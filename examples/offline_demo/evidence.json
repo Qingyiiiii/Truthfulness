@@ -1,0 +1,19 @@
+{
+  "evidence": [
+    {
+      "evidence_id": "ev_001",
+      "claim_id": "claim_001",
+      "search_query": "2023年 全国 粮食 总产量 国家统计局 13908.2亿斤",
+      "source_url": "https://www.stats.gov.cn/",
+      "page_title": "2023年国民经济和社会发展统计公报",
+      "publisher": "国家统计局",
+      "published_at": "2024-02-29T00:00:00+08:00",
+      "retrieved_at": "2026-06-28T17:00:00+08:00",
+      "selected_text": "国家统计局发布的2023年国民经济和社会发展统计公报显示，全年粮食产量13908.2亿斤，约为6.9541亿吨。",
+      "screenshot_path": null,
+      "source_type": "official",
+      "relation_to_claim": "supports",
+      "notes": "Offline demo metadata only. Browser screenshot capture is reserved for the browser evidence stage."
+    }
+  ]
+}

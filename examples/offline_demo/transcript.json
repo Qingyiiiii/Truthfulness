@@ -1,0 +1,18 @@
+{
+  "language": "zh",
+  "source": "manual",
+  "segments": [
+    {
+      "segment_id": "seg_001",
+      "start_seconds": 0,
+      "end_seconds": 12,
+      "text": "主张：中国国家统计局在2024年发布的数据显示，2023年全国粮食总产量超过6.9亿吨。"
+    },
+    {
+      "segment_id": "seg_002",
+      "start_seconds": 12,
+      "end_seconds": 22,
+      "text": "观点：作者认为这说明农业供给保持稳定。"
+    }
+  ]
+}

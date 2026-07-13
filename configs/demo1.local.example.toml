@@ -1,0 +1,17 @@
+[demo1]
+default_platform = "manual"
+runs_dir = "runs"
+
+[llm]
+default_provider = "ollama"
+ollama_base_url = "http://localhost:11434"
+ollama_model = "qwen2.5:7b"
+lmstudio_base_url = "http://localhost:1234/v1"
+
+[search]
+default_provider = "manual"
+browser_screenshot_required = true
+
+[media]
+single_download_only = true
+filename_pattern = "{platform}_{safe_title}_{timestamp}.{extension}"

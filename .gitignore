@@ -1,0 +1,86 @@
+# Personal learning materials
+teach/
+
+# Local IDE settings
+.idea/
+.vscode/
+
+# Python cache and virtual environments
+__pycache__/
+*.py[cod]
+.pytest_cache/
+pytest-cache-files-*/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+env/
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+*.local
+*.secret
+*cookie*
+*Cookie*
+!cookie-catch/
+!cookie-catch/**
+*token*
+*Token*
+cookie/
+cookies/
+secrets/
+
+# Video truthfulness run outputs
+runs/*
+!runs/README.md
+outputs/
+artifacts/
+screenshots/
+media/
+downloads/
+tmp/
+temp/
+
+# Large or sensitive media/data artifacts
+*.mp4
+*.mkv
+*.mov
+*.avi
+*.webm
+*.mp3
+*.wav
+*.m4a
+*.flac
+*.srt
+*.vtt
+*.ass
+*.parquet
+*.sqlite
+*.sqlite3
+*.db
+
+# Local model files
+models/*
+!models/README.md
+*.gguf
+*.safetensors
+*.bin
+
+# Public portfolio snapshot: retain only the sanitized, reviewable surfaces.
+# The repository currently has no tracked release artifacts, so these rules
+# form the publication boundary before the first public commit.
+.agents/
+.codex/
+.tmp/
+data/
+experiments/
+report/*
+!report/v0.1成果汇报.md
+!report/Annotation-example.md
+Optmize/*
+!Optmize/优化方案参考.md
+项目方案.md
+cookie-catch/
+src/video_truthfulness/v01_bilibili_seed.py

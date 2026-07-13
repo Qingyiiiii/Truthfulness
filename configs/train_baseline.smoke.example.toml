@@ -1,0 +1,21 @@
+[training]
+mode = "smoke_baseline"
+smoke_test = true
+gold_jsonl = "path/to/your_reviewed_gold.jsonl"
+batch_id = "your_gold_batch_id"
+experiments_dir = "experiments"
+exp_id = "gold_baseline_smoke"
+seed = 20260701
+
+[training.split]
+train = 0.5
+dev = 0.25
+test = 0.25
+
+[training.boundary]
+formal_training = false
+notes = [
+  "This config is for data loading and smoke-test wiring only.",
+  "Do not mix pending or excluded records into the gold JSONL.",
+  "Do not claim model quality from a smoke-test batch."
+]
