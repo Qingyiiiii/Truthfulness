@@ -1,7 +1,7 @@
 # Ubuntu WSL reproducibility snapshot
 # Generated from a local WSL Python virtual environment; the personal path is intentionally omitted.
-# Date: 2026-07-09
-# Scope: Video Truthfulness WSL v0.1 reproduction, Streamlit, media, ASR GPU validation.
+# Date: 2026-07-15
+# Scope: Truthfulness WSL reproduction, Streamlit, media, ASR, and evidence-agent validation.
 
 altair==6.2.2
 annotated-types==0.7.0
@@ -9,12 +9,15 @@ anyio==4.14.1
 attrs==26.1.0
 av==18.0.0
 blinker==1.9.0
+chromadb==1.5.9
 cachetools==7.1.4
 certifi==2026.6.17
 charset-normalizer==3.4.9
 click==8.4.2
 ctranslate2==4.8.1
 faster-whisper==1.2.1
+fastapi==0.139.0
+fastembed==0.8.0
 filelock==3.29.7
 flatbuffers==25.12.19
 fsspec==2026.6.0
@@ -34,6 +37,8 @@ Jinja2==3.1.6
 joblib==1.5.3
 jsonschema==4.26.0
 jsonschema-specifications==2025.9.1
+langchain-core==1.4.9
+langgraph==1.2.9
 MarkupSafe==3.0.3
 narwhals==2.23.0
 numpy==2.5.1
@@ -52,6 +57,7 @@ pydantic_core==2.46.4
 pydeck==0.9.3
 Pygments==2.20.0
 pytest==9.1.1
+pytest-asyncio==1.4.0
 python-dateutil==2.9.0.post0
 python-multipart==0.0.32
 PyYAML==6.0.3

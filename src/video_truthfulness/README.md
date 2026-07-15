@@ -5,6 +5,7 @@ Core Python package for the Demo1 offline and future platform pipelines.
 Current scope:
 
 - Pydantic schemas for project data objects.
+- LangGraph evidence-agent state, Chroma retrieval, bounded tools, telemetry, and evaluation.
 - Interface protocols for future providers and adapters.
 - Offline transcript/evidence MVP.
 - Guarded single-video media download wrapper.

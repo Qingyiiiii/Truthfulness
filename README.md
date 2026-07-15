@@ -102,6 +102,37 @@ python -m video_truthfulness.cli offline `
 streamlit run app/streamlit_app.py
 ```
 
+### 7.15 日更新 v0.1 工程增强：可评测的证据 Agent
+
+我查阅了中国大陆地区主流招聘平台的部分岗位对于AI应用方面的具体要求，总结并在不改变 v0.1 数据集的前提下新增了一条完全使用合成来源的 Agent/RAG 工程链路。由于后续数据集 sechma 仍然会出现改动，该链路只代表 v0.1 版本的评测性增强。
+
+- LangGraph 显式状态流：分类 → Chroma 检索 → 证据检查 → 结构化生成 → 引用验证 → 拒答或人工升级；
+- 两个受限工具：查询已入库来源信息、创建 SQLite 人工复核任务；
+- FastEmbed 中文 ONNX embedding 与 Chroma 持久化向量检索；
+- FastAPI 严格请求/响应模型、OpenAPI 文档，以及现有 Streamlit 的 Evidence Agent 页面；
+- `trace_id`、逐节点耗时、总耗时、token/成本来源、重试次数、超时与失败状态；
+- 20 条固定合成评测，覆盖引用正确、无答案、提示注入、越权、超时和拒答；
+- Dockerfile、Compose 和 Ubuntu/WSL 一键启动脚本。
+
+```bash
+bash scripts/start_agent_demo.sh
+```
+
+启动后访问：
+
+- FastAPI/OpenAPI：`http://localhost:8000/docs`
+- Streamlit：`http://localhost:8501`
+
+固定评测可独立运行：
+
+```bash
+PYTHONPATH=src python -m video_truthfulness.evals \
+  --embedding-backend fastembed \
+  --runtime-dir runtime/eval-fastembed
+```
+
+当前公开评测结果是 **20/20 PASS**，但它只证明合成用例下的路由、引用、安全与失败处理契约成立，不代表真实世界事实核查准确率。完整设计、状态与验收边界见 [Evidence Agent 文档](docs/agent_rag.md)。
+
 训练入口只接受调用方自行准备的、已完成审核的 `gold_*` JSONL；它当前是数据校验、确定性切分和多数类 baseline 的 smoke 工具，不是正式训练器。可参考 `configs/train_baseline.smoke.example.toml`，不要将 pending 或 excluded 记录混入训练面。
 
 ### 协作工作流
@@ -147,7 +178,7 @@ flowchart LR
 | `report/v0.1成果汇报.md`、`report/Annotation-example.md` | 仅含汇总结果与字段 schema，不含标注内容 |
 | `Optmize/优化方案参考.md` | 脱敏后的后续工程方向 |
 
-下列内容不公开：真实视频运行目录、下载媒体、截图、全量机器/人工标注、seed JSONL、实验日志与切分文件、原始优化过程、教学材料、Cookie 工具、个人环境路径以及依赖这些私有输入的来源特定构建器。这样既不发布第三方平台内容，也不把本地凭证和个人工作流带入提交历史。
+下列内容不公开：真实视频运行目录、下载媒体、截图、全量机器/人工标注、seed JSONL、实验日志与切分文件、原始优化过程、Cookie 工具、个人环境路径以及依赖这些私有输入的来源特定构建器。这样既不发布第三方平台内容，也不把本地凭证和个人工作流带入提交历史。
 
 ## 非协商边界
 

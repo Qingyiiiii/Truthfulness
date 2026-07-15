@@ -1,173 +1,233 @@
-# Interfaces
+# 接口与责任边界
 
-Demo1 keeps external systems behind explicit interfaces. The offline MVP implements only local transcript and local evidence inputs; platform download, browser search, and LLM providers are reserved behind contracts.
+本文定义 Video Truthfulness v0.1 基础链路，以及 2026-07-15 新增的 Evidence Agent/RAG 工程增强所使用的接口、输入输出和失败边界。外部系统必须封装在显式接口之后；LLM 生成内容只能作为候选结构或解释文本，不能直接充当证据。
 
-## PlatformAdapter
+## 一、视频求真基础链路
 
-Responsibility:
+### `PlatformAdapter`
 
-- Identify whether a URL belongs to a supported platform.
-- Fetch public or user-authorized metadata.
-- Hand off media access to `MediaIntake`.
+职责：
 
-Required behavior:
+- 识别受支持的平台 URL；
+- 读取公开或已获授权访问的元数据；
+- 将标准化后的定位信息交给 `MediaIntake`。
 
-- Do not bypass login, paywalls, DRM, or platform access controls.
-- Run one download at a time.
-- Stop and surface the exact failure when access is blocked.
+约束：
 
-## MediaIntake
+- 不绕过登录、付费墙、DRM 或平台访问控制；
+- 同一个 URL 默认只执行一次直接下载尝试；
+- 失败时返回准确的失败原因，不把登录页、风控页或空响应伪装成媒体文件。
 
-Responsibility:
+### `MediaIntake`
 
-- Try subtitles, audio, video, page text, screenshots, and manual imports in the configured order.
-- Save media under `runs/<run_id>/media/`.
-- Save keyframes under `runs/<run_id>/frames/`.
+职责：按以下优先级获取可分析内容：字幕、音频、视频、页面文本、截图、人工提供的材料。
 
-Required behavior:
+必需行为：
 
-- Use filenames that include platform, video title, and timestamp.
-- Record fallback reason in `run_log.jsonl`.
-- Return `media_intake_failed` when no compliant input path exists.
-- If `yt-dlp` is not installed, return `missing_component` and do not retry repeatedly.
-- Download exactly one video at a time; no batch or concurrent download is allowed in Demo1.
-- Multi-strategy attempts must write a complete `download_attempts.json` summary.
-- If every strategy fails, proceed to browser page-text and screenshot fallback.
-- Optional cookie files may be used for user-authorized access, but cookie values and paths must be redacted from public logs and Git. Raw browser cookie headers are converted only as short-lived run-local files and cleaned up after use.
-- When a platform such as B站 blocks unauthenticated downloader requests with risk-control errors, the preferred authorized path is: get Cookie from the user or the explicitly authorized logged-in browser page, store it under the ignored `cookie/` directory, run one sequential download, then clear and delete the source Cookie file after success.
-- If the authorized Cookie path still fails, stop retrying and return a fallback-ready status instead of repeatedly triggering platform risk controls.
+- 所有产物保存到对应的 `runs/<run_id>/` 目录；
+- 使用稳定的文件命名规则；
+- 记录采用了哪条降级路径；
+- 返回显式状态，例如 `downloaded`、`browser_fallback_required`、`manual_input_required` 或 `failed`；
+- 直接下载只顺序执行一次，避免无效重试和重复触发平台限制；
+- 将每次尝试写入简短摘要，至少包含时间、方法、结果和错误类型；
+- 浏览器降级只读取当前用户已被授权访问的页面；
+- 若使用临时 cookies，必须隐藏其内容和路径，并在使用后删除或清空；
+- 连续失败时停止自动重试，转为人工输入或复核。
 
-## TranscriptBuilder
+### `TranscriptBuilder`
 
-Responsibility:
+职责：将字幕、ASR 结果或人工文本转换为统一的 `Transcript`。
 
-- Convert subtitles, ASR output, page text, or manual text into `Transcript`.
-- Preserve segment IDs and timestamps when available.
+必需行为：
 
-Required behavior:
+- 保留原始片段和时间戳；
+- 标记文本来源；
+- 不静默合并不同说话人、不同时间段或不同来源的内容；
+- 无法确认时间戳时，显式标记缺失，而不是编造时间范围。
 
-- Keep source traceability.
-- Do not silently merge unrelated text sources.
+### `ClaimExtractor`
 
-## ClaimExtractor
+职责：从 `Transcript` 中提取可核查的原子主张。
 
-Responsibility:
+必需行为：
 
-- Convert transcript segments into atomic `Claim` records.
-- Filter opinions, predictions, vague claims, and non-checkable material.
+- 区分事实主张、观点、预测、修辞和无法核查的表达；
+- 每条主张关联原始 `segment_id`；
+- 需要上下文才能解释时设置 `needs_context=true`；
+- 不把拆分后的片段改写成强于原文的结论。
 
-Required behavior:
+### `StanceAnalyzer`
 
-- Every claim must reference source segment IDs.
-- Unclear but potentially factual claims should be marked `needs_context`.
+职责：判断视频作者对某一主张的立场，并保留对应片段引用。
 
-## StanceAnalyzer
+边界：
 
-Responsibility:
+- `stance` 不是事实判定；
+- 不能因为作者语气肯定就提高真实性结论；
+- 输出必须关联原始片段，无法判断时返回不确定状态。
 
-- Identify the author's stance toward a claim or topic.
+### `AuthorEvidenceExtractor`
 
-Required behavior:
+职责：提取作者在视频中展示或提到的证据，例如截图、链接、文件、数据和引用来源。
 
-- Stance is not a truth verdict.
-- Stance evidence must reference transcript segments.
+边界：
 
-## AuthorEvidenceExtractor
+- 每条作者证据都必须可追溯到视频片段或截图；
+- 作者展示的材料不自动等于已验证的外部证据；
+- 无法识别来源时明确标记，而不是推测来源。
 
-Responsibility:
+### `SearchProvider`
 
-- Extract screenshots, links, quoted data, experiments, comments, and personal experiences used by the video author.
+可用实现：`BrowserSearchProvider`、`SearchAPIProvider` 和 `ManualEvidenceProvider`。
 
-Required behavior:
+必需行为：
 
-- Mark whether the material needs source tracing.
-- Do not treat author-provided evidence as verified external evidence by default.
+- 保存查询词、检索时间和结果来源；
+- 对关键页面保留截图或稳定文本快照；
+- 区分“检索工具失败”和“没有足够证据”；
+- 不自动访问需要未授权登录、破解或规避访问控制的内容。
 
-## SearchProvider
+### `EvidenceStore`
 
-Responsibility:
+职责：持久化证据记录、截图、正文和元数据。
 
-- Produce external evidence candidates for claims.
+必需行为：
 
-Provider types:
+- 每条证据关联 `claim_id`；
+- 外部页面尽可能保存截图或可复核快照；
+- 为证据分配稳定的 `evidence_id`；
+- 文件名和目录遵循 [file_layout.md](file_layout.md) 的公开边界。
 
-- `BrowserSearchProvider`
-- `SearchAPIProvider`
-- `ManualEvidenceProvider`
+### `EvidenceScorer`
 
-Required behavior:
+评分维度可包括：相关性、来源权威性、时效性、独立性、完整性和可复核性。
 
-- Store query text and retrieved timestamp.
-- Save browser screenshots when evidence is selected.
-- Separate search failure from evidence insufficiency.
+边界：
 
-## EvidenceStore
+- 分数用于解释证据质量和排序，不是自动生成的“真相分数”；
+- 低质量、来源不明或互相冲突的证据必须触发 `review_required`，不能被平均分掩盖。
 
-Responsibility:
+### `ReasoningEngine`
 
-- Persist evidence records, screenshots, selected text, and source metadata.
+职责：对齐主张与证据，并生成保守、可追溯的判定候选。
 
-Required behavior:
+必需行为：
 
-- Every evidence item must be tied to a claim ID.
-- Browser evidence must include screenshot path.
-- Evidence IDs must be stable within a run.
-- Evidence screenshot filenames should follow `<claim_id>_<evidence_id>_<YYYYMMDD_HHMMSS>_<source_type>.png`.
+- 强结论必须有足够证据支持；
+- 只能引用当前证据集中真实存在的 `evidence_id`；
+- 缺少证据时返回 `insufficient_evidence`；
+- 证据冲突、引用失配或风险较高时进入人工复核，而不是强行生成结论。
 
-## EvidenceScorer
+### `ReportGenerator`
 
-Responsibility:
+职责：将结构化结果渲染为可读报告。
 
-- Score relevance, source authority, freshness, independence, completeness, and screenshot availability.
+必需行为：
 
-Required behavior:
+- 保留 `claim_id`、`evidence_id`、判定状态和限制说明；
+- 区分机器生成内容、人工确认内容和未核实内容；
+- 不在渲染阶段补写新的事实或来源。
 
-- Scoring is explanatory, not a total truth score.
-- Low quality evidence should keep `review_required` true.
+### `ReviewStore`
 
-## ReasoningEngine
+职责：保存人工复核任务、处理状态和审计记录。
 
-Responsibility:
+必需行为：
 
-- Align claims with evidence.
-- Output conservative verdicts.
+- 记录创建原因、关联 `trace_id`、主张、证据和时间；
+- 保留状态变更，不用覆盖写隐藏历史；
+- 未经人工确认，不得把复核结果写入 gold/training 数据。
 
-Required behavior:
+### `LLMProvider`
 
-- Never output a strong verdict without evidence.
-- LLM drafts may only cite existing `evidence_id` values.
-- Missing evidence must become `insufficient_evidence`, not a silent pass.
+职责：封装模型调用，并将返回内容解析为指定的 Pydantic 模型。
 
-## ReportGenerator
+必需行为：
 
-Responsibility:
+- 使用结构化输出或等价的严格校验；
+- schema 校验失败时 fail closed；
+- 不接受模型返回的额外字段；
+- 不把模型自述、隐藏推理或未检索到的来源当作证据；
+- 调用必须受超时、重试上限和遥测记录约束。
 
-- Write human-readable Markdown and machine-readable JSON reports.
+## 二、证据 Agent/RAG 工程增强
 
-Required behavior:
+### `EmbeddingBackend` 与 `ChromaEvidenceStore`
 
-- Include claims, evidence, verdicts, review flags, and limitations.
-- Preserve uncertainty and missing context.
+职责：为已授权进入公开演示的数据建立向量索引，并返回证据候选。
 
-## ReviewStore
+必需行为：
 
-Responsibility:
+- 生产演示默认使用 Chroma；
+- 索引记录至少保留 `source_id`、标题、正文、来源类型和允许公开的元数据；
+- 向量相似度只用于候选召回，不能直接决定答案；
+- 召回后执行词法锚点或等价的相关性检查，降低“语义相似但事实无关”的误命中；
+- 不索引 cookies、凭据、真实运行产物、私有媒体或未清洗数据；
+- 测试环境可以使用确定性的本地哈希嵌入，避免把网络模型下载作为测试前提。
 
-- Save human review decisions for future training and evaluation.
+### `AgentService` 与 LangGraph 状态流
 
-Required behavior:
+固定状态流：
 
-- Use JSONL records.
-- Do not store private account material or unauthorized source content.
+`分类 → 检索 → 证据检查 → 生成 → 引用验证 → 拒答/人工升级`
 
-## LLMProvider
+必需行为：
 
-Responsibility:
+- 每个节点只处理其声明的状态字段；
+- 越权、提示注入或不在支持范围内的请求应在检索前终止；
+- 证据不足时不得进入无依据生成；
+- 引用验证失败时，不返回看似完整的答案；
+- 所有路径必须落到显式终态，例如 `answered`、`insufficient_evidence`、`refused`、`human_review_required`、`timeout` 或 `failed`；
+- 同一请求全程携带 `trace_id`。
 
-- Provide a stable interface for local Ollama, LM Studio, and OpenAI-compatible services.
+### Agent 工具
 
-Required behavior:
+公开演示只暴露两个有边界的工具：
 
-- Do not treat model output as evidence.
-- Validate structured output against Pydantic schemas before using it.
-- Fail closed when provider output is malformed.
+1. `lookup_source_info`：按 `source_id` 查询已进入证据目录的来源元数据；
+2. `create_human_review_task`：创建人工复核任务，并返回任务 ID。
+
+工具边界：
+
+- 不接受任意 URL 抓取或任意文件读取；
+- 不读取被 `.gitignore` 隔离的私有目录；
+- 不写入 gold/training 数据；
+- 参数和返回值均使用严格 Pydantic 模型；
+- 工具失败必须进入可观察的失败或升级状态。
+
+### Pydantic 结构化契约
+
+- API 输入、Agent 状态边界、工具参数和最终输出均使用 Pydantic；
+- 关键模型设置 `extra="forbid"`；
+- 引用、状态、耗时和错误字段使用明确类型，不依赖自由文本约定；
+- schema 不匹配时拒绝继续传播错误数据。
+
+### FastAPI 接口
+
+公开接口包括：
+
+- `GET /health`：服务健康检查；
+- `POST /v1/query`：执行一次 Agent 查询；
+- `GET /v1/sources/{source_id}`：查询已入库来源信息；
+- `GET /v1/review-tasks/{task_id}`：读取人工复核任务。
+
+请求可通过 `X-Trace-ID` 传入追踪标识；未提供时由服务生成。响应必须回传最终 `trace_id` 和结构化状态。
+
+### 超时、重试与遥测
+
+- 外部或模型调用必须设置超时；
+- 只对明确的瞬时故障重试，默认最多 2 次尝试，即首次失败后最多再试 1 次；
+- 认证失败、权限拒绝、schema 错误、提示注入和策略拒答不重试；
+- 记录总耗时与关键节点耗时；
+- 记录输入/输出 token、估算成本及其来源；无法获得真实计量时标记为估算或不可用；
+- 超时、重试耗尽和内部异常必须使用不同的失败状态，不能统一伪装为“无答案”。
+
+### 安全终态
+
+- `refused`：请求越权、包含提示注入，或明确超出系统允许范围；
+- `insufficient_evidence`：检索成功但证据不足；
+- `human_review_required`：证据冲突、引用验证失败或风险需要人工判断；
+- `timeout`：受控调用超过时限；
+- `failed`：无法安全恢复的内部失败。
+
+上述终态都必须返回可理解的原因，但不得泄露系统提示、密钥、cookies、内部路径或未公开材料。

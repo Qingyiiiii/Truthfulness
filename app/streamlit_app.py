@@ -6,6 +6,7 @@ entry point and can run the offline MVP when Streamlit is installed.
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 import sys
 
@@ -15,6 +16,7 @@ if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
 import streamlit as st
+import requests
 
 from video_truthfulness.media import YtDlpDownloader
 from video_truthfulness.offline_pipeline import run_offline_demo
@@ -28,7 +30,70 @@ def main() -> None:
     st.title("Video Truthfulness Demo1")
     st.caption("Evidence-first single-video verification demo.")
 
-    offline_tab, download_tab, artifacts_tab = st.tabs(["Offline MVP", "Single Download", "Artifacts"])
+    agent_tab, offline_tab, download_tab, artifacts_tab = st.tabs(
+        ["Evidence Agent", "Offline MVP", "Single Download", "Artifacts"]
+    )
+
+    with agent_tab:
+        st.subheader("LangGraph + Chroma evidence agent")
+        st.caption("Classification → retrieval → evidence check → generation → citation validation → refusal/review")
+        api_url = st.text_input(
+            "FastAPI base URL",
+            os.getenv("TRUTHFULNESS_API_URL", "http://localhost:8000"),
+        ).rstrip("/")
+        query = st.text_area(
+            "Question",
+            "Aurora 地铁三号线何时正式开通？",
+            height=100,
+        )
+        authorized = st.checkbox("I am authorized to submit this input", value=True)
+        if st.button("Run evidence agent", type="primary"):
+            try:
+                response = requests.post(
+                    f"{api_url}/v1/query",
+                    json={"query": query, "authorized": authorized, "top_k": 4},
+                    timeout=40,
+                )
+                response.raise_for_status()
+                payload = response.json()
+            except requests.RequestException as exc:
+                st.error(f"FastAPI request failed: {exc}")
+            else:
+                status = payload["status"]
+                if status == "answered":
+                    st.success(status)
+                elif status in {"insufficient_evidence", "human_review_required"}:
+                    st.warning(status)
+                else:
+                    st.error(status)
+                st.markdown("#### Answer")
+                st.write(payload["answer"])
+                citations = payload.get("citations", [])
+                st.markdown("#### Citations")
+                if citations:
+                    for citation in citations:
+                        st.markdown(
+                            f"- **{citation['page_title']}** — {citation['publisher']} "
+                            f"([source]({citation['source_url']}), score={citation['score']:.3f})"
+                        )
+                        st.code(citation["quote"], language=None)
+                else:
+                    st.caption("No citations returned for this terminal status.")
+                telemetry = payload["telemetry"]
+                token_usage = telemetry["tokens"]
+                cost_usage = telemetry["cost"]
+                metric_columns = st.columns(5)
+                metric_columns[0].metric("Trace", payload["trace_id"][:12])
+                metric_columns[1].metric("Latency", f"{telemetry['total_elapsed_ms']:.1f} ms")
+                metric_columns[2].metric("Tokens", token_usage.get("total_tokens") or 0)
+                amount = cost_usage.get("amount_usd")
+                metric_columns[3].metric("Cost", "N/A" if amount is None else f"${amount:.6f}")
+                metric_columns[4].metric("Retries", telemetry["retries"])
+                if payload.get("review_task_id"):
+                    st.info(f"Human review task: {payload['review_task_id']}")
+                with st.expander("Trace and structured response"):
+                    st.dataframe(telemetry["nodes"], use_container_width=True)
+                    st.json(payload)
 
     with offline_tab:
         st.subheader("Offline transcript/evidence MVP")

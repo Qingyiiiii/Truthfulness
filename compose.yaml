@@ -1,0 +1,60 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: truthfulness-agent:local
+    init: true
+    environment:
+      TRUTHFULNESS_RUNTIME_DIR: /app/runtime
+      TRUTHFULNESS_SOURCE_PATH: /app/examples/agent_demo/sources.jsonl
+      TRUTHFULNESS_EMBEDDING_BACKEND: ${TRUTHFULNESS_EMBEDDING_BACKEND:-fastembed}
+      TRUTHFULNESS_EMBEDDING_MODEL: ${TRUTHFULNESS_EMBEDDING_MODEL:-BAAI/bge-small-zh-v1.5}
+      TRUTHFULNESS_EMBEDDING_CACHE: /opt/truthfulness-models
+      TRUTHFULNESS_LLM_PROVIDER: ${TRUTHFULNESS_LLM_PROVIDER:-extractive}
+      TRUTHFULNESS_LLM_BASE_URL: ${TRUTHFULNESS_LLM_BASE_URL:-http://host.docker.internal:11434}
+      TRUTHFULNESS_LLM_MODEL: ${TRUTHFULNESS_LLM_MODEL:-deepseek-r1:7b}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - truthfulness_runtime:/app/runtime
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3)"
+      interval: 10s
+      timeout: 5s
+      start_period: 30s
+      retries: 6
+
+  ui:
+    image: truthfulness-agent:local
+    init: true
+    command:
+      - streamlit
+      - run
+      - app/streamlit_app.py
+      - --server.address
+      - 0.0.0.0
+      - --server.port
+      - "8501"
+      - --server.headless
+      - "true"
+      - --browser.gatherUsageStats
+      - "false"
+    environment:
+      TRUTHFULNESS_API_URL: http://api:8000
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      disable: true
+    ports:
+      - "8501:8501"
+
+volumes:
+  truthfulness_runtime:

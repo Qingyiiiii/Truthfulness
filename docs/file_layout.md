@@ -1,166 +1,197 @@
-# File Layout
+# 文件布局与公开策略
 
-This document defines where Demo1 files belong and what may be committed.
+本项目采用“白名单式公开”原则：只有已经确认不含个人信息、访问凭据、真实运行材料和未清洗来源的数据，才进入公开快照。目录是否存在不等于允许提交；最终以本文件、`.gitignore` 和提交前审查共同决定。
 
-## Repository Files
+## 一、三类公开边界
 
-| Category | Path | Commit policy |
-| --- | --- | --- |
-| Project entry | `README.md`, `项目方案.md` | Commit |
-| Python package | `src/video_truthfulness/` | Commit |
-| Streamlit entry | `app/` | Commit |
-| Public configs | `configs/*.example.toml` | Commit |
-| Schema docs | `schemas/` | Commit generated schemas and docs only |
-| Engineering docs | `docs/` | Commit |
-| Public examples | `examples/` | Commit only synthetic or authorized samples |
-| Tests | `tests/` | Commit |
-| Runtime outputs | `runs/<run_id>/` | Do not commit real outputs |
-| Local model files | `models/` | Do not commit weights or private paths |
+| 类别 | 默认 Git 行为 | 典型内容 | 处理要求 |
+|---|---|---|---|
+| 可完全公开展示 | 可提交 | 通用源码、中文文档、schema、测试、固定评测、合成示例、Docker 启动文件 | 提交前仍需执行密钥与路径检查 |
+| 需要清洗后公开 | 默认忽略 | 原始数据、实验记录、方案草稿、来源特定构建脚本、教学材料、未经审查的报告 | 脱敏、去真实来源、确认许可后，逐文件显式放行 |
+| 不可公开 | 始终忽略 | 凭据、cookies、token、真实媒体、运行产物、Chroma 库、复核数据库、模型权重、私有研究方案 | 不进入 Git；必要时仅在受控本地或私有存储中保存 |
 
-## Run Directory Layout
+`.gitignore` 只能降低误提交概率，不能替代提交前人工检查。已经被 Git 跟踪的文件不会因为新增忽略规则而自动移除。
 
-Each single-video run writes to a separate directory:
+## 二、仓库级目录
+
+| 路径 | 用途 | 公开类别 |
+|---|---|---|
+| `README.md`、`LICENSE` | 项目入口和许可 | 可完全公开展示 |
+| `src/video_truthfulness/` | 通用业务逻辑与 Agent/RAG 实现 | 可完全公开展示；来源特定脚本除外 |
+| `app/` | 现有 Streamlit 页面和调用入口 | 可完全公开展示 |
+| `tests/` | 自动化测试 | 可完全公开展示 |
+| `evals/` | 20 条固定合成评测及评测脚本 | 可完全公开展示 |
+| `docs/` | 架构、接口、文件边界和演示说明 | 可完全公开展示 |
+| `schemas/` | 数据契约 | 可完全公开展示 |
+| `examples/` | 仅包含合成或已脱敏示例 | 可完全公开展示 |
+| `Dockerfile`、`compose.yaml`、`.dockerignore` | 容器构建与一键启动 | 可完全公开展示 |
+| `.env.example` | 不含真实值的环境变量模板 | 可完全公开展示 |
+| `scripts/` | 不含凭据和私人路径的公共脚本 | 可完全公开展示 |
+| `configs/` | 安全默认值、依赖清单和示例配置 | 可完全公开展示；本地覆盖配置除外 |
+| `report/` | 报告及汇报材料 | 需要清洗后公开；仅显式白名单文件可提交 |
+| `Optmize/` | 优化方案和研究草稿 | 需要清洗后公开；私有研究方案不可公开 |
+| `teach/` | 教学和个人学习材料 | 需要清洗后公开，默认不提交 |
+| `data/`、`experiments/` | 数据与实验记录 | 需要清洗后公开，默认不提交 |
+| `项目方案.md` | 可能包含内部规划和真实来源背景 | 需要清洗后公开，默认不提交 |
+| `runs/` | 每次真实处理运行的产物 | 不可公开；仅 `runs/README.md` 可提交 |
+| `runtime/` | Chroma、人工复核数据库和运行时缓存 | 不可公开 |
+| `models/` | 本地模型和权重 | 不可公开；仅 `models/README.md` 可提交 |
+| `.agents/`、`.codex/`、`.tmp/` | 本地代理状态、工具状态和临时文件 | 不可公开 |
+
+当前允许从受控目录显式公开的文件包括：
+
+- `report/v0.1成果汇报.md`
+- `report/Annotation-example.md`
+- `Optmize/优化方案参考.md`
+- `runs/README.md`
+- `models/README.md`
+- `.env.example`
+
+新增例外必须逐文件审查，不应通过放开整个目录来实现。
+
+## 三、单次视频运行目录
+
+真实运行产物统一放在：
 
 ```text
 runs/<run_id>/
-  input.json
-  metadata.json
-  transcript.json
-  claims.json
-  stance.json
-  author_evidence.json
-  search_queries.json
-  evidence_manifest.json
-  evidence_scores.json
-  verdicts.json
-  download_attempts.json
-  page_text.json
-  page_fallback.json
-  report.md
-  report.json
-  review.jsonl
-  run_log.jsonl
+  run.json
+  source/
+    source.json
+    download_attempts.jsonl
+    browser_fallback.json
   media/
-  frames/
+    source.mp4
+    source_audio.wav
+    source_subtitles.vtt
+  transcript/
+    transcript.json
+  claims/
+    claims.jsonl
+  evidence/
+    evidence_records.jsonl
+    source_text/
+      <source_id>.txt
   screenshots/
+    video/
+      <claim_id>_<timestamp>.png
+    sources/
+      <claim_id>_<source_id>.png
+  output/
+    report.json
+    report.md
+  logs/
+    events.jsonl
 ```
 
-## Media Files
+规则：
 
-Downloaded video or audio files belong under:
+- `<run_id>` 使用 UUID 或 UTC 时间戳加短随机后缀；
+- 每个运行目录必须自包含，便于本地复核；
+- `run.json` 记录配置摘要、代码版本、开始和结束时间；
+- `logs/events.jsonl` 只记录结构化事件，不记录 cookies、token、完整请求头或私人绝对路径；
+- 整个 `runs/<run_id>/` 属于不可公开内容，不通过“只挑几个看起来安全的文件”规避清洗流程。
+
+## 四、Agent/RAG 运行时目录
+
+建议的本地布局：
 
 ```text
-runs/<run_id>/media/
+runtime/
+  chroma/
+  review_tasks.sqlite3
+  model_cache/
+
+eval-results/
+  <evaluation_run_id>.json
 ```
 
-Required naming pattern:
+- `runtime/chroma/` 可能包含由来源文本生成的向量和元数据，不公开；
+- `review_tasks.sqlite3` 可能包含人工复核上下文，不公开；
+- `model_cache/` 只用于本地复用，不公开；
+- `eval-results/` 是运行结果，不公开；固定的合成评测输入和预期结果应放在 `evals/`。
+
+## 五、媒体命名与处理
+
+建议文件名：
+
+- `source.mp4`
+- `source_audio.wav`
+- `source_subtitles.vtt`
+
+处理规则：
+
+- 原始媒体保存到运行目录，不进入仓库；
+- 除非复核确有需要，否则不保留重复的转码副本；
+- 若转码，记录工具版本、参数和校验摘要；
+- 媒体提取失败时保留失败状态，不创建空文件冒充成功产物。
+
+## 六、截图命名与复核
+
+视频截图：
 
 ```text
-<platform>_<safe_video_title>_<YYYYMMDD_HHMMSS>.<extension>
+runs/<run_id>/screenshots/video/<claim_id>_<timestamp>.png
 ```
 
-Example:
+外部来源截图：
 
 ```text
-bilibili_sample_video_title_20260628_173015.mp4
+runs/<run_id>/screenshots/sources/<claim_id>_<source_id>.png
 ```
 
-Rules:
+规则：
 
-- Include the platform name.
-- Include a filesystem-safe video title.
-- Include the exact local timestamp used when the file is saved.
-- Never run multiple platform downloads at the same time.
-- Stop and report the failing step when a platform download is blocked or denied.
-- If a required download component is missing, report `missing_component` before attempting platform access.
-- Multi-strategy attempts must be sequential and written to `download_attempts.json`.
+- 文件名必须稳定且便于定位；
+- 关键证据不能只依赖易失的外部 URL；
+- 截图中可能出现账号名、头像、浏览器信息或个人路径，公开前必须单独清洗；
+- 截图只证明“页面当时显示了什么”，不能替代来源真实性判断。
 
-## Screenshots
+## 七、下载尝试与浏览器降级
 
-Video keyframes belong under:
+自动下载只执行一次顺序尝试，并写入：
 
 ```text
-runs/<run_id>/frames/
+runs/<run_id>/source/download_attempts.jsonl
 ```
 
-External evidence screenshots belong under:
+若直接下载失败，但用户可以在已登录浏览器中合法访问，则记录：
 
 ```text
-runs/<run_id>/screenshots/
+runs/<run_id>/source/browser_fallback.json
 ```
 
-Evidence screenshot naming pattern:
+其中可以记录页面标题、规范 URL、可见元数据和降级原因，但不得记录会话密钥、完整 cookies、认证请求头或账号凭据。
 
-```text
-<claim_id>_<evidence_id>_<YYYYMMDD_HHMMSS>_<source_type>.png
-```
+## 八、Cookies 与凭据
 
-Screenshot rules:
+Cookies 仅用于用户已获授权访问的来源，并遵循：
 
-- Every browser-collected evidence item must have a screenshot.
-- A screenshot is a review artifact, not proof by itself.
-- If screenshot capture fails, record the failure separately from evidence insufficiency.
+- cookies 文件始终存放在仓库外或被 Git 忽略的位置；
+- 临时 Netscape 格式 cookies 文件在使用后立即删除或清空；
+- 日志只记录“使用了临时凭据”，不记录其值；
+- 错误消息、截图和报告必须隐藏 cookies 文件路径及账号标识；
+- 需要长期保留的凭据交给系统密钥管理，不写入 `.env.example`。
 
-## Download Attempts And Browser Fallback
+## 九、模型和大文件
 
-When direct media download is attempted, write:
+以下内容不可提交：
 
-```text
-runs/<run_id>/download_attempts.json
-```
+- 模型权重和检查点；
+- 嵌入模型缓存；
+- Chroma 持久化数据；
+- 原始视频、音频和字幕；
+- SQLite、DuckDB 等运行数据库；
+- Parquet 或其他可能包含真实数据的批量文件。
 
-If all download strategies fail, browser fallback writes:
+仓库中只能保留下载说明、校验方法、许可证提示和不含真实权重的配置示例。
 
-```text
-runs/<run_id>/page_text.json
-runs/<run_id>/page_fallback.json
-runs/<run_id>/screenshots/page_<safe_title>_<YYYYMMDD_HHMMSS>.png
-```
+## 十、提交前检查
 
-Rules:
+每次生成公开快照前至少确认：
 
-- Attempt strategies sequentially, never concurrently.
-- Keep every strategy result in `download_attempts.json`.
-- Do not store cookies, tokens, request headers containing credentials, or account data.
-- When platform risk control blocks unauthenticated downloads, use user-authorized cookies before falling back to page text and screenshots.
-- Page text and screenshots are fallback inputs, not final evidence by themselves.
-
-## Cookie Files
-
-Cookie files are local-only sensitive inputs.
-
-Rules:
-
-- Store local cookies under ignored paths such as `cookie/`, `cookies/`, or `tmp/`.
-- Prefer an ignored project-local directory such as `cookie/` for user-authorized platform cookies used by Demo1 downloads.
-- A cookie may come from a user-provided file or, after explicit user authorization, from the currently logged-in browser page.
-- Do not commit cookie files.
-- Do not print cookie values.
-- If a copied browser cookie header is used, convert it to a temporary Netscape cookie file under the ignored run directory and remove it after the downloader exits.
-- After a successful download, clear and delete the source cookie file when it is under `cookie/` or `cookies/`.
-- If Windows denies immediate deletion, blank the file content first so no cookie value remains.
-- Redact `--cookies` paths from saved command records.
-- If all authorized download strategies fail, stop repeated downloads and switch to page text, keyframe screenshots, or manual media import.
-
-## Model Files
-
-Model weights and local model caches belong outside Git. If a local model path is needed, put only a safe placeholder in an example config.
-
-Never commit:
-
-- `.gguf`
-- `.safetensors`
-- `.bin`
-- private model directories
-- provider API keys
-
-## Sensitive Files
-
-Never commit:
-
-- Cookies
-- Tokens
-- Account material
-- Private video data
-- Unauthorized media
-- Real sensitive run artifacts
+1. `git status --short --ignored` 中没有意外放行的真实产物；
+2. diff 中不存在 token、cookies、邮箱、账号、私人绝对路径和真实媒体链接；
+3. `examples/` 与 `evals/` 仅包含合成或已明确授权的数据；
+4. 所有“需要清洗后公开”的文件都有逐文件审查依据；
+5. Docker 构建上下文没有复制不可公开目录。

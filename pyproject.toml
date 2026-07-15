@@ -8,7 +8,7 @@ version = "0.1.0"
 description = "Evidence-first video claim verification demo."
 readme = "README.md"
 requires-python = ">=3.12"
-license = { text = "Apache-2.0" }
+license = "Apache-2.0"
 authors = [
     { name = "Video Truthfulness maintainers" }
 ]
@@ -20,10 +20,20 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-    "pytest>=8.0"
+    "pytest>=8.0",
+    "pytest-asyncio>=0.24",
+    "httpx>=0.28"
 ]
 ui = [
     "streamlit>=1.35"
+]
+agent = [
+    "chromadb>=1.0,<2.0",
+    "fastapi>=0.115,<1.0",
+    "fastembed>=0.7,<1.0",
+    "langgraph>=1.0,<2.0",
+    "tenacity>=9.0,<10.0",
+    "uvicorn[standard]>=0.34,<1.0"
 ]
 media = [
     "yt-dlp>=2024.0",
@@ -42,3 +52,4 @@ where = ["src"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src"]
+asyncio_mode = "auto"

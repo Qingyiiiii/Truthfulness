@@ -1,11 +1,92 @@
-# Personal learning materials
-teach/
+# =============================================================================
+# A. 可完全公开展示
+# =============================================================================
+#
+# Git 默认会纳入未被下方规则匹配的文件。当前可公开范围包括：
+# - README / LICENSE / docs / schemas
+# - 通用 src / app / tests / evals
+# - 仅含合成数据的 examples
+# - Dockerfile / compose.yaml / .dockerignore
+# - 公共 scripts、依赖清单和安全示例配置
+#
+# 受控目录中的公开例外必须逐文件列出，不能放开整个目录。
+!.env.example
+!runs/README.md
+!models/README.md
+!report/v0.1成果汇报.md
+!report/Annotation-example.md
+!Optmize/优化方案参考.md
 
-# Local IDE settings
+
+# =============================================================================
+# B. 需要清洗后才能公开
+# 默认忽略；完成脱敏、许可和内容审查后，才能逐文件增加 ! 例外。
+# =============================================================================
+
+# 个人教学材料与未经公开审查的数据/实验
+teach/
+data/
+experiments/
+
+# 可能含真实来源、内部规划或来源特定逻辑
+项目方案.md
+src/video_truthfulness/v01_bilibili_seed.py
+
+# 报告与优化草稿：仅放行 A 类中列出的已审查文件
+report/*
+!report/v0.1成果汇报.md
+!report/Annotation-example.md
+
+Optmize/*
+!Optmize/优化方案参考.md
+
+# 本地覆盖配置需要逐项清洗后才能转为公开 example
+*.local
+
+
+# =============================================================================
+# C. 不可公开
+# 始终保留在本地或受控私有存储。只有 A 类明确列出的说明/模板例外可放行。
+# =============================================================================
+
+# 凭据、账号状态和密钥
+.env
+.env.*
+!.env.example
+*.secret
+*cookie*
+*Cookie*
+*token*
+*Token*
+cookie/
+cookies/
+cookie-catch/
+secrets/
+
+# 明确私有的研究方案
+Optmize/包装数据鉴伪优化方案.md
+
+# 真实运行产物、证据快照和运行时数据库
+runs/*
+!runs/README.md
+outputs/
+artifacts/
+screenshots/
+media/
+downloads/
+runtime/
+eval-results/
+tmp/
+temp/
+
+# 本地 Agent / Codex / IDE 状态
+.agents/
+.codex/
+.tmp/
 .idea/
 .vscode/
 
-# Python cache and virtual environments
+# Python 缓存和虚拟环境
 __pycache__/
 *.py[cod]
 .pytest_cache/
@@ -16,34 +97,7 @@ pytest-cache-files-*/
 venv/
 env/
 
-# Local configuration and secrets
-.env
-.env.*
-!.env.example
-*.local
-*.secret
-*cookie*
-*Cookie*
-!cookie-catch/
-!cookie-catch/**
-*token*
-*Token*
-cookie/
-cookies/
-secrets/
-
-# Video truthfulness run outputs
-runs/*
-!runs/README.md
-outputs/
-artifacts/
-screenshots/
-media/
-downloads/
-tmp/
-temp/
-
-# Large or sensitive media/data artifacts
+# 真实媒体、大型数据和本地数据库
 *.mp4
 *.mkv
 *.mov
@@ -51,36 +105,24 @@ temp/
 *.webm
 *.mp3
 *.wav
-*.m4a
 *.flac
+*.m4a
+*.aac
 *.srt
 *.vtt
 *.ass
 *.parquet
 *.sqlite
 *.sqlite3
+*.duckdb
 *.db
 
-# Local model files
+# 模型权重、检查点和缓存；仅保留说明文件
 models/*
 !models/README.md
 *.gguf
-*.safetensors
 *.bin
-
-# Public portfolio snapshot: retain only the sanitized, reviewable surfaces.
-# The repository currently has no tracked release artifacts, so these rules
-# form the publication boundary before the first public commit.
-.agents/
-.codex/
-.tmp/
-data/
-experiments/
-report/*
-!report/v0.1成果汇报.md
-!report/Annotation-example.md
-Optmize/*
-!Optmize/优化方案参考.md
-项目方案.md
-cookie-catch/
-src/video_truthfulness/v01_bilibili_seed.py
+*.pt
+*.pth
+*.ckpt
+*.safetensors

@@ -11,6 +11,10 @@ Allowed here:
 
 Do not commit API keys, cookies, tokens, account identifiers, local absolute secret paths, or private model paths.
 
+`agent-requirements.txt` contains direct public runtime dependencies for the
+Docker API/UI image. Version constraints remain aligned with the `agent` and
+`ui` extras in `pyproject.toml`.
+
 Current examples:
 
 - `demo1.local.example.toml`: local Demo1 provider defaults.
