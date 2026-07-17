@@ -2,9 +2,9 @@ from pathlib import Path
 
 import httpx
 
-from video_truthfulness.agent_config import AgentSettings
-from video_truthfulness.agent_graph import AgentService
-from video_truthfulness.api import create_app
+from video_truthfulness.core.agent_config import AgentSettings
+from video_truthfulness.core.agent_graph import AgentService
+from video_truthfulness.core.api import create_app
 
 
 async def test_fastapi_query_and_trace_header(tmp_path: Path) -> None:

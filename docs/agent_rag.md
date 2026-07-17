@@ -170,7 +170,7 @@ docker compose up --build
 
 ```bash
 pytest -q
-PYTHONPATH=src python -m video_truthfulness.evals \
+PYTHONPATH=src python -m video_truthfulness.versions.v01.evals \
   --embedding-backend fastembed \
   --runtime-dir runtime/eval-fastembed
 ```

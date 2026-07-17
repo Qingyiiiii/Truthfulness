@@ -1,7 +1,7 @@
 import pytest
 from pydantic import ValidationError
 
-from video_truthfulness.agent_models import QueryRequest
+from video_truthfulness.core.agent_models import QueryRequest
 
 
 def test_query_request_rejects_schema_drift() -> None:

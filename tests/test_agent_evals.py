@@ -1,8 +1,8 @@
 from pathlib import Path
 
-from video_truthfulness.agent_config import AgentSettings
-from video_truthfulness.agent_graph import AgentService
-from video_truthfulness.evals import load_eval_cases, run_evaluations
+from video_truthfulness.core.agent_config import AgentSettings
+from video_truthfulness.core.agent_graph import AgentService
+from video_truthfulness.versions.v01.evals import load_eval_cases, run_evaluations
 
 
 async def test_all_twenty_fixed_agent_evaluations_pass(tmp_path: Path) -> None:
@@ -18,7 +18,7 @@ async def test_all_twenty_fixed_agent_evaluations_pass(tmp_path: Path) -> None:
         request_timeout_seconds=10,
     )
     service = AgentService(settings=settings)
-    summary = await run_evaluations(service, load_eval_cases(Path("evals/agent_cases.jsonl")))
+    summary = await run_evaluations(service, load_eval_cases(Path("evals/V01/agent_cases.jsonl")))
 
     assert summary.total == 20
     assert summary.failed == 0, [

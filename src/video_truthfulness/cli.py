@@ -1,15 +1,15 @@
-"""Command line entry point for local Demo1 tasks."""
+"""Command line entry point with explicit version routing."""
 
 from __future__ import annotations
 
 import argparse
 from pathlib import Path
 
-from video_truthfulness.media import MultiStrategyDownloadRunner, YtDlpDownloader
-from video_truthfulness.offline_pipeline import run_offline_demo
-from video_truthfulness.schemas import Platform
-from video_truthfulness.training import run_gold_baseline_smoke
-from video_truthfulness.training_data_quality import (
+from video_truthfulness.core.schemas import Platform
+from video_truthfulness.versions.v01.media import MultiStrategyDownloadRunner, YtDlpDownloader
+from video_truthfulness.versions.v01.offline_pipeline import run_offline_demo
+from video_truthfulness.versions.v01.training import run_gold_baseline_smoke
+from video_truthfulness.versions.v01.training_data_quality import (
     build_training_data_pack_from_toml,
     validate_preference_review_file,
 )
@@ -21,28 +21,36 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="video-truthfulness")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
-    offline = subparsers.add_parser("offline", help="Run the local transcript/evidence MVP.")
+    offline = subparsers.add_parser("v01-offline", help="Run the frozen V01 transcript/evidence MVP.")
     offline.add_argument("--transcript", required=True, type=Path, help="Path to transcript JSON.")
     offline.add_argument("--evidence", required=True, type=Path, help="Path to evidence JSON.")
-    offline.add_argument("--runs-dir", default=Path("runs"), type=Path, help="Directory for run outputs.")
+    offline.add_argument(
+        "--runs-dir",
+        default=Path("runtime/V01/reproduction-runs"),
+        type=Path,
+        help="V01 compatibility output directory; frozen runs/V01 is never the default.",
+    )
     offline.add_argument("--title", default="offline_demo", help="Human-readable video title for this run.")
     offline.add_argument("--source-url", default=None, help="Optional source URL for report metadata.")
-    download = subparsers.add_parser("download", help="Try one compliant platform download.")
+    _add_v01_write_gate(offline)
+    download = subparsers.add_parser("v01-download", help="Try one frozen V01 platform download.")
     download.add_argument("--url", required=True, help="Video URL to download.")
-    download.add_argument("--platform", required=True, choices=[platform.value for platform in Platform], help="Input platform.")
+    download.add_argument("--platform", required=True, choices=[Platform.BILIBILI.value], help="Frozen V01 platform.")
     download.add_argument("--title", required=True, help="Video title used for safe filename creation.")
-    download.add_argument("--runs-dir", default=Path("runs"), type=Path, help="Directory for run outputs.")
+    download.add_argument("--runs-dir", default=Path("runtime/V01/reproduction-runs"), type=Path)
     download.add_argument("--extension", default="mp4", help="Requested merged output extension.")
     download.add_argument("--cookies", default=None, type=Path, help="Optional local cookie file; values are not logged.")
-    download_multi = subparsers.add_parser("download-multi", help="Run bounded sequential download strategies.")
+    _add_v01_write_gate(download)
+    download_multi = subparsers.add_parser("v01-download-multi", help="Run frozen V01 download strategies.")
     download_multi.add_argument("--url", required=True, help="Video URL to download.")
-    download_multi.add_argument("--platform", required=True, choices=[platform.value for platform in Platform], help="Input platform.")
+    download_multi.add_argument("--platform", required=True, choices=[Platform.BILIBILI.value], help="Frozen V01 platform.")
     download_multi.add_argument("--title", required=True, help="Video title used for safe filename creation.")
-    download_multi.add_argument("--runs-dir", default=Path("runs"), type=Path, help="Directory for run outputs.")
+    download_multi.add_argument("--runs-dir", default=Path("runtime/V01/reproduction-runs"), type=Path)
     download_multi.add_argument("--extension", default="mp4", help="Requested merged output extension.")
     download_multi.add_argument("--cookies", default=None, type=Path, help="Optional local cookie file; values are not logged.")
+    _add_v01_write_gate(download_multi)
     train_baseline = subparsers.add_parser(
-        "train-baseline",
+        "v01-train-baseline",
         help="Validate gold JSONL and run a tiny majority-label training smoke test.",
     )
     train_baseline.add_argument("--gold-jsonl", required=True, type=Path, help="Gold-only claim JSONL batch.")
@@ -50,7 +58,7 @@ def build_parser() -> argparse.ArgumentParser:
     train_baseline.add_argument("--exp-id", required=True, help="Experiment id under --experiments-dir.")
     train_baseline.add_argument(
         "--experiments-dir",
-        default=Path("experiments"),
+        default=Path("runtime/V01/reproduction-experiments"),
         type=Path,
         help="Directory for training smoke outputs.",
     )
@@ -68,8 +76,9 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Replace existing generated files in the experiment directory.",
     )
+    _add_v01_write_gate(train_baseline)
     training_data_pack = subparsers.add_parser(
-        "training-data-pack",
+        "v01-training-data-pack",
         help="Build quality, SFT, synthetic, and preference artifacts from reviewed JSONL.",
     )
     training_data_pack.add_argument(
@@ -78,8 +87,9 @@ def build_parser() -> argparse.ArgumentParser:
         type=Path,
         help="TOML configuration for the versioned training-data pack.",
     )
+    _add_v01_write_gate(training_data_pack)
     validate_preference = subparsers.add_parser(
-        "validate-preference-reviews",
+        "v01-validate-preference-reviews",
         help="Validate pending or completed single-human preference review JSONL.",
     )
     validate_preference.add_argument(
@@ -96,12 +106,40 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
+def _add_v01_write_gate(command_parser: argparse.ArgumentParser) -> None:
+    """Require an explicit opt-in before a frozen V01 command may write outputs."""
+
+    command_parser.add_argument(
+        "--allow-frozen-v01-write",
+        action="store_true",
+        help="Acknowledge that this compatibility command writes only to the supplied non-V02 output path.",
+    )
+
+
+def _require_v01_write_opt_in(args: argparse.Namespace) -> None:
+    """Keep frozen V01 commands read-only unless the caller opts in explicitly."""
+
+    write_commands = {
+        "v01-offline",
+        "v01-download",
+        "v01-download-multi",
+        "v01-train-baseline",
+        "v01-training-data-pack",
+    }
+    if args.command in write_commands and not args.allow_frozen_v01_write:
+        raise SystemExit(
+            "Frozen V01 is read-only by default. Re-run with --allow-frozen-v01-write "
+            "and an output path outside runs/V01 and all V02 directories."
+        )
+
+
 def main() -> None:
     """Run the selected CLI command."""
 
     parser = build_parser()
     args = parser.parse_args()
-    if args.command == "offline":
+    _require_v01_write_opt_in(args)
+    if args.command == "v01-offline":
         result = run_offline_demo(
             transcript_path=args.transcript,
             evidence_path=args.evidence,
@@ -112,7 +150,7 @@ def main() -> None:
         print(f"run_dir={result.run_dir}")
         print(f"report_md={result.markdown_report_path}")
         print(f"report_json={result.json_report_path}")
-    elif args.command == "download":
+    elif args.command == "v01-download":
         result = YtDlpDownloader().download_single(
             source_url=args.url,
             platform=Platform(args.platform),
@@ -124,7 +162,7 @@ def main() -> None:
         print(result.model_dump_json(indent=2))
         if result.status.value != "success":
             raise SystemExit(2)
-    elif args.command == "download-multi":
+    elif args.command == "v01-download-multi":
         result = MultiStrategyDownloadRunner().run(
             source_url=args.url,
             platform=Platform(args.platform),
@@ -136,9 +174,9 @@ def main() -> None:
         print(result.model_dump_json(indent=2))
         if result.final_status.value != "success":
             raise SystemExit(2)
-    elif args.command == "train-baseline":
+    elif args.command == "v01-train-baseline":
         if not args.smoke_test:
-            raise SystemExit("train-baseline currently supports only explicit --smoke-test runs.")
+            raise SystemExit("v01-train-baseline currently supports only explicit --smoke-test runs.")
         result = run_gold_baseline_smoke(
             gold_jsonl=args.gold_jsonl,
             batch_id=args.batch_id,
@@ -156,7 +194,7 @@ def main() -> None:
         print(f"metrics={result.metrics_path}")
         print(f"summary={result.summary_path}")
         print(f"handoff={result.handoff_path}")
-    elif args.command == "training-data-pack":
+    elif args.command == "v01-training-data-pack":
         result = build_training_data_pack_from_toml(args.config)
         print(f"output_dir={result.output_dir}")
         print(f"quality_records={result.quality_records_path}")
@@ -177,7 +215,7 @@ def main() -> None:
                 }
             )
         )
-    elif args.command == "validate-preference-reviews":
+    elif args.command == "v01-validate-preference-reviews":
         summary = validate_preference_review_file(
             args.preference_jsonl,
             require_all_reviewed=args.require_all_reviewed,

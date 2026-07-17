@@ -1,4 +1,4 @@
-"""Streamlit shell for Demo1.
+"""Streamlit shell for the frozen V01 compatibility surface.
 
 The full UI is scheduled for a later stage. This shell documents the intended
 entry point and can run the offline MVP when Streamlit is installed.
@@ -18,17 +18,17 @@ if str(SRC) not in sys.path:
 import streamlit as st
 import requests
 
-from video_truthfulness.media import YtDlpDownloader
-from video_truthfulness.offline_pipeline import run_offline_demo
-from video_truthfulness.schemas import Platform
+from video_truthfulness.core.schemas import Platform
+from video_truthfulness.versions.v01.media import YtDlpDownloader
+from video_truthfulness.versions.v01.offline_pipeline import run_offline_demo
 
 
 def main() -> None:
     """Render a minimal local Demo1 page."""
 
-    st.set_page_config(page_title="Video Truthfulness Demo1", layout="wide")
-    st.title("Video Truthfulness Demo1")
-    st.caption("Evidence-first single-video verification demo.")
+    st.set_page_config(page_title="Video Truthfulness V01 (Frozen)", layout="wide")
+    st.title("Video Truthfulness V01 compatibility shell")
+    st.warning("V01 is frozen. This UI is an explicit compatibility entry, not the active V02 workflow.")
 
     agent_tab, offline_tab, download_tab, artifacts_tab = st.tabs(
         ["Evidence Agent", "Offline MVP", "Single Download", "Artifacts"]
@@ -101,7 +101,12 @@ def main() -> None:
         evidence_path = st.text_input("Evidence JSON", "examples/offline_demo/evidence.json")
         title = st.text_input("Video title", "offline_demo")
         if st.button("Run offline MVP"):
-            result = run_offline_demo(Path(transcript_path), Path(evidence_path), video_title=title)
+            result = run_offline_demo(
+                Path(transcript_path),
+                Path(evidence_path),
+                runs_dir=Path("runtime/V01/reproduction-runs"),
+                video_title=title,
+            )
             st.success(f"Run written to {result.run_dir}")
             st.markdown(result.markdown_report_path.read_text(encoding="utf-8"))
             st.json(result.report.model_dump(mode="json"))
@@ -120,6 +125,7 @@ def main() -> None:
                     source_url=source_url,
                     platform=Platform(platform),
                     video_title=video_title,
+                    runs_dir=Path("runtime/V01/reproduction-runs"),
                 )
                 st.json(result.model_dump(mode="json"))
                 if result.status.value == "success":
@@ -129,9 +135,8 @@ def main() -> None:
 
     with artifacts_tab:
         st.subheader("Run artifacts")
-        st.write("Runtime outputs are written under `runs/<run_id>/` and ignored by Git except `runs/README.md`.")
-        st.write("Evidence screenshots belong under `runs/<run_id>/screenshots/`.")
-        st.write("Downloaded media belongs under `runs/<run_id>/media/`.")
+        st.write("Compatibility outputs are written under `runtime/V01/reproduction-runs/<run_id>/`.")
+        st.write("The 27 frozen directories under `runs/V01/` are read-only and are never used as UI output targets.")
 
 
 if __name__ == "__main__":

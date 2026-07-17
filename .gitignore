@@ -43,11 +43,15 @@
 /configs/*
 !/configs/README.md
 !/configs/agent-requirements.txt
-!/configs/demo1.local.example.toml
-!/configs/train_baseline.smoke.example.toml
-!/configs/training_data_quality.example.toml
 !/configs/ubuntu-wsl-requirements.freeze.txt
 !/configs/version_id_policy.toml
+!/configs/versions/
+/configs/versions/*
+!/configs/versions/v01/
+/configs/versions/v01/*
+!/configs/versions/v01/demo1.local.example.toml
+!/configs/versions/v01/train_baseline.smoke.example.toml
+!/configs/versions/v01/training_data_quality.example.toml
 
 
 # =============================================================================
@@ -60,8 +64,12 @@
 !/docs/agent_rag.md
 !/docs/file_layout.md
 !/docs/interfaces.md
-!/docs/training_data_quality.md
 !/docs/version_and_id_system.md
+!/docs/versions/
+/docs/versions/*
+!/docs/versions/v01/
+/docs/versions/v01/*
+!/docs/versions/v01/training_data_quality.md
 
 !/models/
 /models/*
@@ -71,12 +79,24 @@
 /runs/*
 !/runs/README.md
 
+!/versions/
+/versions/*
+!/versions/V01/
+/versions/V01/*
+!/versions/V01/README.md
+!/versions/V01/SOURCE_CHECKPOINT.md
+!/versions/V02/
+/versions/V02/*
+!/versions/V02/README.md
+
 # Only aggregate/schema reports are public. Real reports and versioned run
 # reports remain private until separately reviewed.
 !/report/
 /report/*
-!/report/Annotation-example.md
-!/report/v0.1成果汇报.md
+!/report/V01/
+/report/V01/*
+!/report/V01/Annotation-example.md
+!/report/V01/v0.1成果汇报.md
 
 # Architecture drafts, internal prompts, old-plan snapshots, workflows and
 # acceptance reports remain private. Only the sanitized reference is public.
@@ -92,7 +112,9 @@
 !/evals/
 /evals/*
 !/evals/README.md
-!/evals/agent_cases.jsonl
+!/evals/V01/
+/evals/V01/*
+!/evals/V01/agent_cases.jsonl
 
 !/examples/
 /examples/*
@@ -109,12 +131,16 @@
 !/examples/offline_demo/evidence.json
 !/examples/offline_demo/transcript.json
 
-!/examples/training_data/
-/examples/training_data/*
-!/examples/training_data/README.md
-!/examples/training_data/PUBLIC_DEMO_SUMMARY.md
-!/examples/training_data/input.synthetic.jsonl
-!/examples/training_data/splits.synthetic.jsonl
+!/examples/versions/
+/examples/versions/*
+!/examples/versions/v01/
+/examples/versions/v01/*
+!/examples/versions/v01/training_data/
+/examples/versions/v01/training_data/*
+!/examples/versions/v01/training_data/README.md
+!/examples/versions/v01/training_data/PUBLIC_DEMO_SUMMARY.md
+!/examples/versions/v01/training_data/input.synthetic.jsonl
+!/examples/versions/v01/training_data/splits.synthetic.jsonl
 
 
 # =============================================================================
@@ -127,21 +153,29 @@
 !/schemas/legacy_run_id_map_v1.schema.json
 !/schemas/run_identity_v1.schema.json
 
-!/schemas/training_data/
-/schemas/training_data/*
-!/schemas/training_data/preference_pair_v1.schema.json
-!/schemas/training_data/quality_record_v1.schema.json
-!/schemas/training_data/sft_example_v1.schema.json
-!/schemas/training_data/synthetic_example_v1.schema.json
+!/schemas/versions/
+/schemas/versions/*
+!/schemas/versions/v01/
+/schemas/versions/v01/*
+!/schemas/versions/v01/training_data/
+/schemas/versions/v01/training_data/*
+!/schemas/versions/v01/training_data/preference_pair_v1.schema.json
+!/schemas/versions/v01/training_data/quality_record_v1.schema.json
+!/schemas/versions/v01/training_data/sft_example_v1.schema.json
+!/schemas/versions/v01/training_data/synthetic_example_v1.schema.json
 
 !/scripts/
 /scripts/*
-!/scripts/export_training_data_schemas.py
 !/scripts/start_agent_demo.sh
 !/scripts/ubuntu_wsl_asr_gpu_check.sh
 !/scripts/ubuntu_wsl_repro_check.sh
 !/scripts/ubuntu_wsl_streamlit.sh
 !/scripts/validate_version_ids.py
+!/scripts/versions/
+/scripts/versions/*
+!/scripts/versions/v01/
+/scripts/versions/v01/*
+!/scripts/versions/v01/export_training_data_schemas.py
 
 
 # =============================================================================
@@ -156,33 +190,51 @@
 /src/video_truthfulness/*
 !/src/video_truthfulness/README.md
 !/src/video_truthfulness/__init__.py
-!/src/video_truthfulness/agent_config.py
-!/src/video_truthfulness/agent_generation.py
-!/src/video_truthfulness/agent_graph.py
-!/src/video_truthfulness/agent_models.py
-!/src/video_truthfulness/agent_retrieval.py
-!/src/video_truthfulness/agent_tools.py
-!/src/video_truthfulness/api.py
-!/src/video_truthfulness/claims.py
 !/src/video_truthfulness/cli.py
-!/src/video_truthfulness/config.py
-!/src/video_truthfulness/evals.py
-!/src/video_truthfulness/evidence_store.py
-!/src/video_truthfulness/fallback.py
-!/src/video_truthfulness/interfaces.py
-!/src/video_truthfulness/json_io.py
-!/src/video_truthfulness/llm.py
-!/src/video_truthfulness/media.py
-!/src/video_truthfulness/naming.py
-!/src/video_truthfulness/offline_pipeline.py
-!/src/video_truthfulness/reasoning.py
-!/src/video_truthfulness/reporting.py
-!/src/video_truthfulness/schemas.py
-!/src/video_truthfulness/scoring.py
-!/src/video_truthfulness/search.py
-!/src/video_truthfulness/training.py
-!/src/video_truthfulness/training_data_quality.py
-!/src/video_truthfulness/training_data_schemas.py
+
+!/src/video_truthfulness/core/
+/src/video_truthfulness/core/*
+!/src/video_truthfulness/core/__init__.py
+!/src/video_truthfulness/core/agent_config.py
+!/src/video_truthfulness/core/agent_generation.py
+!/src/video_truthfulness/core/agent_graph.py
+!/src/video_truthfulness/core/agent_models.py
+!/src/video_truthfulness/core/agent_retrieval.py
+!/src/video_truthfulness/core/agent_tools.py
+!/src/video_truthfulness/core/api.py
+!/src/video_truthfulness/core/claims.py
+!/src/video_truthfulness/core/config.py
+!/src/video_truthfulness/core/evidence_store.py
+!/src/video_truthfulness/core/fallback.py
+!/src/video_truthfulness/core/interfaces.py
+!/src/video_truthfulness/core/json_io.py
+!/src/video_truthfulness/core/llm.py
+!/src/video_truthfulness/core/media.py
+!/src/video_truthfulness/core/naming.py
+!/src/video_truthfulness/core/reasoning.py
+!/src/video_truthfulness/core/reporting.py
+!/src/video_truthfulness/core/schemas.py
+!/src/video_truthfulness/core/scoring.py
+!/src/video_truthfulness/core/search.py
+
+!/src/video_truthfulness/versions/
+/src/video_truthfulness/versions/*
+!/src/video_truthfulness/versions/__init__.py
+!/src/video_truthfulness/versions/v01/
+/src/video_truthfulness/versions/v01/*
+!/src/video_truthfulness/versions/v01/__init__.py
+!/src/video_truthfulness/versions/v01/evals.py
+!/src/video_truthfulness/versions/v01/media.py
+!/src/video_truthfulness/versions/v01/naming.py
+!/src/video_truthfulness/versions/v01/offline_pipeline.py
+!/src/video_truthfulness/versions/v01/training.py
+!/src/video_truthfulness/versions/v01/training_data_quality.py
+!/src/video_truthfulness/versions/v01/training_data_schemas.py
+!/src/video_truthfulness/versions/v02/
+/src/video_truthfulness/versions/v02/*
+!/src/video_truthfulness/versions/v02/__init__.py
+!/src/video_truthfulness/versions/v02/identity.py
+!/src/video_truthfulness/versions/v02/youtube.py
 
 
 # =============================================================================
@@ -197,11 +249,16 @@
 !/tests/test_agent_evals.py
 !/tests/test_agent_graph.py
 !/tests/test_agent_models.py
-!/tests/test_demo1_interfaces.py
-!/tests/test_offline_pipeline.py
 !/tests/test_schemas.py
-!/tests/test_training.py
-!/tests/test_training_data_quality.py
+!/tests/test_version_boundaries.py
+!/tests/versions/
+/tests/versions/*
+!/tests/versions/v01/
+/tests/versions/v01/*
+!/tests/versions/v01/test_demo1_interfaces.py
+!/tests/versions/v01/test_offline_pipeline.py
+!/tests/versions/v01/test_training.py
+!/tests/versions/v01/test_training_data_quality.py
 
 
 # =============================================================================
@@ -218,3 +275,54 @@
 # - Optmize/workflows/, Optmize/old-plan/ and unreviewed optimization drafts;
 # - local manifests/path maps, IDE state, agent state, caches and virtualenvs;
 # - future files under otherwise public directories until explicitly reviewed.
+
+
+# =============================================================================
+# I. Stage-two upload boundary (enforced rules)
+# =============================================================================
+#
+# Sections A-G are the reviewed public allowlist. The paths below are permanent
+# local-only material for this repository: do not add future `!` rules for them,
+# do not stage them, and do not publish sanitized copies from these locations.
+# Public documentation must instead be written as new synthetic or aggregate
+# artifacts in an explicitly reviewed public path.
+
+/Optmize/workflows/
+/Optmize/old-plan/
+/Optmize/阶段*.md
+/Optmize/构架优化清单.md
+/Optmize/项目优化方案.md
+/Optmize/多线程执行提示词.md
+/report/V01/Initial-screening.md
+/report/V01/Manual-annotation.md
+/report/V01/人工标注.md
+/src/video_truthfulness/versions/v01/v01_bilibili_seed.py
+/src/video_truthfulness/versions/v01/v01_bilibili_seed_frozen.py
+/versions/V01/FROZEN_MANIFEST.local.json
+/versions/V01/PATH_MAP.local.jsonl
+
+# Never publish raw credentials, real run identities, private datasets, runtime
+# projections, model artifacts or downloaded media from this repository.
+
+/.agents/
+/.codex/
+/.tmp/
+/artifacts/
+/cookie/
+/cookie-catch/
+/data/
+/experiments/
+/outputs/
+/registry/
+/runs/V01/
+/runs/V02/
+/runtime/
+/secrets/
+/tmp/
+/tools/versions/v01/cookie-catch/
+*.part
+*.mp4
+*.mkv
+*.webm
+*.sqlite
+*.sqlite3

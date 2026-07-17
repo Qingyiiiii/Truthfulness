@@ -22,7 +22,7 @@
 | `src/video_truthfulness/` | 通用业务逻辑与 Agent/RAG 实现 | 可完全公开展示；来源特定脚本除外 |
 | `app/` | 现有 Streamlit 页面和调用入口 | 可完全公开展示 |
 | `tests/` | 自动化测试 | 可完全公开展示 |
-| `evals/` | 20 条固定合成评测及评测脚本 | 可完全公开展示 |
+| `evals/V01/` | 20 条固定合成评测 fixture | 可完全公开展示；冻结兼容用途 |
 | `docs/` | 架构、接口、文件边界和演示说明 | 可完全公开展示 |
 | `schemas/` | 数据契约 | 可完全公开展示 |
 | `examples/` | 仅包含合成或已脱敏示例 | 可完全公开展示 |
@@ -33,7 +33,7 @@
 | `report/` | 报告及汇报材料 | 需要清洗后公开；仅显式白名单文件可提交 |
 | `Optmize/` | 优化方案和研究草稿 | 需要清洗后公开；私有研究方案不可公开 |
 | `teach/` | 教学和个人学习材料 | 需要清洗后公开，默认不提交 |
-| `data/`、`experiments/` | 数据与实验记录 | 需要清洗后公开，默认不提交 |
+| `data/V01/`、`experiments/V01/` | 冻结的 V01 数据与实验记录 | 需要清洗后公开，默认不提交 |
 | `项目方案.md` | 可能包含内部规划和真实来源背景 | 需要清洗后公开，默认不提交 |
 | `runs/` | 每次真实处理运行的产物 | 不可公开；仅 `runs/README.md` 可提交 |
 | `runtime/` | Chroma、人工复核数据库和运行时缓存 | 不可公开 |
@@ -42,8 +42,8 @@
 
 当前允许从受控目录显式公开的文件包括：
 
-- `report/v0.1成果汇报.md`
-- `report/Annotation-example.md`
+- `report/V01/v0.1成果汇报.md`
+- `report/V01/Annotation-example.md`
 - `Optmize/优化方案参考.md`
 - `runs/README.md`
 - `models/README.md`

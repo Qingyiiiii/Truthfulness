@@ -1,8 +1,8 @@
 from pathlib import Path
 
-from video_truthfulness.agent_config import AgentSettings
-from video_truthfulness.agent_graph import AgentService
-from video_truthfulness.agent_models import OutcomeStatus, QueryRequest
+from video_truthfulness.core.agent_config import AgentSettings
+from video_truthfulness.core.agent_graph import AgentService
+from video_truthfulness.core.agent_models import OutcomeStatus, QueryRequest
 
 
 def build_service(tmp_path: Path) -> AgentService:

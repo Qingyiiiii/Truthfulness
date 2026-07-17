@@ -1,7 +1,7 @@
 from pathlib import Path
 
-from video_truthfulness.json_io import read_json
-from video_truthfulness.schemas import Evidence, EvidenceRelation, SourceType, Transcript
+from video_truthfulness.core.json_io import read_json
+from video_truthfulness.core.schemas import Evidence, EvidenceRelation, SourceType, Transcript
 
 
 def test_transcript_schema_loads_example() -> None:

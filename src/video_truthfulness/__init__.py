@@ -1,5 +1,3 @@
-"""Public package for the Video Truthfulness Demo1 implementation."""
+"""Video Truthfulness package with explicit shared and versioned boundaries."""
 
-from video_truthfulness.offline_pipeline import run_offline_demo
-
-__all__ = ["run_offline_demo"]
+__all__: list[str] = []

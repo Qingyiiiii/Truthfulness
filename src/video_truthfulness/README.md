@@ -1,15 +1,14 @@
 # video_truthfulness
 
-Core Python package for the Demo1 offline and future platform pipelines.
+Python package split into version-neutral core and explicit version surfaces.
 
-Current scope:
+Current layout:
 
-- Pydantic schemas for project data objects.
-- LangGraph evidence-agent state, Chroma retrieval, bounded tools, telemetry, and evaluation.
-- Interface protocols for future providers and adapters.
-- Offline transcript/evidence MVP.
-- Guarded single-video media download wrapper.
-- Local LLM provider abstractions.
-- Report generation for Markdown and JSON outputs.
+- `core/`: shared schemas, Agent/RAG, provider abstractions, evidence logic,
+  process primitives, reporting, and safe filenames; it never imports a version package.
+- `versions/v01/`: frozen Bilibili compatibility paths, title-style legacy run IDs,
+  offline Demo1, evaluation fixture binding, training smoke, and v0.1.1 quality gates.
+- `versions/v02/`: active YouTube identity and platform-policy boundary; it never imports V01.
+- `cli.py`: explicit `v01-*` compatibility routing with frozen writes disabled by default.
 
 The package must keep platform access, browser automation, and real downloads behind explicit adapters so failures are isolated.

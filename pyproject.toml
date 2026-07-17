@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "video-truthfulness"
-version = "0.1.0"
-description = "Evidence-first video claim verification demo."
+version = "0.2.0"
+description = "Evidence-first YouTube video truthfulness project with a frozen V01 compatibility layer."
 readme = "README.md"
 requires-python = ">=3.12"
 license = "Apache-2.0"
