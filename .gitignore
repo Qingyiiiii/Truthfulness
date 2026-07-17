@@ -1,128 +1,220 @@
 # =============================================================================
-# A. 可完全公开展示
+# Public snapshot allowlist
 # =============================================================================
 #
-# Git 默认会纳入未被下方规则匹配的文件。当前可公开范围包括：
-# - README / LICENSE / docs / schemas
-# - 通用 src / app / tests / evals
-# - 仅含合成数据的 examples
-# - Dockerfile / compose.yaml / .dockerignore
-# - 公共 scripts、依赖清单和安全示例配置
+# Default policy: ignore every repository-root entry, then re-include only the
+# files that have been reviewed as public showcase material. A new file remains
+# private until it receives an explicit `!` rule below.
 #
-# 受控目录中的公开例外必须逐文件列出，不能放开整个目录。
-!.env.example
-!runs/README.md
-!models/README.md
-!report/v0.1成果汇报.md
-!report/Annotation-example.md
-!Optmize/优化方案参考.md
+# Important: .gitignore does not remove files that are already tracked. Validate
+# this policy with:
+#
+#   git ls-files -ci --exclude-standard
+#   git status --short --ignored
+#
+
+/*
 
 
 # =============================================================================
-# B. 需要清洗后才能公开
-# 默认忽略；完成脱敏、许可和内容审查后，才能逐文件增加 ! 例外。
+# A. Reviewed public root files
 # =============================================================================
 
-# 个人教学材料与未经公开审查的数据/实验
-teach/
-data/
-experiments/
-
-# 可能含真实来源、内部规划或来源特定逻辑
-项目方案.md
-src/video_truthfulness/v01_bilibili_seed.py
-
-# 报告与优化草稿：仅放行 A 类中列出的已审查文件
-report/*
-!report/v0.1成果汇报.md
-!report/Annotation-example.md
-
-Optmize/*
-!Optmize/优化方案参考.md
-
-# 本地覆盖配置需要逐项清洗后才能转为公开 example
-*.local
+!/.dockerignore
+!/.env.example
+!/.gitignore
+!/Dockerfile
+!/LICENSE
+!/README.md
+!/compose.yaml
+!/pyproject.toml
 
 
 # =============================================================================
-# C. 不可公开
-# 始终保留在本地或受控私有存储。只有 A 类明确列出的说明/模板例外可放行。
+# B. Reviewed public application and configuration files
 # =============================================================================
 
-# 凭据、账号状态和密钥
-.env
-.env.*
-!.env.example
-*.secret
-*cookie*
-*Cookie*
-*token*
-*Token*
-cookie/
-cookies/
-cookie-catch/
-secrets/
+!/app/
+/app/*
+!/app/README.md
+!/app/streamlit_app.py
 
-# 明确私有的研究方案
-Optmize/包装数据鉴伪优化方案.md
+!/configs/
+/configs/*
+!/configs/README.md
+!/configs/agent-requirements.txt
+!/configs/demo1.local.example.toml
+!/configs/train_baseline.smoke.example.toml
+!/configs/training_data_quality.example.toml
+!/configs/ubuntu-wsl-requirements.freeze.txt
+!/configs/version_id_policy.toml
 
-# 真实运行产物、证据快照和运行时数据库
-runs/*
-!runs/README.md
-outputs/
-artifacts/
-screenshots/
-media/
-downloads/
-runtime/
-eval-results/
-tmp/
-temp/
 
-# 本地 Agent / Codex / IDE 状态
-.agents/
-.codex/
-.tmp/
-.idea/
-.vscode/
+# =============================================================================
+# C. Reviewed public documentation
+# =============================================================================
 
-# Python 缓存和虚拟环境
-__pycache__/
-*.py[cod]
-.pytest_cache/
-pytest-cache-files-*/
-.mypy_cache/
-.ruff_cache/
-.venv/
-venv/
-env/
+!/docs/
+/docs/*
+!/docs/README.md
+!/docs/agent_rag.md
+!/docs/file_layout.md
+!/docs/interfaces.md
+!/docs/training_data_quality.md
+!/docs/version_and_id_system.md
 
-# 真实媒体、大型数据和本地数据库
-*.mp4
-*.mkv
-*.mov
-*.avi
-*.webm
-*.mp3
-*.wav
-*.flac
-*.m4a
-*.aac
-*.srt
-*.vtt
-*.ass
-*.parquet
-*.sqlite
-*.sqlite3
-*.duckdb
-*.db
+!/models/
+/models/*
+!/models/README.md
 
-# 模型权重、检查点和缓存；仅保留说明文件
-models/*
-!models/README.md
-*.gguf
-*.bin
-*.pt
-*.pth
-*.ckpt
-*.safetensors
+!/runs/
+/runs/*
+!/runs/README.md
+
+# Only aggregate/schema reports are public. Real reports and versioned run
+# reports remain private until separately reviewed.
+!/report/
+/report/*
+!/report/Annotation-example.md
+!/report/v0.1成果汇报.md
+
+# Architecture drafts, internal prompts, old-plan snapshots, workflows and
+# acceptance reports remain private. Only the sanitized reference is public.
+!/Optmize/
+/Optmize/*
+!/Optmize/优化方案参考.md
+
+
+# =============================================================================
+# D. Reviewed synthetic examples and public evaluation fixtures
+# =============================================================================
+
+!/evals/
+/evals/*
+!/evals/README.md
+!/evals/agent_cases.jsonl
+
+!/examples/
+/examples/*
+!/examples/README.md
+
+!/examples/agent_demo/
+/examples/agent_demo/*
+!/examples/agent_demo/README.md
+!/examples/agent_demo/sources.jsonl
+
+!/examples/offline_demo/
+/examples/offline_demo/*
+!/examples/offline_demo/README.md
+!/examples/offline_demo/evidence.json
+!/examples/offline_demo/transcript.json
+
+!/examples/training_data/
+/examples/training_data/*
+!/examples/training_data/README.md
+!/examples/training_data/PUBLIC_DEMO_SUMMARY.md
+!/examples/training_data/input.synthetic.jsonl
+!/examples/training_data/splits.synthetic.jsonl
+
+
+# =============================================================================
+# E. Reviewed public schemas and schema exporters
+# =============================================================================
+
+!/schemas/
+/schemas/*
+!/schemas/README.md
+!/schemas/legacy_run_id_map_v1.schema.json
+!/schemas/run_identity_v1.schema.json
+
+!/schemas/training_data/
+/schemas/training_data/*
+!/schemas/training_data/preference_pair_v1.schema.json
+!/schemas/training_data/quality_record_v1.schema.json
+!/schemas/training_data/sft_example_v1.schema.json
+!/schemas/training_data/synthetic_example_v1.schema.json
+
+!/scripts/
+/scripts/*
+!/scripts/export_training_data_schemas.py
+!/scripts/start_agent_demo.sh
+!/scripts/ubuntu_wsl_asr_gpu_check.sh
+!/scripts/ubuntu_wsl_repro_check.sh
+!/scripts/ubuntu_wsl_streamlit.sh
+!/scripts/validate_version_ids.py
+
+
+# =============================================================================
+# F. Reviewed public source files
+# =============================================================================
+
+!/src/
+/src/*
+!/src/README.md
+
+!/src/video_truthfulness/
+/src/video_truthfulness/*
+!/src/video_truthfulness/README.md
+!/src/video_truthfulness/__init__.py
+!/src/video_truthfulness/agent_config.py
+!/src/video_truthfulness/agent_generation.py
+!/src/video_truthfulness/agent_graph.py
+!/src/video_truthfulness/agent_models.py
+!/src/video_truthfulness/agent_retrieval.py
+!/src/video_truthfulness/agent_tools.py
+!/src/video_truthfulness/api.py
+!/src/video_truthfulness/claims.py
+!/src/video_truthfulness/cli.py
+!/src/video_truthfulness/config.py
+!/src/video_truthfulness/evals.py
+!/src/video_truthfulness/evidence_store.py
+!/src/video_truthfulness/fallback.py
+!/src/video_truthfulness/interfaces.py
+!/src/video_truthfulness/json_io.py
+!/src/video_truthfulness/llm.py
+!/src/video_truthfulness/media.py
+!/src/video_truthfulness/naming.py
+!/src/video_truthfulness/offline_pipeline.py
+!/src/video_truthfulness/reasoning.py
+!/src/video_truthfulness/reporting.py
+!/src/video_truthfulness/schemas.py
+!/src/video_truthfulness/scoring.py
+!/src/video_truthfulness/search.py
+!/src/video_truthfulness/training.py
+!/src/video_truthfulness/training_data_quality.py
+!/src/video_truthfulness/training_data_schemas.py
+
+
+# =============================================================================
+# G. Reviewed public tests
+# =============================================================================
+
+!/tests/
+/tests/*
+!/tests/README.md
+!/tests/conftest.py
+!/tests/test_agent_api.py
+!/tests/test_agent_evals.py
+!/tests/test_agent_graph.py
+!/tests/test_agent_models.py
+!/tests/test_demo1_interfaces.py
+!/tests/test_offline_pipeline.py
+!/tests/test_schemas.py
+!/tests/test_training.py
+!/tests/test_training_data_quality.py
+
+
+# =============================================================================
+# H. Intentionally private by default
+# =============================================================================
+#
+# The root deny rule already covers these categories. They are listed here as
+# policy documentation, not as additional matching rules:
+#
+# - data/, experiments/, runtime/, tmp/, outputs/, artifacts/ and real media;
+# - cookie/, cookie-catch/, secrets, browser profiles and all credentials;
+# - report/V01/, report/V02/, runs/V01/ and runs/V02/ contents;
+# - project-specific seed builders and private source adapters;
+# - Optmize/workflows/, Optmize/old-plan/ and unreviewed optimization drafts;
+# - local manifests/path maps, IDE state, agent state, caches and virtualenvs;
+# - future files under otherwise public directories until explicitly reviewed.

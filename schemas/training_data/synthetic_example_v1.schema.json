@@ -1,0 +1,137 @@
+{
+  "$defs": {
+    "OriginType": {
+      "description": "Where a record came from.",
+      "enum": [
+        "human_gold",
+        "machine_candidate",
+        "synthetic",
+        "derived"
+      ],
+      "title": "OriginType",
+      "type": "string"
+    },
+    "ReviewStatus": {
+      "description": "Human review state for synthetic preference data.",
+      "enum": [
+        "pending",
+        "reviewed"
+      ],
+      "title": "ReviewStatus",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "One controlled, traceable hard negative.",
+  "properties": {
+    "after_text": {
+      "title": "After Text",
+      "type": "string"
+    },
+    "before_text": {
+      "title": "Before Text",
+      "type": "string"
+    },
+    "content_hash": {
+      "title": "Content Hash",
+      "type": "string"
+    },
+    "generated_at": {
+      "title": "Generated At",
+      "type": "string"
+    },
+    "generation_seed": {
+      "title": "Generation Seed",
+      "type": "integer"
+    },
+    "generator_type": {
+      "title": "Generator Type",
+      "type": "string"
+    },
+    "generator_version": {
+      "title": "Generator Version",
+      "type": "string"
+    },
+    "human_review_status": {
+      "$ref": "#/$defs/ReviewStatus",
+      "default": "pending"
+    },
+    "mutation_parameters": {
+      "additionalProperties": true,
+      "title": "Mutation Parameters",
+      "type": "object"
+    },
+    "mutation_type": {
+      "title": "Mutation Type",
+      "type": "string"
+    },
+    "origin": {
+      "$ref": "#/$defs/OriginType",
+      "default": "synthetic"
+    },
+    "output_dataset_version": {
+      "title": "Output Dataset Version",
+      "type": "string"
+    },
+    "parent_dataset_version": {
+      "title": "Parent Dataset Version",
+      "type": "string"
+    },
+    "parent_record_id": {
+      "title": "Parent Record Id",
+      "type": "string"
+    },
+    "pipeline_version": {
+      "title": "Pipeline Version",
+      "type": "string"
+    },
+    "prompt_version": {
+      "title": "Prompt Version",
+      "type": "string"
+    },
+    "schema_version": {
+      "default": "synthetic_example_v1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "split": {
+      "title": "Split",
+      "type": "string"
+    },
+    "synthetic_id": {
+      "title": "Synthetic Id",
+      "type": "string"
+    },
+    "verifier_reasons": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Verifier Reasons",
+      "type": "array"
+    },
+    "verifier_result": {
+      "title": "Verifier Result",
+      "type": "string"
+    }
+  },
+  "required": [
+    "pipeline_version",
+    "output_dataset_version",
+    "synthetic_id",
+    "parent_record_id",
+    "parent_dataset_version",
+    "mutation_type",
+    "before_text",
+    "after_text",
+    "generator_type",
+    "generator_version",
+    "prompt_version",
+    "generation_seed",
+    "generated_at",
+    "verifier_result",
+    "split",
+    "content_hash"
+  ],
+  "title": "SyntheticExample",
+  "type": "object"
+}

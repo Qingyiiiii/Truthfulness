@@ -1,0 +1,56 @@
+[policy]
+id_policy_version = "id_policy_v1.0.0"
+project_version = "v0.2"
+storage_version = "V02"
+release_id = "truthfulness_v0.2_youtube_video"
+primary_source_type = "video"
+primary_source_platform = "youtube"
+release_status = "development"
+release_status_values = ["development", "frozen", "deprecated"]
+
+[patterns]
+ulid = "^[0-9a-hjkmnp-tv-z]{26}$"
+source_youtube = "^youtube_[A-Za-z0-9_-]{11}$"
+source_bilibili_legacy = "^bilibili_BV[0-9A-Za-z]{10}$"
+run_id = "^run_[0-9a-hjkmnp-tv-z]{26}$"
+task_id = "^task_[0-9a-hjkmnp-tv-z]{26}$"
+session_id = "^session_[0-9a-hjkmnp-tv-z]{26}$"
+artifact_id = "^artifact_[0-9a-hjkmnp-tv-z]{26}$"
+checkpoint_id = "^checkpoint_[0-9a-hjkmnp-tv-z]{26}$"
+batch_id = "^batch_[0-9a-hjkmnp-tv-z]{26}$"
+dataset_build_id = "^dataset_build_[0-9a-hjkmnp-tv-z]{26}$"
+exp_id = "^exp_[0-9a-hjkmnp-tv-z]{26}$"
+claim_id = "^claim_[0-9a-hjkmnp-tv-z]{26}$"
+evidence_id = "^evidence_[0-9a-hjkmnp-tv-z]{26}$"
+dataset_version = "^truthfulness_youtube_video_ds_v[0-9]+\\.[0-9]+\\.[0-9]+$"
+workflow_version = "^youtube_truthfulness_workflow_v[0-9]+\\.[0-9]+\\.[0-9]+$"
+schema_version = "^[a-z][a-z0-9_]*_v[0-9]+\\.[0-9]+\\.[0-9]+$"
+prompt_version = "^[a-z][a-z0-9_]*_prompt_v[0-9]+\\.[0-9]+\\.[0-9]+$"
+agent_profile_version = "^[a-z][a-z0-9_]*_agent_v[0-9]+\\.[0-9]+\\.[0-9]+$"
+utc_timestamp = "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]+)?Z$"
+
+[paths]
+canonical_v02_run = "runs/V02/{run_id}/"
+v01_legacy_map = "runs/V01/legacy_run_id_map.jsonl"
+v02_path_map = "runs/V02/run_path_map.jsonl"
+run_identity_filename = "run.json"
+path_separator = "/"
+allow_absolute_paths = false
+
+[dataset]
+draft_status = "draft"
+frozen_status = "frozen"
+draft_dataset_version_must_be_null = true
+frozen_dataset_version_required = true
+overwrite_frozen_version = false
+
+[identity]
+canonical_case = "lower"
+source_external_id_case_sensitive = true
+reuse_ids = false
+encode_titles_in_ids = false
+encode_paths_in_ids = false
+
+[time]
+audit_timezone = "UTC"
+serialization = "ISO-8601"

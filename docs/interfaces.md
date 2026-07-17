@@ -2,6 +2,8 @@
 
 本文定义 Video Truthfulness v0.1 基础链路，以及 2026-07-15 新增的 Evidence Agent/RAG 工程增强所使用的接口、输入输出和失败边界。外部系统必须封装在显式接口之后；LLM 生成内容只能作为候选结构或解释文本，不能直接充当证据。
 
+v0.2 YouTube 视频求真的版本与 ID 语义以 [version_and_id_system.md](version_and_id_system.md) 为权威；本文件不另行定义第二套 run 身份规则。
+
 ## 一、视频求真基础链路
 
 ### `PlatformAdapter`
@@ -24,7 +26,9 @@
 
 必需行为：
 
-- 所有产物保存到对应的 `runs/<run_id>/` 目录；
+- 新 v0.2 真实来源处理必须先生成 canonical `run_<ulid>`，创建 `runs/V02/<run_id>/`，并在下载前写入符合 `run_identity_v1.schema.json` 的最小 `run.json`；
+- `MediaIntake` 至少传递 `id_policy_version`、`project_version`、`storage_version`、`release_id`、`run_id`、`source_id` 和实际 `storage_path`，不能从标题或目录时间反推身份；
+- V01 历史 B站 run 和阶段一前的 V02 试点只通过映射索引解析，不由 `MediaIntake` 重命名或改写；
 - 使用稳定的文件命名规则；
 - 记录采用了哪条降级路径；
 - 返回显式状态，例如 `downloaded`、`browser_fallback_required`、`manual_input_required` 或 `failed`；

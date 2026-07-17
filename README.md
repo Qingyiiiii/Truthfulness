@@ -96,7 +96,7 @@ python -m video_truthfulness.cli offline `
   --title offline_demo
 ```
 
-该示例只使用合成的 transcript 与证据元数据，并把输出写入 Git 忽略的 `runs/<run_id>/`。如需查看 UI 壳层，可安装 `.[ui]` 后运行：
+该示例只使用合成的 transcript 与证据元数据，并使用现有 v0.1 离线演示布局写入 Git 忽略的 `runs/<run_id>/`；它不创建真实 v0.2 来源 run。新的 v0.2 YouTube run 必须遵守 [版本与 canonical ID 规范](docs/version_and_id_system.md)，使用 `runs/V02/run_<ulid>/`。如需查看 UI 壳层，可安装 `.[ui]` 后运行：
 
 ```powershell
 streamlit run app/streamlit_app.py
@@ -104,7 +104,7 @@ streamlit run app/streamlit_app.py
 
 ### 7.15 日更新 v0.1 工程增强：可评测的证据 Agent
 
-我查阅了中国大陆地区主流招聘平台的部分岗位对于AI应用方面的具体要求，总结并在不改变 v0.1 数据集的前提下新增了一条完全使用合成来源的 Agent/RAG 工程链路。由于后续数据集 sechma 仍然会出现改动，该链路只代表 v0.1 版本的评测性增强。
+我查阅了中国大陆地区主流招聘平台的部分岗位对于AI应用方面的具体要求，总结并在不改变 v0.1 数据集的前提下新增了一条完全使用合成来源的 Agent/RAG 工程链路。由于后续数据集 schema 仍然会出现改动，该链路只代表 v0.1 版本的评测性增强。
 
 - LangGraph 显式状态流：分类 → Chroma 检索 → 证据检查 → 结构化生成 → 引用验证 → 拒答或人工升级；
 - 两个受限工具：查询已入库来源信息、创建 SQLite 人工复核任务；
@@ -134,6 +134,30 @@ PYTHONPATH=src python -m video_truthfulness.evals \
 当前公开评测结果是 **20/20 PASS**，但它只证明合成用例下的路由、引用、安全与失败处理契约成立，不代表真实世界事实核查准确率。完整设计、状态与验收边界见 [Evidence Agent 文档](docs/agent_rag.md)。
 
 训练入口只接受调用方自行准备的、已完成审核的 `gold_*` JSONL；它当前是数据校验、确定性切分和多数类 baseline 的 smoke 工具，不是正式训练器。可参考 `configs/train_baseline.smoke.example.toml`，不要将 pending 或 excluded 记录混入训练面。
+
+### 7.17 日更新 v0.1补充：训练数据质量门禁
+
+我在查阅金融量化及相关数据工程岗位时，我注意到部分岗位的数据工作重点并非传统交易数据仓库，而是训练数据管道、预训练/SFT/RLHF 数据准备、质量治理与合成数据。基于这一要求，项目在复用 v0.1 既有私有数据的前提下完成了一次最小的 v0.1.1 增强；机器初筛 `Initial-screening` 和人工 gold `Manual-annotation` 的 schema 均未改变，真实记录继续只保存在本地。
+
+本次更新采用“质量门禁为核心、任务准入为核心、派生数据为输出、小型人工偏好验证为补充”的范围：
+
+- **质量与可追溯性**：冻结输入与 split 哈希，显式记录数据、Schema、流水线版本和父子 lineage；检查字段完整性、精确重复、MinHash/LSH 近重复候选和跨 split 污染；
+- **按任务准入**：分别为 claim-triage SFT、证据型 SFT、合成样本父记录、真实性评测和公开发布输出 `pass`、`quarantine` 或 `reject`，不使用一个模糊的全局“可训练”标志；
+- **SFT 派生输出**：只从合格记录构造 claim-triage SFT；证据元数据不足时不训练“直接判真”，也不把弱标签包装成人工 gold；
+- **受控合成数据**：通过时间偏移、单位/数量级错误、上下文删除、局部事实扩大、观点或预测事实化、来源漂白等 mutation 生成带父记录和 split 继承关系的 hard negative；
+- **小型偏好验证**：生成 30 条仅供单人人工 `accept/edit/reject` 的本地待复核 pair；人工写回前状态保持 `pending`，不宣称已经完成 RLHF、DPO 或偏好数据生产；
+- **可复现输出**：公开 JSON Schema、纯合成 fixture 和聚合报告；本地私有运行可输出 JSONL 与 Parquet，真实 claim、证据和人工标注不进入公开仓库。
+
+私有 v0.1 数据的本地门禁运行只公开聚合结果：424 条输入中硬错误为 0，412 条通过 claim-triage SFT 准入，派生 100 条受控合成样本和 30 条待人工复核偏好对。由于 424 条记录都缺少完整的证据元数据，它们全部被隔离在 evidence-grounded SFT 和 truthfulness evaluation 之外；这一结果证明门禁能阻止不合格数据进入对应任务，不证明模型质量提升。
+
+公开演示只使用 8 条完全虚构记录：
+
+```bash
+PYTHONPATH=src python -m video_truthfulness.cli training-data-pack \
+  --config configs/training_data_quality.example.toml
+```
+
+当前公开 fixture 可重复生成 8 条质量记录、8 条 claim-triage SFT、6 条受控合成样本和 4 条待复核偏好对。完整边界见 [Training-data quality pack](docs/training_data_quality.md)。这些数量只证明数据契约与门禁可运行，不代表真实数据公开、模型训练完成或模型质量提升。
 
 ### 协作工作流
 

@@ -1,0 +1,8 @@
+{"record_key":"synthetic_transit_report::claim_001","source_id":"synthetic_transit_report","claim_id":"claim_001","split":"train"}
+{"record_key":"synthetic_transit_report::claim_002","source_id":"synthetic_transit_report","claim_id":"claim_002","split":"train"}
+{"record_key":"synthetic_school_policy::claim_001","source_id":"synthetic_school_policy","claim_id":"claim_001","split":"train"}
+{"record_key":"synthetic_product_review::claim_001","source_id":"synthetic_product_review","claim_id":"claim_001","split":"train"}
+{"record_key":"synthetic_energy_forecast::claim_001","source_id":"synthetic_energy_forecast","claim_id":"claim_001","split":"train"}
+{"record_key":"synthetic_health_note::claim_001","source_id":"synthetic_health_note","claim_id":"claim_001","split":"train"}
+{"record_key":"synthetic_science_release::claim_001","source_id":"synthetic_science_release","claim_id":"claim_001","split":"dev"}
+{"record_key":"synthetic_ad_copy::claim_001","source_id":"synthetic_ad_copy","claim_id":"claim_001","split":"test"}

@@ -9,6 +9,10 @@ from video_truthfulness.media import MultiStrategyDownloadRunner, YtDlpDownloade
 from video_truthfulness.offline_pipeline import run_offline_demo
 from video_truthfulness.schemas import Platform
 from video_truthfulness.training import run_gold_baseline_smoke
+from video_truthfulness.training_data_quality import (
+    build_training_data_pack_from_toml,
+    validate_preference_review_file,
+)
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -63,6 +67,31 @@ def build_parser() -> argparse.ArgumentParser:
         "--overwrite",
         action="store_true",
         help="Replace existing generated files in the experiment directory.",
+    )
+    training_data_pack = subparsers.add_parser(
+        "training-data-pack",
+        help="Build quality, SFT, synthetic, and preference artifacts from reviewed JSONL.",
+    )
+    training_data_pack.add_argument(
+        "--config",
+        required=True,
+        type=Path,
+        help="TOML configuration for the versioned training-data pack.",
+    )
+    validate_preference = subparsers.add_parser(
+        "validate-preference-reviews",
+        help="Validate pending or completed single-human preference review JSONL.",
+    )
+    validate_preference.add_argument(
+        "--preference-jsonl",
+        required=True,
+        type=Path,
+        help="PreferencePair JSONL to validate.",
+    )
+    validate_preference.add_argument(
+        "--require-all-reviewed",
+        action="store_true",
+        help="Fail if any pair still has review_status=pending.",
     )
     return parser
 
@@ -127,5 +156,32 @@ def main() -> None:
         print(f"metrics={result.metrics_path}")
         print(f"summary={result.summary_path}")
         print(f"handoff={result.handoff_path}")
+    elif args.command == "training-data-pack":
+        result = build_training_data_pack_from_toml(args.config)
+        print(f"output_dir={result.output_dir}")
+        print(f"quality_records={result.quality_records_path}")
+        print(f"sft_examples={result.sft_examples_path}")
+        print(f"synthetic_examples={result.synthetic_examples_path}")
+        print(f"preference_pairs={result.preference_pairs_path}")
+        print(f"quality_report={result.report_md_path}")
+        print(f"review_packet={result.review_packet_path}")
+        print(f"handoff={result.handoff_path}")
+        print(
+            "counts="
+            + str(
+                {
+                    "quality_records": result.summary["records"]["quality_records"],
+                    "sft_examples": result.summary["records"]["sft_examples"],
+                    "synthetic_examples": result.summary["records"]["synthetic_examples"],
+                    "preference_pairs": result.summary["records"]["preference_pairs"],
+                }
+            )
+        )
+    elif args.command == "validate-preference-reviews":
+        summary = validate_preference_review_file(
+            args.preference_jsonl,
+            require_all_reviewed=args.require_all_reviewed,
+        )
+        print("validation=" + str(summary))
 if __name__ == "__main__":
     main()

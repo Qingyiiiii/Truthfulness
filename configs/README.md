@@ -19,3 +19,6 @@ Current examples:
 
 - `demo1.local.example.toml`: local Demo1 provider defaults.
 - `train_baseline.smoke.example.toml`: gold JSONL data-loading and metrics smoke test only; not a formal training configuration. The public repository deliberately does not include a real gold batch.
+- training_data_quality.example.toml: runs the public synthetic quality-pack
+  demo. It generates task gates, controlled hard negatives, claim-triage SFT,
+  and pending preference pairs without exposing real annotations.

@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:video-truthfulness:schema:run-identity:v1",
+  "title": "Video Truthfulness run identity v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id_policy_version",
+    "project_version",
+    "storage_version",
+    "release_id",
+    "run_id",
+    "source_id",
+    "source_external_id",
+    "source_type",
+    "source_platform",
+    "source_title",
+    "storage_path",
+    "directory_mode",
+    "created_at",
+    "created_at_provenance"
+  ],
+  "properties": {
+    "id_policy_version": {"const": "id_policy_v1.0.0"},
+    "project_version": {"const": "v0.2"},
+    "storage_version": {"const": "V02"},
+    "release_id": {"const": "truthfulness_v0.2_youtube_video"},
+    "run_id": {"type": "string", "pattern": "^run_[0-9a-hjkmnp-tv-z]{26}$"},
+    "source_id": {"type": "string", "pattern": "^youtube_[A-Za-z0-9_-]{11}$"},
+    "source_external_id": {"type": "string", "pattern": "^[A-Za-z0-9_-]{11}$"},
+    "source_type": {"const": "video"},
+    "source_platform": {"const": "youtube"},
+    "source_title": {"type": "string", "minLength": 1},
+    "storage_path": {
+      "type": "string",
+      "pattern": "^runs/V02/[^/]+/$",
+      "not": {"pattern": "(^[A-Za-z]:)|(^/)|(\\\\)|(\\.\\.)"}
+    },
+    "directory_mode": {"enum": ["canonical", "legacy_alias"]},
+    "created_at": {"type": "string", "format": "date-time", "pattern": "Z$"},
+    "created_at_provenance": {"enum": ["observed_time", "registration_time"]},
+    "legacy_timestamp_hint": {
+      "type": ["string", "null"],
+      "pattern": "^[0-9]{8}_[0-9]{6}$"
+    }
+  }
+}

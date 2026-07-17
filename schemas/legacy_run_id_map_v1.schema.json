@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:video-truthfulness:schema:legacy-run-id-map:v1",
+  "title": "Video Truthfulness legacy run path mapping v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id_policy_version",
+    "project_version",
+    "storage_version",
+    "canonical_run_id",
+    "legacy_directory_name",
+    "legacy_relative_path",
+    "source_id",
+    "mapping_status",
+    "mapping_basis",
+    "mapped_at"
+  ],
+  "properties": {
+    "id_policy_version": {"const": "id_policy_v1.0.0"},
+    "project_version": {"enum": ["v0.1", "v0.2"]},
+    "storage_version": {"enum": ["V01", "V02"]},
+    "canonical_run_id": {"type": "string", "pattern": "^run_[0-9a-hjkmnp-tv-z]{26}$"},
+    "legacy_directory_name": {
+      "type": "string",
+      "minLength": 1,
+      "not": {"pattern": "[/\\\\]|^\\.$|^\\.\\.$"}
+    },
+    "legacy_relative_path": {
+      "type": "string",
+      "pattern": "^runs/(V01|V02)/[^/]+/$",
+      "not": {"pattern": "(^[A-Za-z]:)|(^/)|(\\\\)|(\\.\\.)"}
+    },
+    "source_id": {
+      "anyOf": [
+        {"type": "null"},
+        {"type": "string", "pattern": "^youtube_[A-Za-z0-9_-]{11}$"},
+        {"type": "string", "pattern": "^bilibili_BV[0-9A-Za-z]{10}$"}
+      ]
+    },
+    "mapping_status": {"enum": ["indexed_without_rewrite", "legacy_alias"]},
+    "mapping_basis": {
+      "enum": [
+        "directory_and_existing_metadata",
+        "existing_trial_directory_and_source_external_id"
+      ]
+    },
+    "mapped_at": {"type": "string", "format": "date-time", "pattern": "Z$"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"project_version": {"const": "v0.1"}}},
+      "then": {
+        "properties": {
+          "storage_version": {"const": "V01"},
+          "mapping_status": {"const": "indexed_without_rewrite"},
+          "mapping_basis": {"const": "directory_and_existing_metadata"},
+          "legacy_relative_path": {"pattern": "^runs/V01/[^/]+/$"},
+          "source_id": {
+            "anyOf": [
+              {"type": "null"},
+              {"type": "string", "pattern": "^bilibili_BV[0-9A-Za-z]{10}$"}
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {"properties": {"project_version": {"const": "v0.2"}}},
+      "then": {
+        "properties": {
+          "storage_version": {"const": "V02"},
+          "mapping_status": {"const": "legacy_alias"},
+          "mapping_basis": {"const": "existing_trial_directory_and_source_external_id"},
+          "legacy_relative_path": {"pattern": "^runs/V02/[^/]+/$"},
+          "source_id": {"type": "string", "pattern": "^youtube_[A-Za-z0-9_-]{11}$"}
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,115 @@
+{
+  "$defs": {
+    "ChatMessage": {
+      "additionalProperties": false,
+      "description": "One portable SFT chat message.",
+      "properties": {
+        "content": {
+          "title": "Content",
+          "type": "string"
+        },
+        "role": {
+          "title": "Role",
+          "type": "string"
+        }
+      },
+      "required": [
+        "role",
+        "content"
+      ],
+      "title": "ChatMessage",
+      "type": "object"
+    },
+    "OriginType": {
+      "description": "Where a record came from.",
+      "enum": [
+        "human_gold",
+        "machine_candidate",
+        "synthetic",
+        "derived"
+      ],
+      "title": "OriginType",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Portable, task-scoped instruction/chat derivative.",
+  "properties": {
+    "content_hash": {
+      "title": "Content Hash",
+      "type": "string"
+    },
+    "eligibility_reason": {
+      "title": "Eligibility Reason",
+      "type": "string"
+    },
+    "messages": {
+      "items": {
+        "$ref": "#/$defs/ChatMessage"
+      },
+      "title": "Messages",
+      "type": "array"
+    },
+    "origin": {
+      "$ref": "#/$defs/OriginType",
+      "default": "derived"
+    },
+    "output_dataset_version": {
+      "title": "Output Dataset Version",
+      "type": "string"
+    },
+    "pipeline_version": {
+      "title": "Pipeline Version",
+      "type": "string"
+    },
+    "quality_gate_version": {
+      "title": "Quality Gate Version",
+      "type": "string"
+    },
+    "schema_version": {
+      "default": "sft_example_v1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "sft_example_id": {
+      "title": "Sft Example Id",
+      "type": "string"
+    },
+    "source_dataset_version": {
+      "title": "Source Dataset Version",
+      "type": "string"
+    },
+    "source_record_id": {
+      "title": "Source Record Id",
+      "type": "string"
+    },
+    "split": {
+      "title": "Split",
+      "type": "string"
+    },
+    "target_schema_version": {
+      "title": "Target Schema Version",
+      "type": "string"
+    },
+    "task_name": {
+      "title": "Task Name",
+      "type": "string"
+    }
+  },
+  "required": [
+    "pipeline_version",
+    "output_dataset_version",
+    "sft_example_id",
+    "source_record_id",
+    "source_dataset_version",
+    "task_name",
+    "messages",
+    "target_schema_version",
+    "split",
+    "quality_gate_version",
+    "eligibility_reason",
+    "content_hash"
+  ],
+  "title": "SFTExample",
+  "type": "object"
+}

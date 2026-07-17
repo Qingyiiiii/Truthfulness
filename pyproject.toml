@@ -39,6 +39,9 @@ media = [
     "yt-dlp>=2024.0",
     "imageio-ffmpeg>=0.6"
 ]
+data = [
+    "pyarrow>=17.0"
+]
 asr = [
     "faster-whisper>=1.2"
 ]

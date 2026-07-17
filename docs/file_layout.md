@@ -2,6 +2,8 @@
 
 本项目采用“白名单式公开”原则：只有已经确认不含个人信息、访问凭据、真实运行材料和未清洗来源的数据，才进入公开快照。目录是否存在不等于允许提交；最终以本文件、`.gitignore` 和提交前审查共同决定。
 
+版本、canonical ID 和 legacy 路径映射以 [version_and_id_system.md](version_and_id_system.md) 为权威；本文件只说明物理布局和公开边界。
+
 ## 一、三类公开边界
 
 | 类别 | 默认 Git 行为 | 典型内容 | 处理要求 |
@@ -49,12 +51,12 @@
 
 新增例外必须逐文件审查，不应通过放开整个目录来实现。
 
-## 三、单次视频运行目录
+## 三、版本目录与单次运行目录
 
-真实运行产物统一放在：
+阶段一启用后，新的 v0.2 真实运行产物使用固定存储分区和 canonical `run_id`：
 
 ```text
-runs/<run_id>/
+runs/V02/run_<ulid>/
   run.json
   source/
     source.json
@@ -84,13 +86,23 @@ runs/<run_id>/
     events.jsonl
 ```
 
+当前版本索引：
+
+| 版本 | 路径 | 主要来源 | 状态 |
+|---|---|---|---|
+| v0.1 Seed | `runs/V01/` | B站 | 已于 2026-07-16 归档，共 27 个 run 目录 |
+| v0.2 | `runs/V02/` | YouTube 视频求真 | 开发中；不代表数据集已冻结 |
+
 规则：
 
-- `<run_id>` 使用 UUID 或 UTC 时间戳加短随机后缀；
+- `project_version = v0.2` 与 `storage_version = V02` 分开保存；
+- 新 V02 `<run_id>` 固定为 `run_` 加 26 位小写 Crockford Base32 ULID，不包含标题、URL、时间文本或路径；
+- 新 V02 目录必须严格使用 `runs/V02/<run_id>/`，并在任何媒体处理前先写入最小 `run.json`；
+- V01 的 27 个历史目录不改名，通过 `legacy_run_id_map.jsonl` 只读映射；阶段一前的 V02 试点通过 `run_path_map.jsonl` 解析；
 - 每个运行目录必须自包含，便于本地复核；
 - `run.json` 记录配置摘要、代码版本、开始和结束时间；
 - `logs/events.jsonl` 只记录结构化事件，不记录 cookies、token、完整请求头或私人绝对路径；
-- 整个 `runs/<run_id>/` 属于不可公开内容，不通过“只挑几个看起来安全的文件”规避清洗流程。
+- 整个 `runs/<storage_version>/<physical_directory>/` 属于不可公开内容，不通过“只挑几个看起来安全的文件”规避清洗流程。
 
 ## 四、Agent/RAG 运行时目录
 
@@ -131,13 +143,13 @@ eval-results/
 视频截图：
 
 ```text
-runs/<run_id>/screenshots/video/<claim_id>_<timestamp>.png
+runs/<storage_version>/<physical_directory>/screenshots/video/<claim_id>_<timestamp>.png
 ```
 
 外部来源截图：
 
 ```text
-runs/<run_id>/screenshots/sources/<claim_id>_<source_id>.png
+runs/<storage_version>/<physical_directory>/screenshots/sources/<claim_id>_<source_id>.png
 ```
 
 规则：
@@ -152,13 +164,13 @@ runs/<run_id>/screenshots/sources/<claim_id>_<source_id>.png
 自动下载只执行一次顺序尝试，并写入：
 
 ```text
-runs/<run_id>/source/download_attempts.jsonl
+runs/<storage_version>/<physical_directory>/source/download_attempts.jsonl
 ```
 
 若直接下载失败，但用户可以在已登录浏览器中合法访问，则记录：
 
 ```text
-runs/<run_id>/source/browser_fallback.json
+runs/<storage_version>/<physical_directory>/source/browser_fallback.json
 ```
 
 其中可以记录页面标题、规范 URL、可见元数据和降级原因，但不得记录会话密钥、完整 cookies、认证请求头或账号凭据。

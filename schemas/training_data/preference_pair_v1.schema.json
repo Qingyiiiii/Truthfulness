@@ -1,0 +1,145 @@
+{
+  "$defs": {
+    "ReviewDecision": {
+      "description": "Allowed single-human pilot decisions.",
+      "enum": [
+        "accept",
+        "edit",
+        "reject"
+      ],
+      "title": "ReviewDecision",
+      "type": "string"
+    },
+    "ReviewStatus": {
+      "description": "Human review state for synthetic preference data.",
+      "enum": [
+        "pending",
+        "reviewed"
+      ],
+      "title": "ReviewStatus",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "A DPO-ready schema record; not evidence of completed RLHF.",
+  "properties": {
+    "chosen": {
+      "title": "Chosen",
+      "type": "string"
+    },
+    "content_hash": {
+      "title": "Content Hash",
+      "type": "string"
+    },
+    "final_chosen": {
+      "default": "",
+      "title": "Final Chosen",
+      "type": "string"
+    },
+    "mutation_type": {
+      "title": "Mutation Type",
+      "type": "string"
+    },
+    "output_dataset_version": {
+      "title": "Output Dataset Version",
+      "type": "string"
+    },
+    "pair_id": {
+      "title": "Pair Id",
+      "type": "string"
+    },
+    "pipeline_version": {
+      "title": "Pipeline Version",
+      "type": "string"
+    },
+    "prompt": {
+      "title": "Prompt",
+      "type": "string"
+    },
+    "quality_flags": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Quality Flags",
+      "type": "array"
+    },
+    "rejected": {
+      "title": "Rejected",
+      "type": "string"
+    },
+    "rejection_reason": {
+      "title": "Rejection Reason",
+      "type": "string"
+    },
+    "review_decision": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ReviewDecision"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "review_reason": {
+      "default": "",
+      "title": "Review Reason",
+      "type": "string"
+    },
+    "review_status": {
+      "$ref": "#/$defs/ReviewStatus",
+      "default": "pending"
+    },
+    "reviewed_at": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Reviewed At"
+    },
+    "reviewer_type": {
+      "default": "single_human",
+      "title": "Reviewer Type",
+      "type": "string"
+    },
+    "schema_version": {
+      "default": "preference_pair_v1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "source_record_id": {
+      "title": "Source Record Id",
+      "type": "string"
+    },
+    "split": {
+      "title": "Split",
+      "type": "string"
+    },
+    "synthetic_id": {
+      "title": "Synthetic Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "pipeline_version",
+    "output_dataset_version",
+    "pair_id",
+    "source_record_id",
+    "synthetic_id",
+    "prompt",
+    "chosen",
+    "rejected",
+    "rejection_reason",
+    "mutation_type",
+    "split",
+    "content_hash"
+  ],
+  "title": "PreferencePair",
+  "type": "object"
+}

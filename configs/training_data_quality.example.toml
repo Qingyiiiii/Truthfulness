@@ -1,0 +1,23 @@
+[dataset]
+input_jsonl = "examples/training_data/input.synthetic.jsonl"
+split_jsonl = "examples/training_data/splits.synthetic.jsonl"
+output_dir = "tmp/training_data_pack_public_demo"
+output_dataset_version = "truthfulness_v0.1.1_public_synthetic_demo"
+usage_scope = "public_synthetic"
+seed = 20260717
+
+[quality]
+near_duplicate_threshold = 0.82
+shingle_size = 3
+minhash_permutations = 64
+lsh_bands = 16
+long_text_chars = 300
+
+[derived]
+synthetic_limit = 8
+max_synthetic_per_parent = 1
+preference_review_count = 4
+
+[output]
+write_parquet = false
+overwrite = true
