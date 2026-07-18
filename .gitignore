@@ -52,6 +52,9 @@
 !/configs/versions/v01/demo1.local.example.toml
 !/configs/versions/v01/train_baseline.smoke.example.toml
 !/configs/versions/v01/training_data_quality.example.toml
+!/configs/workflows/
+/configs/workflows/*
+!/configs/workflows/youtube_truthfulness_dag_v1.yaml
 
 
 # =============================================================================
@@ -65,6 +68,7 @@
 !/docs/file_layout.md
 !/docs/interfaces.md
 !/docs/version_and_id_system.md
+!/docs/artifact_registry_and_dag.md
 !/docs/versions/
 /docs/versions/*
 !/docs/versions/v01/
@@ -142,6 +146,15 @@
 !/examples/versions/v01/training_data/input.synthetic.jsonl
 !/examples/versions/v01/training_data/splits.synthetic.jsonl
 
+!/examples/artifact_registry/
+/examples/artifact_registry/*
+!/examples/artifact_registry/synthetic_run/
+/examples/artifact_registry/synthetic_run/*
+!/examples/artifact_registry/synthetic_run/README.md
+!/examples/artifact_registry/synthetic_run/run.json
+!/examples/artifact_registry/synthetic_run/valid_artifact_record.json
+!/examples/artifact_registry/synthetic_run/invalid_absolute_path_record.json
+
 
 # =============================================================================
 # E. Reviewed public schemas and schema exporters
@@ -152,6 +165,15 @@
 !/schemas/README.md
 !/schemas/legacy_run_id_map_v1.schema.json
 !/schemas/run_identity_v1.schema.json
+
+!/schemas/artifact_registry/
+/schemas/artifact_registry/*
+!/schemas/artifact_registry/artifact_record_v1.schema.json
+!/schemas/artifact_registry/entity_index_v1.schema.json
+
+!/schemas/dag/
+/schemas/dag/*
+!/schemas/dag/youtube_truthfulness_dag_v1.schema.json
 
 !/schemas/versions/
 /schemas/versions/*
@@ -217,6 +239,17 @@
 !/src/video_truthfulness/core/scoring.py
 !/src/video_truthfulness/core/search.py
 
+!/src/video_truthfulness/core/artifacts/
+/src/video_truthfulness/core/artifacts/*
+!/src/video_truthfulness/core/artifacts/__init__.py
+!/src/video_truthfulness/core/artifacts/__main__.py
+!/src/video_truthfulness/core/artifacts/models.py
+!/src/video_truthfulness/core/artifacts/hashing.py
+!/src/video_truthfulness/core/artifacts/registry.py
+!/src/video_truthfulness/core/artifacts/projection.py
+!/src/video_truthfulness/core/artifacts/dag.py
+!/src/video_truthfulness/core/artifacts/invalidation.py
+
 !/src/video_truthfulness/versions/
 /src/video_truthfulness/versions/*
 !/src/video_truthfulness/versions/__init__.py
@@ -259,6 +292,18 @@
 !/tests/versions/v01/test_offline_pipeline.py
 !/tests/versions/v01/test_training.py
 !/tests/versions/v01/test_training_data_quality.py
+
+!/tests/shared/
+/tests/shared/*
+!/tests/shared/artifacts/
+/tests/shared/artifacts/*
+!/tests/shared/artifacts/test_registry_schema.py
+!/tests/shared/artifacts/test_registry_append_only.py
+!/tests/shared/artifacts/test_hashing.py
+!/tests/shared/artifacts/test_projection_rebuild.py
+!/tests/shared/artifacts/test_dag_schema.py
+!/tests/shared/artifacts/test_dag_state.py
+!/tests/shared/artifacts/test_invalidation.py
 
 
 # =============================================================================

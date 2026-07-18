@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:video-truthfulness:schema:entity-index:v1",
+  "title": "Video Truthfulness Entity Index v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["entity_index_schema_version", "container_artifact_id", "created_at", "entries"],
+  "properties": {
+    "entity_index_schema_version": {"const": "entity_index_v1.0.0"},
+    "container_artifact_id": {"type": "string", "pattern": "^artifact_[0-9a-hjkmnp-tv-z]{26}$"},
+    "created_at": {"type": "string", "format": "date-time"},
+    "entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["entity_id", "entity_type", "semantic_hash", "container_artifact_id", "upstream_artifact_ids", "upstream_entity_refs", "source_locator"],
+        "properties": {
+          "entity_id": {"type": "string", "minLength": 1},
+          "entity_type": {"enum": ["transcript_segment", "claim", "evidence", "verdict"]},
+          "semantic_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "container_artifact_id": {"type": "string", "pattern": "^artifact_[0-9a-hjkmnp-tv-z]{26}$"},
+          "upstream_artifact_ids": {
+            "type": "array",
+            "items": {"type": "string", "pattern": "^artifact_[0-9a-hjkmnp-tv-z]{26}$"},
+            "uniqueItems": true
+          },
+          "upstream_entity_refs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["entity_id", "entity_type", "container_artifact_id"],
+              "properties": {
+                "entity_id": {"type": "string", "minLength": 1},
+                "entity_type": {"type": "string", "minLength": 1},
+                "container_artifact_id": {"type": "string", "pattern": "^artifact_[0-9a-hjkmnp-tv-z]{26}$"}
+              }
+            }
+          },
+          "source_locator": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["kind", "value"],
+            "properties": {
+              "kind": {"enum": ["json_pointer", "jsonl_line", "time_range", "text_anchor"]},
+              "value": {"type": "string", "minLength": 1}
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:video-truthfulness:schema:youtube-truthfulness-dag:v1",
+  "title": "YouTube Truthfulness Logical DAG v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["dag_id", "dag_version", "project_version", "release_id", "source_platform", "workflow_version", "entry_nodes", "terminal_nodes", "nodes"],
+  "properties": {
+    "dag_id": {"const": "youtube_truthfulness_dag"},
+    "dag_version": {"const": "youtube_truthfulness_dag_v1.0.0"},
+    "project_version": {"const": "v0.2"},
+    "release_id": {"const": "truthfulness_v0.2_youtube_video"},
+    "source_platform": {"const": "youtube"},
+    "workflow_version": {"const": "youtube_truthfulness_workflow_v1.0.0"},
+    "entry_nodes": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"}},
+    "terminal_nodes": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"}},
+    "nodes": {
+      "type": "array",
+      "minItems": 9,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["node_id", "stage_id", "name", "node_type", "workflow_ref", "required_inputs", "optional_inputs", "declared_outputs", "entry_condition", "success_condition", "manual_gate", "retry_policy", "fallback_nodes", "failure_terminal", "invalidation_rules", "next_nodes"],
+        "properties": {
+          "node_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"},
+          "stage_id": {"type": "string", "pattern": "^S0[1-9]$"},
+          "name": {"type": "string", "minLength": 1},
+          "node_type": {"enum": ["transform", "validation", "decision", "gate", "aggregate", "human_action", "external_action", "terminal"]},
+          "workflow_ref": {"type": "string", "pattern": "^S0[1-9]@youtube_truthfulness_workflow_v1\\.0\\.0$"},
+          "required_inputs": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^[a-z][a-z0-9_]*(?:\\.[a-z][a-z0-9_]*)+$"}},
+          "optional_inputs": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^[a-z][a-z0-9_]*(?:\\.[a-z][a-z0-9_]*)+$"}},
+          "declared_outputs": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^[a-z][a-z0-9_]*(?:\\.[a-z][a-z0-9_]*)+$"}},
+          "entry_condition": {"type": "string", "minLength": 1},
+          "success_condition": {"type": "string", "minLength": 1},
+          "manual_gate": {"type": "boolean"},
+          "retry_policy": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["max_attempts", "time_budget_seconds", "cost_budget_usd"],
+            "properties": {
+              "max_attempts": {"type": "integer", "minimum": 1, "maximum": 10},
+              "time_budget_seconds": {"type": ["integer", "null"], "minimum": 1},
+              "cost_budget_usd": {"type": ["number", "null"], "minimum": 0}
+            }
+          },
+          "fallback_nodes": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"}},
+          "failure_terminal": {"type": ["string", "null"], "pattern": "^[a-z][a-z0-9_]*$"},
+          "invalidation_rules": {"type": "array", "items": {"type": "string", "minLength": 1}},
+          "next_nodes": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"}}
+        }
+      }
+    }
+  }
+}

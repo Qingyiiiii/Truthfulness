@@ -8,6 +8,8 @@ Allowed:
 - Authorized sample evidence metadata.
 - Tiny JSON files used by tests and docs.
 - Fully invented training-data fixtures with fixed splits.
+- Fully invented Artifact Registry identity and positive/negative Schema fixtures under
+  `artifact_registry/synthetic_run/`.
 
 Not allowed:
 

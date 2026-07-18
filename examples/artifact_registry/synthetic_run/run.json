@@ -1,0 +1,17 @@
+{
+  "id_policy_version": "id_policy_v1.0.0",
+  "project_version": "v0.2",
+  "storage_version": "V02",
+  "release_id": "truthfulness_v0.2_youtube_video",
+  "run_id": "run_01j00000000000000000000000",
+  "source_id": "youtube_synth3tic01",
+  "source_external_id": "synth3tic01",
+  "source_type": "video",
+  "source_platform": "youtube",
+  "source_title": "Synthetic public registry example",
+  "storage_path": "runs/V02/run_01j00000000000000000000000/",
+  "directory_mode": "canonical",
+  "created_at": "2026-01-01T00:00:00Z",
+  "created_at_provenance": "registration_time",
+  "legacy_timestamp_hint": null
+}
