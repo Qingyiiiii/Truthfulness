@@ -23,7 +23,9 @@ dev = [
     "pytest>=8.0",
     "pytest-asyncio>=0.24",
     "httpx>=0.28",
-    "jsonschema>=4.23,<5.0"
+    "jsonschema>=4.23,<5.0",
+    "rfc3339-validator>=0.1.4,<1.0",
+    "ruff>=0.12,<1.0"
 ]
 ui = [
     "streamlit>=1.35"
@@ -41,7 +43,8 @@ media = [
     "imageio-ffmpeg>=0.6"
 ]
 data = [
-    "pyarrow>=17.0"
+    "duckdb>=1.5.1,<1.6",
+    "pyarrow>=21.0,<22.0"
 ]
 asr = [
     "faster-whisper>=1.2"

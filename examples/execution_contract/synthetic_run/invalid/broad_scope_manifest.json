@@ -1,0 +1,110 @@
+{
+  "session_manifest_version": "session_manifest_v1.0.0",
+  "project_version": "v0.2",
+  "storage_version": "V02",
+  "release_id": "truthfulness_v0.2_youtube_video",
+  "task_id": "task_01j00000000000000000000000",
+  "session_id": "session_01j00000000000000000000000",
+  "attempt_no": 1,
+  "task_scope": "run",
+  "run_id": "run_01j00000000000000000000000",
+  "stage_id": "S01",
+  "dag_node_id": "source_identity",
+  "parent_checkpoint_id": null,
+  "bootstrap_refs": [
+    {
+      "ref_type": "git_commit",
+      "object_id": "8c64bc910168e4212f081cdcc0ac2099738dcd3a",
+      "description": "stage-three public implementation seal"
+    },
+    {
+      "ref_type": "git_tree",
+      "object_id": "bcd5ef0545d7796fa8af15ecf29186f118742e9e",
+      "description": "stage-three public tree"
+    },
+    {
+      "ref_type": "working_tree_manifest",
+      "relative_path": "examples/execution_contract/synthetic_run/working_tree_manifest.json",
+      "content_hash_algorithm": "sha256",
+      "content_hash": "47bba36d142f2ad1e7f406015d2117f8d720b971607016d3db21a44b7f02ded8",
+      "purpose": "bounded synthetic code and input surface"
+    },
+    {
+      "ref_type": "dag_config",
+      "relative_path": "examples/execution_contract/synthetic_run/youtube_truthfulness_dag_v1_1.yaml",
+      "content_hash_algorithm": "sha256",
+      "content_hash": "e14161e9824f479d806ec7de935b4683af9a3c7147ac2e9f13336254d3c7b740",
+      "purpose": "fixed synthetic DAG declaration"
+    }
+  ],
+  "agent_profile_version": "video_intake_agent_v1.0.0",
+  "agent_runtime_version": "synthetic-runtime-1",
+  "workflow_version": "youtube_truthfulness_workflow_v1.1.0",
+  "dag_version": "youtube_truthfulness_dag_v1.1.0",
+  "schema_versions": [
+    "artifact_record_v1.1.0",
+    "current_state_v1.0.0",
+    "execution_checkpoint_v1.0.0",
+    "execution_event_v1.0.0",
+    "handoff_v2.0.0",
+    "session_manifest_v1.0.0"
+  ],
+  "prompt_version": "s01_prompt_v1.0.0",
+  "code_ref": {
+    "git_commit": "8c64bc910168e4212f081cdcc0ac2099738dcd3a",
+    "working_tree_dirty": true,
+    "working_tree_manifest_path": "examples/execution_contract/synthetic_run/working_tree_manifest.json",
+    "working_tree_manifest_hash": "47bba36d142f2ad1e7f406015d2117f8d720b971607016d3db21a44b7f02ded8"
+  },
+  "environment_ref": {
+    "runtime_name": "python",
+    "runtime_version": "3.13",
+    "os_family": "windows",
+    "architecture": "x86_64",
+    "dependency_manifest_path": null,
+    "dependency_manifest_hash": null
+  },
+  "declared_read_set": [
+    {
+      "scope_type": "artifact",
+      "artifact_id": "artifact_01j00000000000000000000001",
+      "purpose": "read synthetic input Artifact"
+    },
+    {
+      "scope_type": "path",
+      "relative_path": "examples/execution_contract/synthetic_run/artifacts/input.json",
+      "purpose": "read synthetic input bytes"
+    },
+    {
+      "scope_type": "path",
+      "relative_path": "examples/execution_contract/synthetic_run/artifact_registry.jsonl",
+      "purpose": "validate synthetic Registry"
+    },
+    {
+      "scope_type": "path",
+      "relative_path": "examples/execution_contract/synthetic_run/working_tree_manifest.json",
+      "purpose": "validate bounded code reference"
+    },
+    {
+      "scope_type": "path",
+      "relative_path": "examples/execution_contract/synthetic_run/youtube_truthfulness_dag_v1_1.yaml",
+      "purpose": "validate DAG version and topology"
+    }
+  ],
+  "declared_write_set": [
+    {
+      "scope_type": "path_prefix",
+      "relative_path": "runs",
+      "recursive": true,
+      "purpose": "write only the bounded public synthetic bundle"
+    }
+  ],
+  "human_gate_policy": {
+    "approval_required": false,
+    "gate_node_ids": [],
+    "decision_artifact_required": false,
+    "implicit_approval_allowed": false
+  },
+  "created_at": "2026-01-01T00:00:00Z",
+  "manifest_hash": "866c2fec741250be12a0f81eef6f8129e0b09834af5238266f4f3fe36a0626a8"
+}

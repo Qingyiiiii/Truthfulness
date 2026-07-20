@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import ast
+import tomllib
 from pathlib import Path
 
 import pytest
@@ -78,3 +79,56 @@ def test_v02_youtube_strategy_has_no_v01_cookie_or_bilibili_policy() -> None:
     assert "--cookies" not in serialized
     assert "referer" not in serialized
     assert "412" not in serialized
+
+
+def test_v02_youtube_prefers_exact_480p_then_lowest_quality() -> None:
+    strategies = no_cookie_strategies()
+    selectors = [
+        strategy.format_selector
+        for strategy in strategies
+        if not strategy.metadata_only
+    ]
+
+    assert selectors == [
+        (
+            "bestvideo[height=480]+bestaudio/"
+            "best[height=480]/worstvideo+worstaudio/worst"
+        ),
+        "best[height=480]/worst",
+    ]
+    assert all("height=480" in selector for selector in selectors)
+    assert all("height<=" not in selector for selector in selectors)
+    assert all(selector.index("height=480") < selector.index("worst") for selector in selectors)
+
+
+def test_gdb1_warehouse_uses_logical_root_without_public_absolute_mapping() -> None:
+    with (ROOT / "configs" / "version_id_policy.toml").open("rb") as handle:
+        policy = tomllib.load(handle)
+    with (ROOT / "configs" / "storage" / "claim_warehouse_v1.toml").open(
+        "rb"
+    ) as handle:
+        storage = tomllib.load(handle)
+
+    assert policy["storage_roots"] == {
+        "repository": "repository",
+        "claim_warehouse": "ubuntu_v02_claim_warehouse",
+        "claim_warehouse_environment_variable": (
+            "VIDEO_TRUTHFULNESS_WAREHOUSE_V02_ROOT"
+        ),
+        "allow_private_absolute_mapping_in_public_records": False,
+    }
+    assert storage["storage_root_ref"] == "ubuntu_v02_claim_warehouse"
+    assert (
+        storage["storage_root_environment_variable"]
+        == "VIDEO_TRUTHFULNESS_WAREHOUSE_V02_ROOT"
+    )
+    assert not any(
+        token in repr(storage) for token in ("/home/", "D:\\\\", "C:\\\\")
+    )
+
+
+def test_gdb1_runtime_database_and_projection_files_remain_git_ignored() -> None:
+    ignore = (ROOT / ".gitignore").read_text(encoding="utf-8").splitlines()
+    assert "*.duckdb" in ignore
+    assert "*.duckdb.wal" in ignore
+    assert "*.parquet" in ignore

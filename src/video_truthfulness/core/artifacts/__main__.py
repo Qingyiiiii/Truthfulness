@@ -7,7 +7,7 @@ import json
 from pathlib import Path
 
 from video_truthfulness.core.artifacts.dag import derive_dag_state, explain_node, load_dag, validate_dag, write_dag_state
-from video_truthfulness.core.artifacts.models import ArtifactRecord
+from video_truthfulness.core.artifacts.models import parse_artifact_record
 from video_truthfulness.core.artifacts.projection import query_artifact, rebuild_sqlite_projection
 from video_truthfulness.core.artifacts.registry import AppendOnlyRegistry
 
@@ -90,7 +90,7 @@ def main() -> None:
             print(json.dumps(record.model_dump(mode="json") if record else None, ensure_ascii=False, sort_keys=True))
         elif args.command in {"register", "append-revision"}:
             raw = json.loads(Path(args.manifest).read_text(encoding="utf-8"))
-            records = [ArtifactRecord.model_validate(item) for item in raw["records"]]
+            records = [parse_artifact_record(item) for item in raw["records"]]
             if args.command == "register" and any(record.record_revision != 1 for record in records):
                 raise SystemExit("registry register only accepts revision 1 records; use append-revision.")
             if args.command == "append-revision" and any(record.record_revision <= 1 for record in records):

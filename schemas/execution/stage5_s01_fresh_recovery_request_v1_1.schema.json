@@ -1,0 +1,137 @@
+{
+  "$defs": {
+    "sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    }
+  },
+  "$id": "urn:video-truthfulness:schema:stage5-s01-fresh-recovery-request:v1.1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Five-file recovery request binding the export without reading its package.",
+  "properties": {
+    "checkpoint_id": {
+      "pattern": "^checkpoint_[0-9a-hjkmnp-tv-z]{26}$",
+      "title": "Checkpoint Id",
+      "type": "string"
+    },
+    "checkpoint_path": {
+      "title": "Checkpoint Path",
+      "type": "string"
+    },
+    "dag_snapshot_path": {
+      "title": "Dag Snapshot Path",
+      "type": "string"
+    },
+    "execution_plan_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Execution Plan Hash",
+      "type": "string"
+    },
+    "handoff_artifact_id": {
+      "pattern": "^artifact_[0-9a-hjkmnp-tv-z]{26}$",
+      "title": "Handoff Artifact Id",
+      "type": "string"
+    },
+    "handoff_path": {
+      "title": "Handoff Path",
+      "type": "string"
+    },
+    "handoff_record_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Handoff Record Hash",
+      "type": "string"
+    },
+    "handoff_record_id": {
+      "pattern": "^record_[0-9a-hjkmnp-tv-z]{26}$",
+      "title": "Handoff Record Id",
+      "type": "string"
+    },
+    "registry_path": {
+      "title": "Registry Path",
+      "type": "string"
+    },
+    "request_hash": {
+      "$ref": "#/$defs/sha256"
+    },
+    "request_version": {
+      "const": "stage5_s01_fresh_recovery_request_v1.1.0",
+      "title": "Request Version",
+      "type": "string"
+    },
+    "run_id": {
+      "pattern": "^run_[0-9a-hjkmnp-tv-z]{26}$",
+      "title": "Run Id",
+      "type": "string"
+    },
+    "session_id": {
+      "pattern": "^session_[0-9a-hjkmnp-tv-z]{26}$",
+      "title": "Session Id",
+      "type": "string"
+    },
+    "static_manifest_file_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Static Manifest File Sha256",
+      "type": "string"
+    },
+    "static_manifest_path": {
+      "title": "Static Manifest Path",
+      "type": "string"
+    },
+    "static_manifest_semantic_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Static Manifest Semantic Hash",
+      "type": "string"
+    },
+    "static_manifest_size_bytes": {
+      "minimum": 1,
+      "title": "Static Manifest Size Bytes",
+      "type": "integer"
+    },
+    "task_id": {
+      "pattern": "^task_[0-9a-hjkmnp-tv-z]{26}$",
+      "title": "Task Id",
+      "type": "string"
+    },
+    "warehouse_export_artifact_id": {
+      "pattern": "^artifact_[0-9a-hjkmnp-tv-z]{26}$",
+      "title": "Warehouse Export Artifact Id",
+      "type": "string"
+    },
+    "warehouse_export_logical_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Warehouse Export Logical Hash",
+      "type": "string"
+    },
+    "warehouse_projection_status": {
+      "const": "pending",
+      "title": "Warehouse Projection Status",
+      "type": "string"
+    }
+  },
+  "required": [
+    "request_version",
+    "handoff_path",
+    "checkpoint_path",
+    "dag_snapshot_path",
+    "registry_path",
+    "static_manifest_path",
+    "run_id",
+    "task_id",
+    "session_id",
+    "execution_plan_hash",
+    "checkpoint_id",
+    "handoff_artifact_id",
+    "handoff_record_id",
+    "handoff_record_hash",
+    "static_manifest_file_sha256",
+    "static_manifest_semantic_hash",
+    "static_manifest_size_bytes",
+    "request_hash",
+    "warehouse_export_artifact_id",
+    "warehouse_export_logical_hash",
+    "warehouse_projection_status"
+  ],
+  "title": "Stage 5 S01 fresh recovery request v1.1",
+  "type": "object"
+}

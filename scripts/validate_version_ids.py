@@ -355,6 +355,38 @@ def run_self_tests(patterns: dict[str, re.Pattern[str]], audit: Audit) -> None:
             f"unique={unique}, valid_case={valid_case}, ordered={ordered}",
         )
 
+    canonical_additions = {
+        "event_id": "event_01arz3ndektsv4rrffq69g5fav",
+        "exp_id": "exp_01arz3ndektsv4rrffq69g5fav",
+        "dag_version": "youtube_truthfulness_dag_v1.1.0",
+        "export_id": "export_01arz3ndektsv4rrffq69g5fav",
+        "load_plan_id": "load_plan_01arz3ndektsv4rrffq69g5fav",
+        "load_batch_id": "load_batch_01arz3ndektsv4rrffq69g5fav",
+        "projection_attempt_id": "attempt_01arz3ndektsv4rrffq69g5fav",
+        "load_receipt_id": "load_receipt_01arz3ndektsv4rrffq69g5fav",
+    }
+    invalid_additions = {
+        "event_id": "event_title_20260718",
+        "exp_id": "experiment_01arz3ndektsv4rrffq69g5fav",
+        "dag_version": "youtube_truthfulness_dag_v1_1_0",
+        "export_id": "warehouse_export_title",
+        "load_plan_id": "loadplan_01arz3ndektsv4rrffq69g5fav",
+        "load_batch_id": "loadbatch_01arz3ndektsv4rrffq69g5fav",
+        "projection_attempt_id": "projection_attempt_title",
+        "load_receipt_id": "receipt_01arz3ndektsv4rrffq69g5fav",
+    }
+    accepted = all(patterns[name].fullmatch(value) for name, value in canonical_additions.items())
+    rejected = all(not patterns[name].fullmatch(value) for name, value in invalid_additions.items())
+    if accepted and rejected:
+        audit.passed(
+            "self-test execution, warehouse and DAG canonical ID/version formats"
+        )
+    else:
+        audit.failed(
+            "self-test WP1 canonical formats",
+            f"accepted={accepted}, rejected={rejected}",
+        )
+
 
 def validate_policy(root: Path, audit: Audit) -> tuple[dict[str, Any], dict[str, re.Pattern[str]]] | None:
     path = root / "configs" / "version_id_policy.toml"
@@ -376,6 +408,24 @@ def validate_policy(root: Path, audit: Audit) -> tuple[dict[str, Any], dict[str,
         audit.failed("policy fixed values", ", ".join(mismatches))
     else:
         audit.passed("canonical policy fixed values and regular expressions")
+    storage_roots = config.get("storage_roots", {})
+    expected_storage_roots = {
+        "repository": "repository",
+        "claim_warehouse": "ubuntu_v02_claim_warehouse",
+        "claim_warehouse_environment_variable": (
+            "VIDEO_TRUTHFULNESS_WAREHOUSE_V02_ROOT"
+        ),
+        "allow_private_absolute_mapping_in_public_records": False,
+    }
+    storage_mismatches = [
+        f"{name}={storage_roots.get(name)!r}"
+        for name, expected in expected_storage_roots.items()
+        if storage_roots.get(name) != expected
+    ]
+    if storage_mismatches:
+        audit.failed("storage-root policy", ", ".join(storage_mismatches))
+    else:
+        audit.passed("repository and private Claim warehouse storage roots are frozen")
     return config, patterns
 
 

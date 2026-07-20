@@ -2,9 +2,9 @@
 
 > 规范版本：`id_policy_v1.0.0`
 > 项目范围：`truthfulness_v0.2_youtube_video`
-> 权威状态：阶段一 canonical 规范
+> 权威状态：阶段一 canonical 规范；阶段四 WP1 补充 event/DAG 语法
 
-本文只定义项目版本、组件版本、对象身份和物理路径之间的关系。Artifact Registry、DAG、HANDOFF v2、Session 分支和自动调度不属于本规范。
+本文只定义项目版本、组件版本、对象身份和物理路径之间的关系。Artifact Registry、DAG 业务拓扑、HANDOFF v2、Session 分支和自动调度不属于本规范；`dag_version` 与 `event_id` 仅在这里固定语法。
 
 ## 1. 固定版本身份
 
@@ -33,6 +33,7 @@
 | `id_policy_version` | `id_policy_v1.0.0` | ID 语法、唯一性与映射规则 |
 | `dataset_version` | `truthfulness_youtube_video_ds_v<MAJOR>.<MINOR>.<PATCH>` | 已冻结的数据内容、标签和 split |
 | `workflow_version` | `youtube_truthfulness_workflow_v<MAJOR>.<MINOR>.<PATCH>` | DAG、阶段顺序与阶段契约 |
+| `dag_version` | `youtube_truthfulness_dag_v<MAJOR>.<MINOR>.<PATCH>` | 逻辑 DAG 声明及兼容代际 |
 | `schema_version` | `<schema_name>_v<MAJOR>.<MINOR>.<PATCH>` | 单个结构化 Schema |
 | `prompt_version` | `<stage_id>_prompt_v<MAJOR>.<MINOR>.<PATCH>` | 单阶段 Prompt |
 | `agent_profile_version` | `<role>_agent_v<MAJOR>.<MINOR>.<PATCH>` | Agent 职责、工具和权限 |
@@ -76,7 +77,7 @@ dataset_version = truthfulness_youtube_video_ds_v0.1.0
 canonical ID 分为两类：
 
 1. 语义稳定 ID：由外部稳定事实确定，例如 YouTube video ID 对应的 `source_id`。
-2. 运行实体 ID：对象创建时分配，例如 `run_id`、`task_id`、`artifact_id` 和 `checkpoint_id`。
+2. 运行实体 ID：对象创建时分配，例如 `run_id`、`task_id`、`artifact_id`、`event_id` 和 `checkpoint_id`。
 
 运行实体使用带类型前缀的 26 位小写 Crockford Base32 ULID：
 
@@ -132,6 +133,7 @@ source_id = bilibili_<BVID>
 | `session_id` | `session_<ulid>` | 全项目 |
 | `artifact_id` | `artifact_<ulid>` | 全项目 |
 | `checkpoint_id` | `checkpoint_<ulid>` | 全项目 |
+| `event_id` | `event_<ulid>` | 全项目 |
 | `batch_id` | `batch_<ulid>` | 全项目 |
 | `dataset_build_id` | `dataset_build_<ulid>` | 全项目 |
 | `exp_id` | `exp_<ulid>` | 全项目 |

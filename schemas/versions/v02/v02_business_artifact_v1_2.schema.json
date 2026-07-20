@@ -1,0 +1,4873 @@
+{
+  "$defs": {
+    "AcquisitionDecisionArtifactV1_2": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Artifact Hash",
+          "type": "string"
+        },
+        "artifact_id": {
+          "pattern": "^artifact_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "artifact_schema_version": {
+          "const": "v02_business_artifact_v1.2.0",
+          "title": "Artifact Schema Version",
+          "type": "string"
+        },
+        "artifact_type": {
+          "const": "acquisition.decision",
+          "title": "Artifact Type",
+          "type": "string"
+        },
+        "created_at": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?Z$",
+          "title": "Created At",
+          "type": "string"
+        },
+        "dag_node_id": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Dag Node Id",
+          "type": "string"
+        },
+        "payload": {
+          "$ref": "#/$defs/AcquisitionDecisionPayload"
+        },
+        "run_id": {
+          "pattern": "^run_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Run Id",
+          "type": "string"
+        },
+        "stage_id": {
+          "enum": [
+            "S01",
+            "S02"
+          ],
+          "title": "Stage Id",
+          "type": "string"
+        },
+        "upstream_artifact_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Upstream Artifact Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "artifact_schema_version",
+        "artifact_id",
+        "artifact_type",
+        "run_id",
+        "stage_id",
+        "dag_node_id",
+        "upstream_artifact_ids",
+        "created_at",
+        "artifact_hash",
+        "payload"
+      ],
+      "title": "AcquisitionDecisionArtifactV1_2",
+      "type": "object"
+    },
+    "AcquisitionDecisionPayload": {
+      "additionalProperties": false,
+      "properties": {
+        "authorization_source": {
+          "const": "G0A_D03_reuse_registered_validated_media",
+          "title": "Authorization Source",
+          "type": "string"
+        },
+        "redownload_forbidden": {
+          "const": true,
+          "title": "Redownload Forbidden",
+          "type": "boolean"
+        },
+        "selected_existing_node_id": {
+          "const": "public_no_cookie_download",
+          "title": "Selected Existing Node Id",
+          "type": "string"
+        },
+        "selected_media": {
+          "$ref": "#/$defs/ArtifactBinding"
+        },
+        "source_id": {
+          "pattern": "^youtube_[A-Za-z0-9_-]{11}$",
+          "title": "Source Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_id",
+        "selected_existing_node_id",
+        "selected_media",
+        "redownload_forbidden",
+        "authorization_source"
+      ],
+      "title": "AcquisitionDecisionPayload",
+      "type": "object"
+    },
+    "AlignmentEntry": {
+      "additionalProperties": false,
+      "properties": {
+        "locator": {
+          "$ref": "#/$defs/TimeLocator"
+        },
+        "normalized_segment_id": {
+          "pattern": "^segment_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Normalized Segment Id",
+          "type": "string"
+        },
+        "ocr_entry_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Ocr Entry Ids",
+          "type": "array"
+        },
+        "raw_segment_id": {
+          "pattern": "^segment_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Raw Segment Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "raw_segment_id",
+        "normalized_segment_id",
+        "locator",
+        "ocr_entry_ids"
+      ],
+      "title": "AlignmentEntry",
+      "type": "object"
+    },
+    "ArtifactBinding": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_id": {
+          "pattern": "^artifact_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "content_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Content Hash",
+          "type": "string"
+        },
+        "record_id": {
+          "pattern": "^record_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Record Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "artifact_id",
+        "record_id",
+        "content_hash"
+      ],
+      "title": "ArtifactBinding",
+      "type": "object"
+    },
+    "AtomicClaimCollectionArtifactV1_2": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Artifact Hash",
+          "type": "string"
+        },
+        "artifact_id": {
+          "pattern": "^artifact_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "artifact_schema_version": {
+          "const": "v02_business_artifact_v1.2.0",
+          "title": "Artifact Schema Version",
+          "type": "string"
+        },
+        "artifact_type": {
+          "const": "claim.atomic_collection",
+          "title": "Artifact Type",
+          "type": "string"
+        },
+        "created_at": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?Z$",
+          "title": "Created At",
+          "type": "string"
+        },
+        "dag_node_id": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Dag Node Id",
+          "type": "string"
+        },
+        "payload": {
+          "$ref": "#/$defs/AtomicClaimCollectionPayloadV1_2"
+        },
+        "run_id": {
+          "pattern": "^run_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Run Id",
+          "type": "string"
+        },
+        "stage_id": {
+          "enum": [
+            "S01",
+            "S02"
+          ],
+          "title": "Stage Id",
+          "type": "string"
+        },
+        "upstream_artifact_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Upstream Artifact Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "artifact_schema_version",
+        "artifact_id",
+        "artifact_type",
+        "run_id",
+        "stage_id",
+        "dag_node_id",
+        "upstream_artifact_ids",
+        "created_at",
+        "artifact_hash",
+        "payload"
+      ],
+      "title": "AtomicClaimCollectionArtifactV1_2",
+      "type": "object"
+    },
+    "AtomicClaimCollectionPayloadV1_2": {
+      "additionalProperties": false,
+      "properties": {
+        "atomic_revisions": {
+          "items": {
+            "$ref": "#/$defs/AtomicClaimRevisionV1_2"
+          },
+          "title": "Atomic Revisions",
+          "type": "array"
+        },
+        "dependencies": {
+          "items": {
+            "$ref": "#/$defs/ClaimDependencyV1_2"
+          },
+          "title": "Dependencies",
+          "type": "array"
+        },
+        "parent_claim_collection_artifact_id": {
+          "pattern": "^artifact_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Parent Claim Collection Artifact Id",
+          "type": "string"
+        },
+        "run_gate_state": {
+          "enum": [
+            "READY_FOR_S02",
+            "WAITING_FOR_HUMAN"
+          ],
+          "title": "Run Gate State",
+          "type": "string"
+        },
+        "split_sets": {
+          "items": {
+            "$ref": "#/$defs/ClaimSplitSetRevisionV1_2"
+          },
+          "minItems": 1,
+          "title": "Split Sets",
+          "type": "array"
+        }
+      },
+      "required": [
+        "parent_claim_collection_artifact_id",
+        "split_sets",
+        "atomic_revisions",
+        "dependencies",
+        "run_gate_state"
+      ],
+      "title": "AtomicClaimCollectionPayloadV1_2",
+      "type": "object"
+    },
+    "AtomicClaimRevisionV1_2": {
+      "additionalProperties": false,
+      "properties": {
+        "atomic_claim_id": {
+          "pattern": "^claim_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Atomic Claim Id",
+          "type": "string"
+        },
+        "atomic_revision_id": {
+          "pattern": "^atomic_claim_revision_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Atomic Revision Id",
+          "type": "string"
+        },
+        "checkability": {
+          "enum": [
+            "checkable",
+            "context_only",
+            "not_checkable"
+          ],
+          "title": "Checkability",
+          "type": "string"
+        },
+        "machine_verdict_eligible": {
+          "title": "Machine Verdict Eligible",
+          "type": "boolean"
+        },
+        "parent_claim_id": {
+          "pattern": "^claim_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Parent Claim Id",
+          "type": "string"
+        },
+        "quality_warnings": {
+          "items": {
+            "const": "atomic_text_over_5000_chars",
+            "type": "string"
+          },
+          "title": "Quality Warnings",
+          "type": "array"
+        },
+        "revision_no": {
+          "minimum": 1,
+          "title": "Revision No",
+          "type": "integer"
+        },
+        "split_revision_id": {
+          "pattern": "^claim_split_revision_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Split Revision Id",
+          "type": "string"
+        },
+        "supersedes_revision_id": {
+          "anyOf": [
+            {
+              "pattern": "^atomic_claim_revision_[0-9a-hjkmnp-tv-z]{26}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Supersedes Revision Id"
+        },
+        "taxonomy_version": {
+          "title": "Taxonomy Version",
+          "type": "string"
+        },
+        "text": {
+          "$ref": "#/$defs/ClaimTextStorageV1_2"
+        },
+        "writer_role": {
+          "enum": [
+            "claim_splitter",
+            "authorized_human"
+          ],
+          "title": "Writer Role",
+          "type": "string"
+        }
+      },
+      "required": [
+        "atomic_claim_id",
+        "parent_claim_id",
+        "atomic_revision_id",
+        "revision_no",
+        "split_revision_id",
+        "text",
+        "checkability",
+        "quality_warnings",
+        "machine_verdict_eligible",
+        "taxonomy_version",
+        "writer_role"
+      ],
+      "title": "AtomicClaimRevisionV1_2",
+      "type": "object"
+    },
+    "ClaimCollectionArtifactV1_2": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Artifact Hash",
+          "type": "string"
+        },
+        "artifact_id": {
+          "pattern": "^artifact_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "artifact_schema_version": {
+          "const": "v02_business_artifact_v1.2.0",
+          "title": "Artifact Schema Version",
+          "type": "string"
+        },
+        "artifact_type": {
+          "const": "claim.collection",
+          "title": "Artifact Type",
+          "type": "string"
+        },
+        "created_at": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?Z$",
+          "title": "Created At",
+          "type": "string"
+        },
+        "dag_node_id": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Dag Node Id",
+          "type": "string"
+        },
+        "payload": {
+          "$ref": "#/$defs/ClaimCollectionPayloadV1_2"
+        },
+        "run_id": {
+          "pattern": "^run_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Run Id",
+          "type": "string"
+        },
+        "stage_id": {
+          "enum": [
+            "S01",
+            "S02"
+          ],
+          "title": "Stage Id",
+          "type": "string"
+        },
+        "upstream_artifact_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Upstream Artifact Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "artifact_schema_version",
+        "artifact_id",
+        "artifact_type",
+        "run_id",
+        "stage_id",
+        "dag_node_id",
+        "upstream_artifact_ids",
+        "created_at",
+        "artifact_hash",
+        "payload"
+      ],
+      "title": "ClaimCollectionArtifactV1_2",
+      "type": "object"
+    },
+    "ClaimCollectionPayloadV1_2": {
+      "additionalProperties": false,
+      "properties": {
+        "parent_revisions": {
+          "items": {
+            "$ref": "#/$defs/ParentClaimRevisionV1_2"
+          },
+          "minItems": 1,
+          "title": "Parent Revisions",
+          "type": "array"
+        },
+        "transcript_artifact_id": {
+          "pattern": "^artifact_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Transcript Artifact Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "transcript_artifact_id",
+        "parent_revisions"
+      ],
+      "title": "ClaimCollectionPayloadV1_2",
+      "type": "object"
+    },
+    "ClaimDependencyV1_2": {
+      "additionalProperties": false,
+      "properties": {
+        "dependency_id": {
+          "pattern": "^claim_dependency_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Dependency Id",
+          "type": "string"
+        },
+        "dependency_type": {
+          "enum": [
+            "qualifies",
+            "conditions",
+            "scope_of",
+            "compares_with",
+            "same_assertion_bundle"
+          ],
+          "title": "Dependency Type",
+          "type": "string"
+        },
+        "from_atomic_revision_id": {
+          "pattern": "^atomic_claim_revision_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "From Atomic Revision Id",
+          "type": "string"
+        },
+        "to_atomic_revision_id": {
+          "pattern": "^atomic_claim_revision_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "To Atomic Revision Id",
+          "type": "string"
+        },
+        "writer_role": {
+          "enum": [
+            "claim_splitter",
+            "authorized_human"
+          ],
+          "title": "Writer Role",
+          "type": "string"
+        }
+      },
+      "required": [
+        "dependency_id",
+        "from_atomic_revision_id",
+        "to_atomic_revision_id",
+        "dependency_type",
+        "writer_role"
+      ],
+      "title": "ClaimDependencyV1_2",
+      "type": "object"
+    },
+    "ClaimEntityIndexArtifactV1_2": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Artifact Hash",
+          "type": "string"
+        },
+        "artifact_id": {
+          "pattern": "^artifact_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "artifact_schema_version": {
+          "const": "v02_business_artifact_v1.2.0",
+          "title": "Artifact Schema Version",
+          "type": "string"
+        },
+        "artifact_type": {
+          "const": "claim.entity_index",
+          "title": "Artifact Type",
+          "type": "string"
+        },
+        "created_at": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?Z$",
+          "title": "Created At",
+          "type": "string"
+        },
+        "dag_node_id": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Dag Node Id",
+          "type": "string"
+        },
+        "payload": {
+          "$ref": "#/$defs/ClaimEntityIndexPayload"
+        },
+        "run_id": {
+          "pattern": "^run_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Run Id",
+          "type": "string"
+        },
+        "stage_id": {
+          "enum": [
+            "S01",
+            "S02"
+          ],
+          "title": "Stage Id",
+          "type": "string"
+        },
+        "upstream_artifact_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Upstream Artifact Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "artifact_schema_version",
+        "artifact_id",
+        "artifact_type",
+        "run_id",
+        "stage_id",
+        "dag_node_id",
+        "upstream_artifact_ids",
+        "created_at",
+        "artifact_hash",
+        "payload"
+      ],
+      "title": "ClaimEntityIndexArtifactV1_2",
+      "type": "object"
+    },
+    "ClaimEntityIndexPayload": {
+      "additionalProperties": false,
+      "properties": {
+        "container": {
+          "$ref": "#/$defs/ArtifactBinding"
+        },
+        "entries": {
+          "items": {
+            "$ref": "#/$defs/EntityIndexEntry"
+          },
+          "minItems": 1,
+          "title": "Entries",
+          "type": "array"
+        },
+        "index_revision": {
+          "enum": [
+            "initial",
+            "atomic_superseding"
+          ],
+          "title": "Index Revision",
+          "type": "string"
+        },
+        "supersedes_artifact_id": {
+          "anyOf": [
+            {
+              "pattern": "^artifact_[0-9a-hjkmnp-tv-z]{26}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Supersedes Artifact Id"
+        }
+      },
+      "required": [
+        "container",
+        "index_revision",
+        "entries"
+      ],
+      "title": "ClaimEntityIndexPayload",
+      "type": "object"
+    },
+    "ClaimEvidenceLinkV1_2": {
+      "additionalProperties": false,
+      "properties": {
+        "atomic_revision_id": {
+          "anyOf": [
+            {
+              "pattern": "^atomic_claim_revision_[0-9a-hjkmnp-tv-z]{26}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Atomic Revision Id"
+        },
+        "evidence_link_id": {
+          "pattern": "^evidence_link_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Evidence Link Id",
+          "type": "string"
+        },
+        "evidence_relation": {
+          "anyOf": [
+            {
+              "enum": [
+                "supports",
+                "refutes",
+                "context",
+                "conflicts",
+                "unresolved"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Evidence Relation"
+        },
+        "evidence_revision_id": {
+          "pattern": "^evidence_revision_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Evidence Revision Id",
+          "type": "string"
+        },
+        "evidence_strength": {
+          "anyOf": [
+            {
+              "enum": [
+                "high",
+                "medium",
+                "low"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Evidence Strength"
+        },
+        "parent_revision_id": {
+          "anyOf": [
+            {
+              "pattern": "^parent_claim_revision_[0-9a-hjkmnp-tv-z]{26}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Parent Revision Id"
+        },
+        "rejection_reason": {
+          "anyOf": [
+            {
+              "maxLength": 2000,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Rejection Reason"
+        },
+        "source_role": {
+          "anyOf": [
+            {
+              "enum": [
+                "primary_source",
+                "secondary_source"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Source Role"
+        },
+        "target_kind": {
+          "default": "atomic_claim_revision",
+          "enum": [
+            "atomic_claim_revision",
+            "parent_claim_revision"
+          ],
+          "title": "Target Kind",
+          "type": "string"
+        },
+        "taxonomy_version": {
+          "title": "Taxonomy Version",
+          "type": "string"
+        },
+        "use_status": {
+          "enum": [
+            "evidence",
+            "clue_only",
+            "rejected"
+          ],
+          "title": "Use Status",
+          "type": "string"
+        },
+        "writer_role": {
+          "enum": [
+            "machine_evidence_writer",
+            "authorized_human"
+          ],
+          "title": "Writer Role",
+          "type": "string"
+        }
+      },
+      "required": [
+        "evidence_link_id",
+        "evidence_revision_id",
+        "source_role",
+        "use_status",
+        "evidence_strength",
+        "evidence_relation",
+        "taxonomy_version",
+        "writer_role"
+      ],
+      "title": "ClaimEvidenceLinkV1_2",
+      "type": "object"
+    },
+    "ClaimSplitSetRevisionV1_2": {
+      "additionalProperties": false,
+      "properties": {
+        "coverage_reviewed": {
+          "title": "Coverage Reviewed",
+          "type": "boolean"
+        },
+        "failure_reason": {
+          "anyOf": [
+            {
+              "maxLength": 5000,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Failure Reason"
+        },
+        "members": {
+          "items": {
+            "$ref": "#/$defs/SplitSetMemberV1_2"
+          },
+          "title": "Members",
+          "type": "array"
+        },
+        "parent_claim_id": {
+          "pattern": "^claim_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Parent Claim Id",
+          "type": "string"
+        },
+        "parent_revision_id": {
+          "pattern": "^parent_claim_revision_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Parent Revision Id",
+          "type": "string"
+        },
+        "revision_no": {
+          "minimum": 1,
+          "title": "Revision No",
+          "type": "integer"
+        },
+        "split_revision_id": {
+          "pattern": "^claim_split_revision_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Split Revision Id",
+          "type": "string"
+        },
+        "split_status": {
+          "enum": [
+            "resolved_atomic",
+            "needs_human_split"
+          ],
+          "title": "Split Status",
+          "type": "string"
+        },
+        "supersedes_split_revision_id": {
+          "anyOf": [
+            {
+              "pattern": "^claim_split_revision_[0-9a-hjkmnp-tv-z]{26}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Supersedes Split Revision Id"
+        },
+        "taxonomy_version": {
+          "title": "Taxonomy Version",
+          "type": "string"
+        },
+        "writer_role": {
+          "enum": [
+            "claim_splitter",
+            "authorized_human"
+          ],
+          "title": "Writer Role",
+          "type": "string"
+        }
+      },
+      "required": [
+        "split_revision_id",
+        "parent_claim_id",
+        "parent_revision_id",
+        "revision_no",
+        "split_status",
+        "members",
+        "coverage_reviewed",
+        "taxonomy_version",
+        "writer_role"
+      ],
+      "title": "ClaimSplitSetRevisionV1_2",
+      "type": "object"
+    },
+    "ClaimTextChunkV1_2": {
+      "additionalProperties": false,
+      "properties": {
+        "byte_end_exclusive": {
+          "exclusiveMinimum": 0,
+          "title": "Byte End Exclusive",
+          "type": "integer"
+        },
+        "byte_start": {
+          "minimum": 0,
+          "title": "Byte Start",
+          "type": "integer"
+        },
+        "chunk_id": {
+          "pattern": "^claim_text_chunk_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Chunk Id",
+          "type": "string"
+        },
+        "chunk_index": {
+          "minimum": 0,
+          "title": "Chunk Index",
+          "type": "integer"
+        },
+        "chunk_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Chunk Sha256",
+          "type": "string"
+        },
+        "owner_kind": {
+          "enum": [
+            "parent_claim_revision",
+            "atomic_claim_revision"
+          ],
+          "title": "Owner Kind",
+          "type": "string"
+        },
+        "owner_revision_id": {
+          "pattern": "^(?:parent_claim_revision|atomic_claim_revision)_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Owner Revision Id",
+          "type": "string"
+        },
+        "text": {
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "chunk_id",
+        "owner_kind",
+        "owner_revision_id",
+        "chunk_index",
+        "byte_start",
+        "byte_end_exclusive",
+        "text",
+        "chunk_sha256"
+      ],
+      "title": "ClaimTextChunkV1_2",
+      "type": "object"
+    },
+    "ClaimTextStorageV1_2": {
+      "additionalProperties": false,
+      "properties": {
+        "chunks": {
+          "items": {
+            "$ref": "#/$defs/ClaimTextChunkV1_2"
+          },
+          "title": "Chunks",
+          "type": "array"
+        },
+        "inline_text": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Inline Text"
+        },
+        "text_char_count": {
+          "minimum": 1,
+          "title": "Text Char Count",
+          "type": "integer"
+        },
+        "text_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Text Sha256",
+          "type": "string"
+        },
+        "text_utf8_byte_count": {
+          "minimum": 1,
+          "title": "Text Utf8 Byte Count",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "text_char_count",
+        "text_utf8_byte_count",
+        "text_sha256",
+        "chunks"
+      ],
+      "title": "ClaimTextStorageV1_2",
+      "type": "object"
+    },
+    "EntityIndexEntry": {
+      "additionalProperties": false,
+      "properties": {
+        "entity_id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "title": "Entity Id",
+          "type": "string"
+        },
+        "locator": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/TimeLocator"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "parent_entity_id": {
+          "anyOf": [
+            {
+              "maxLength": 80,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Parent Entity Id"
+        },
+        "semantic_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Semantic Hash",
+          "type": "string"
+        },
+        "upstream_entity_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Upstream Entity Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "entity_id",
+        "semantic_hash",
+        "upstream_entity_ids",
+        "locator"
+      ],
+      "title": "EntityIndexEntry",
+      "type": "object"
+    },
+    "EvidenceAvailabilityV1_2": {
+      "additionalProperties": false,
+      "properties": {
+        "atomic_revision_id": {
+          "pattern": "^atomic_claim_revision_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Atomic Revision Id",
+          "type": "string"
+        },
+        "availability": {
+          "enum": [
+            "pending",
+            "has_evidence",
+            "no_evidence"
+          ],
+          "title": "Availability",
+          "type": "string"
+        },
+        "batch_closed": {
+          "title": "Batch Closed",
+          "type": "boolean"
+        },
+        "clue_link_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Clue Link Ids",
+          "type": "array"
+        },
+        "formal_evidence_link_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Formal Evidence Link Ids",
+          "type": "array"
+        },
+        "retrieval_batch_id": {
+          "pattern": "^retrieval_batch_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Retrieval Batch Id",
+          "type": "string"
+        },
+        "writer_role": {
+          "const": "retrieval_batch_closer",
+          "title": "Writer Role",
+          "type": "string"
+        }
+      },
+      "required": [
+        "atomic_revision_id",
+        "retrieval_batch_id",
+        "availability",
+        "batch_closed",
+        "formal_evidence_link_ids",
+        "clue_link_ids",
+        "writer_role"
+      ],
+      "title": "EvidenceAvailabilityV1_2",
+      "type": "object"
+    },
+    "EvidenceCollectionArtifactV1_2": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Artifact Hash",
+          "type": "string"
+        },
+        "artifact_id": {
+          "pattern": "^artifact_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "artifact_schema_version": {
+          "const": "v02_business_artifact_v1.2.0",
+          "title": "Artifact Schema Version",
+          "type": "string"
+        },
+        "artifact_type": {
+          "const": "evidence.collection",
+          "title": "Artifact Type",
+          "type": "string"
+        },
+        "created_at": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?Z$",
+          "title": "Created At",
+          "type": "string"
+        },
+        "dag_node_id": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Dag Node Id",
+          "type": "string"
+        },
+        "payload": {
+          "$ref": "#/$defs/EvidenceCollectionPayloadV1_2"
+        },
+        "run_id": {
+          "pattern": "^run_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Run Id",
+          "type": "string"
+        },
+        "stage_id": {
+          "enum": [
+            "S01",
+            "S02"
+          ],
+          "title": "Stage Id",
+          "type": "string"
+        },
+        "upstream_artifact_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Upstream Artifact Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "artifact_schema_version",
+        "artifact_id",
+        "artifact_type",
+        "run_id",
+        "stage_id",
+        "dag_node_id",
+        "upstream_artifact_ids",
+        "created_at",
+        "artifact_hash",
+        "payload"
+      ],
+      "title": "EvidenceCollectionArtifactV1_2",
+      "type": "object"
+    },
+    "EvidenceCollectionPayloadV1_2": {
+      "additionalProperties": false,
+      "properties": {
+        "atomic_claim_collection_artifact_id": {
+          "pattern": "^artifact_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Atomic Claim Collection Artifact Id",
+          "type": "string"
+        },
+        "availability": {
+          "items": {
+            "$ref": "#/$defs/EvidenceAvailabilityV1_2"
+          },
+          "minItems": 1,
+          "title": "Availability",
+          "type": "array"
+        },
+        "evidence_revisions": {
+          "items": {
+            "$ref": "#/$defs/EvidenceRevisionV1_2"
+          },
+          "title": "Evidence Revisions",
+          "type": "array"
+        },
+        "links": {
+          "items": {
+            "$ref": "#/$defs/ClaimEvidenceLinkV1_2"
+          },
+          "title": "Links",
+          "type": "array"
+        },
+        "retrieval_attempts": {
+          "items": {
+            "$ref": "#/$defs/RetrievalAttemptV1_2"
+          },
+          "title": "Retrieval Attempts",
+          "type": "array"
+        },
+        "retrieval_batch_id": {
+          "pattern": "^retrieval_batch_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Retrieval Batch Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "atomic_claim_collection_artifact_id",
+        "retrieval_batch_id",
+        "evidence_revisions",
+        "retrieval_attempts",
+        "links",
+        "availability"
+      ],
+      "title": "EvidenceCollectionPayloadV1_2",
+      "type": "object"
+    },
+    "EvidenceEntityIndexArtifactV1_2": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Artifact Hash",
+          "type": "string"
+        },
+        "artifact_id": {
+          "pattern": "^artifact_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "artifact_schema_version": {
+          "const": "v02_business_artifact_v1.2.0",
+          "title": "Artifact Schema Version",
+          "type": "string"
+        },
+        "artifact_type": {
+          "const": "evidence.entity_index",
+          "title": "Artifact Type",
+          "type": "string"
+        },
+        "created_at": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?Z$",
+          "title": "Created At",
+          "type": "string"
+        },
+        "dag_node_id": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Dag Node Id",
+          "type": "string"
+        },
+        "payload": {
+          "$ref": "#/$defs/EvidenceEntityIndexPayload"
+        },
+        "run_id": {
+          "pattern": "^run_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Run Id",
+          "type": "string"
+        },
+        "stage_id": {
+          "enum": [
+            "S01",
+            "S02"
+          ],
+          "title": "Stage Id",
+          "type": "string"
+        },
+        "upstream_artifact_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Upstream Artifact Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "artifact_schema_version",
+        "artifact_id",
+        "artifact_type",
+        "run_id",
+        "stage_id",
+        "dag_node_id",
+        "upstream_artifact_ids",
+        "created_at",
+        "artifact_hash",
+        "payload"
+      ],
+      "title": "EvidenceEntityIndexArtifactV1_2",
+      "type": "object"
+    },
+    "EvidenceEntityIndexPayload": {
+      "additionalProperties": false,
+      "properties": {
+        "claim_collection_artifact_id": {
+          "pattern": "^artifact_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Claim Collection Artifact Id",
+          "type": "string"
+        },
+        "container": {
+          "$ref": "#/$defs/ArtifactBinding"
+        },
+        "entries": {
+          "items": {
+            "$ref": "#/$defs/EntityIndexEntry"
+          },
+          "minItems": 1,
+          "title": "Entries",
+          "type": "array"
+        }
+      },
+      "required": [
+        "container",
+        "claim_collection_artifact_id",
+        "entries"
+      ],
+      "title": "EvidenceEntityIndexPayload",
+      "type": "object"
+    },
+    "EvidenceItem": {
+      "additionalProperties": false,
+      "properties": {
+        "canonical_url": {
+          "anyOf": [
+            {
+              "maxLength": 2048,
+              "pattern": "^https?://[^\\s]+$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Canonical Url"
+        },
+        "claim_ids": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Claim Ids",
+          "type": "array"
+        },
+        "evidence_id": {
+          "pattern": "^evidence_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Evidence Id",
+          "type": "string"
+        },
+        "excerpt": {
+          "maxLength": 20000,
+          "minLength": 1,
+          "title": "Excerpt",
+          "type": "string"
+        },
+        "published_date": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Published Date"
+        },
+        "publisher": {
+          "maxLength": 300,
+          "minLength": 1,
+          "title": "Publisher",
+          "type": "string"
+        },
+        "quality": {
+          "enum": [
+            "high",
+            "medium",
+            "low",
+            "clue_only"
+          ],
+          "title": "Quality",
+          "type": "string"
+        },
+        "relation": {
+          "enum": [
+            "supports",
+            "refutes",
+            "context",
+            "conflicts",
+            "unresolved"
+          ],
+          "title": "Relation",
+          "type": "string"
+        },
+        "retrieved_at": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?Z$",
+          "title": "Retrieved At",
+          "type": "string"
+        },
+        "source_type": {
+          "enum": [
+            "official",
+            "primary_report",
+            "paper",
+            "database",
+            "high_quality_secondary",
+            "other"
+          ],
+          "title": "Source Type",
+          "type": "string"
+        },
+        "stable_locator": {
+          "anyOf": [
+            {
+              "maxLength": 500,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Stable Locator"
+        }
+      },
+      "required": [
+        "evidence_id",
+        "claim_ids",
+        "source_type",
+        "publisher",
+        "retrieved_at",
+        "excerpt",
+        "relation",
+        "quality"
+      ],
+      "title": "EvidenceItem",
+      "type": "object"
+    },
+    "EvidenceMergedCollectionArtifactV1_2": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Artifact Hash",
+          "type": "string"
+        },
+        "artifact_id": {
+          "pattern": "^artifact_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "artifact_schema_version": {
+          "const": "v02_business_artifact_v1.2.0",
+          "title": "Artifact Schema Version",
+          "type": "string"
+        },
+        "artifact_type": {
+          "const": "evidence.merged_collection",
+          "title": "Artifact Type",
+          "type": "string"
+        },
+        "created_at": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?Z$",
+          "title": "Created At",
+          "type": "string"
+        },
+        "dag_node_id": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Dag Node Id",
+          "type": "string"
+        },
+        "payload": {
+          "$ref": "#/$defs/EvidenceMergedCollectionPayload"
+        },
+        "run_id": {
+          "pattern": "^run_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Run Id",
+          "type": "string"
+        },
+        "stage_id": {
+          "enum": [
+            "S01",
+            "S02"
+          ],
+          "title": "Stage Id",
+          "type": "string"
+        },
+        "upstream_artifact_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Upstream Artifact Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "artifact_schema_version",
+        "artifact_id",
+        "artifact_type",
+        "run_id",
+        "stage_id",
+        "dag_node_id",
+        "upstream_artifact_ids",
+        "created_at",
+        "artifact_hash",
+        "payload"
+      ],
+      "title": "EvidenceMergedCollectionArtifactV1_2",
+      "type": "object"
+    },
+    "EvidenceMergedCollectionPayload": {
+      "additionalProperties": false,
+      "properties": {
+        "added_evidence": {
+          "items": {
+            "$ref": "#/$defs/EvidenceItem"
+          },
+          "title": "Added Evidence",
+          "type": "array"
+        },
+        "base_evidence": {
+          "$ref": "#/$defs/ArtifactBinding"
+        },
+        "diff_summary": {
+          "maxLength": 5000,
+          "minLength": 1,
+          "title": "Diff Summary",
+          "type": "string"
+        },
+        "import_validation_artifact_id": {
+          "pattern": "^artifact_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Import Validation Artifact Id",
+          "type": "string"
+        },
+        "preserved_evidence_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Preserved Evidence Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "base_evidence",
+        "import_validation_artifact_id",
+        "preserved_evidence_ids",
+        "added_evidence",
+        "diff_summary"
+      ],
+      "title": "EvidenceMergedCollectionPayload",
+      "type": "object"
+    },
+    "EvidenceRevisionV1_2": {
+      "additionalProperties": false,
+      "properties": {
+        "canonical_url": {
+          "anyOf": [
+            {
+              "maxLength": 2048,
+              "pattern": "^https?://[^\\s]+$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Canonical Url"
+        },
+        "evidence_id": {
+          "pattern": "^evidence_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Evidence Id",
+          "type": "string"
+        },
+        "evidence_revision_id": {
+          "pattern": "^evidence_revision_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Evidence Revision Id",
+          "type": "string"
+        },
+        "excerpt": {
+          "maxLength": 20000,
+          "minLength": 1,
+          "title": "Excerpt",
+          "type": "string"
+        },
+        "published_date": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Published Date"
+        },
+        "publisher": {
+          "maxLength": 300,
+          "minLength": 1,
+          "title": "Publisher",
+          "type": "string"
+        },
+        "retrieved_at": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?Z$",
+          "title": "Retrieved At",
+          "type": "string"
+        },
+        "revision_no": {
+          "minimum": 1,
+          "title": "Revision No",
+          "type": "integer"
+        },
+        "source_kind": {
+          "enum": [
+            "official",
+            "primary_report",
+            "paper",
+            "database",
+            "high_quality_secondary",
+            "other"
+          ],
+          "title": "Source Kind",
+          "type": "string"
+        },
+        "stable_locator": {
+          "anyOf": [
+            {
+              "maxLength": 500,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Stable Locator"
+        },
+        "supersedes_revision_id": {
+          "anyOf": [
+            {
+              "pattern": "^evidence_revision_[0-9a-hjkmnp-tv-z]{26}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Supersedes Revision Id"
+        },
+        "taxonomy_version": {
+          "title": "Taxonomy Version",
+          "type": "string"
+        },
+        "writer_role": {
+          "enum": [
+            "machine_evidence_writer",
+            "authorized_human"
+          ],
+          "title": "Writer Role",
+          "type": "string"
+        }
+      },
+      "required": [
+        "evidence_id",
+        "evidence_revision_id",
+        "revision_no",
+        "source_kind",
+        "publisher",
+        "retrieved_at",
+        "excerpt",
+        "taxonomy_version",
+        "writer_role"
+      ],
+      "title": "EvidenceRevisionV1_2",
+      "type": "object"
+    },
+    "FileBinding": {
+      "additionalProperties": false,
+      "properties": {
+        "content_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Content Hash",
+          "type": "string"
+        },
+        "content_hash_algorithm": {
+          "const": "sha256",
+          "title": "Content Hash Algorithm",
+          "type": "string"
+        },
+        "relative_path": {
+          "maxLength": 512,
+          "minLength": 1,
+          "title": "Relative Path",
+          "type": "string"
+        },
+        "size_bytes": {
+          "minimum": 0,
+          "title": "Size Bytes",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "relative_path",
+        "content_hash_algorithm",
+        "content_hash",
+        "size_bytes"
+      ],
+      "title": "FileBinding",
+      "type": "object"
+    },
+    "FrameBudget": {
+      "additionalProperties": false,
+      "properties": {
+        "adjacent_min_interval_ms": {
+          "minimum": 2000,
+          "title": "Adjacent Min Interval Ms",
+          "type": "integer"
+        },
+        "run_max_frames": {
+          "maximum": 24,
+          "minimum": 0,
+          "title": "Run Max Frames",
+          "type": "integer"
+        },
+        "trigger_max_frames": {
+          "maximum": 3,
+          "minimum": 0,
+          "title": "Trigger Max Frames",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "run_max_frames",
+        "trigger_max_frames",
+        "adjacent_min_interval_ms"
+      ],
+      "title": "FrameBudget",
+      "type": "object"
+    },
+    "ImportSourceRecord": {
+      "additionalProperties": false,
+      "properties": {
+        "canonical_url": {
+          "anyOf": [
+            {
+              "maxLength": 2048,
+              "pattern": "^https?://[^\\s]+$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Canonical Url"
+        },
+        "claim_id": {
+          "pattern": "^claim_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Claim Id",
+          "type": "string"
+        },
+        "classification": {
+          "enum": [
+            "supports",
+            "refutes",
+            "context",
+            "conflict",
+            "unresolved",
+            "rejected"
+          ],
+          "title": "Classification",
+          "type": "string"
+        },
+        "excerpt_verified": {
+          "title": "Excerpt Verified",
+          "type": "boolean"
+        },
+        "lead_status": {
+          "enum": [
+            "evidence",
+            "clue_only",
+            "no_evidence",
+            "source_blocked",
+            "pending"
+          ],
+          "title": "Lead Status",
+          "type": "string"
+        },
+        "rejection_reason": {
+          "anyOf": [
+            {
+              "maxLength": 500,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Rejection Reason"
+        }
+      },
+      "required": [
+        "claim_id",
+        "classification",
+        "excerpt_verified",
+        "lead_status"
+      ],
+      "title": "ImportSourceRecord",
+      "type": "object"
+    },
+    "MachineClaimAssessmentV1_2": {
+      "additionalProperties": false,
+      "properties": {
+        "assessment_revision_id": {
+          "pattern": "^assessment_revision_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Assessment Revision Id",
+          "type": "string"
+        },
+        "atomic_revision_id": {
+          "pattern": "^atomic_claim_revision_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Atomic Revision Id",
+          "type": "string"
+        },
+        "candidate_verdict": {
+          "enum": [
+            "supported",
+            "refuted",
+            "mixed",
+            "insufficient",
+            "unverifiable"
+          ],
+          "title": "Candidate Verdict",
+          "type": "string"
+        },
+        "claim_checkability": {
+          "enum": [
+            "checkable",
+            "context_only",
+            "not_checkable"
+          ],
+          "title": "Claim Checkability",
+          "type": "string"
+        },
+        "config_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Config Hash",
+          "type": "string"
+        },
+        "evidence_link_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Evidence Link Ids",
+          "type": "array"
+        },
+        "model_version": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Model Version",
+          "type": "string"
+        },
+        "prompt_version": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Prompt Version",
+          "type": "string"
+        },
+        "reason": {
+          "maxLength": 10000,
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        },
+        "review_status": {
+          "const": "machine_pending",
+          "title": "Review Status",
+          "type": "string"
+        },
+        "uncertainty": {
+          "enum": [
+            "low",
+            "medium",
+            "high"
+          ],
+          "title": "Uncertainty",
+          "type": "string"
+        },
+        "writer_role": {
+          "const": "machine_assessor",
+          "title": "Writer Role",
+          "type": "string"
+        }
+      },
+      "required": [
+        "assessment_revision_id",
+        "atomic_revision_id",
+        "claim_checkability",
+        "evidence_link_ids",
+        "candidate_verdict",
+        "reason",
+        "uncertainty",
+        "model_version",
+        "prompt_version",
+        "config_hash",
+        "review_status",
+        "writer_role"
+      ],
+      "title": "MachineClaimAssessmentV1_2",
+      "type": "object"
+    },
+    "MachineInclusionRecommendationV1_2": {
+      "additionalProperties": false,
+      "properties": {
+        "atomic_revision_id": {
+          "pattern": "^atomic_claim_revision_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Atomic Revision Id",
+          "type": "string"
+        },
+        "inclusion_revision_id": {
+          "pattern": "^inclusion_revision_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Inclusion Revision Id",
+          "type": "string"
+        },
+        "reason": {
+          "maxLength": 5000,
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        },
+        "recommended_status": {
+          "enum": [
+            "included",
+            "excluded",
+            "pending"
+          ],
+          "title": "Recommended Status",
+          "type": "string"
+        },
+        "writer_role": {
+          "const": "machine_recommender",
+          "title": "Writer Role",
+          "type": "string"
+        }
+      },
+      "required": [
+        "inclusion_revision_id",
+        "atomic_revision_id",
+        "recommended_status",
+        "reason",
+        "writer_role"
+      ],
+      "title": "MachineInclusionRecommendationV1_2",
+      "type": "object"
+    },
+    "MachineReportArtifactV1_2": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Artifact Hash",
+          "type": "string"
+        },
+        "artifact_id": {
+          "pattern": "^artifact_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "artifact_schema_version": {
+          "const": "v02_business_artifact_v1.2.0",
+          "title": "Artifact Schema Version",
+          "type": "string"
+        },
+        "artifact_type": {
+          "const": "report.machine",
+          "title": "Artifact Type",
+          "type": "string"
+        },
+        "created_at": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?Z$",
+          "title": "Created At",
+          "type": "string"
+        },
+        "dag_node_id": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Dag Node Id",
+          "type": "string"
+        },
+        "payload": {
+          "$ref": "#/$defs/MachineReportPayloadV1_1"
+        },
+        "run_id": {
+          "pattern": "^run_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Run Id",
+          "type": "string"
+        },
+        "stage_id": {
+          "enum": [
+            "S01",
+            "S02"
+          ],
+          "title": "Stage Id",
+          "type": "string"
+        },
+        "upstream_artifact_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Upstream Artifact Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "artifact_schema_version",
+        "artifact_id",
+        "artifact_type",
+        "run_id",
+        "stage_id",
+        "dag_node_id",
+        "upstream_artifact_ids",
+        "created_at",
+        "artifact_hash",
+        "payload"
+      ],
+      "title": "MachineReportArtifactV1_2",
+      "type": "object"
+    },
+    "MachineReportPayloadV1_1": {
+      "additionalProperties": false,
+      "properties": {
+        "candidate_verdict": {
+          "enum": [
+            "supported",
+            "refuted",
+            "mixed",
+            "insufficient",
+            "unverifiable"
+          ],
+          "title": "Candidate Verdict",
+          "type": "string"
+        },
+        "claim_refs": {
+          "items": {
+            "$ref": "#/$defs/ReportClaimRef"
+          },
+          "minItems": 1,
+          "title": "Claim Refs",
+          "type": "array"
+        },
+        "deterministic_template_version": {
+          "maxLength": 120,
+          "minLength": 1,
+          "title": "Deterministic Template Version",
+          "type": "string"
+        },
+        "evidence_quality": {
+          "enum": [
+            "high",
+            "medium",
+            "low",
+            "none"
+          ],
+          "title": "Evidence Quality",
+          "type": "string"
+        },
+        "input_bindings": {
+          "items": {
+            "$ref": "#/$defs/ArtifactBinding"
+          },
+          "minItems": 2,
+          "title": "Input Bindings",
+          "type": "array"
+        },
+        "needs_source_depth": {
+          "title": "Needs Source Depth",
+          "type": "boolean"
+        },
+        "needs_split": {
+          "title": "Needs Split",
+          "type": "boolean"
+        },
+        "review_status": {
+          "const": "machine_pending",
+          "title": "Review Status",
+          "type": "string"
+        },
+        "screening_state": {
+          "enum": [
+            "complete",
+            "partial",
+            "blocked"
+          ],
+          "title": "Screening State",
+          "type": "string"
+        },
+        "summary": {
+          "maxLength": 20000,
+          "minLength": 1,
+          "title": "Summary",
+          "type": "string"
+        }
+      },
+      "required": [
+        "input_bindings",
+        "summary",
+        "claim_refs",
+        "deterministic_template_version",
+        "screening_state",
+        "candidate_verdict",
+        "evidence_quality",
+        "needs_split",
+        "needs_source_depth",
+        "review_status"
+      ],
+      "title": "MachineReportPayloadV1_1",
+      "type": "object"
+    },
+    "MediaAudioArtifactV1_2": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Artifact Hash",
+          "type": "string"
+        },
+        "artifact_id": {
+          "pattern": "^artifact_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "artifact_schema_version": {
+          "const": "v02_business_artifact_v1.2.0",
+          "title": "Artifact Schema Version",
+          "type": "string"
+        },
+        "artifact_type": {
+          "const": "media.audio",
+          "title": "Artifact Type",
+          "type": "string"
+        },
+        "created_at": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?Z$",
+          "title": "Created At",
+          "type": "string"
+        },
+        "dag_node_id": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Dag Node Id",
+          "type": "string"
+        },
+        "payload": {
+          "$ref": "#/$defs/MediaAudioPayload"
+        },
+        "run_id": {
+          "pattern": "^run_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Run Id",
+          "type": "string"
+        },
+        "stage_id": {
+          "enum": [
+            "S01",
+            "S02"
+          ],
+          "title": "Stage Id",
+          "type": "string"
+        },
+        "upstream_artifact_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Upstream Artifact Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "artifact_schema_version",
+        "artifact_id",
+        "artifact_type",
+        "run_id",
+        "stage_id",
+        "dag_node_id",
+        "upstream_artifact_ids",
+        "created_at",
+        "artifact_hash",
+        "payload"
+      ],
+      "title": "MediaAudioArtifactV1_2",
+      "type": "object"
+    },
+    "MediaAudioPayload": {
+      "additionalProperties": false,
+      "properties": {
+        "channels": {
+          "const": 1,
+          "title": "Channels",
+          "type": "integer"
+        },
+        "codec": {
+          "const": "pcm_s16le",
+          "title": "Codec",
+          "type": "string"
+        },
+        "container_format": {
+          "const": "wav",
+          "title": "Container Format",
+          "type": "string"
+        },
+        "duration_ms": {
+          "exclusiveMinimum": 0,
+          "title": "Duration Ms",
+          "type": "integer"
+        },
+        "extraction_parameters_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Extraction Parameters Hash",
+          "type": "string"
+        },
+        "ffmpeg_content_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Ffmpeg Content Hash",
+          "type": "string"
+        },
+        "output_content_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Output Content Hash",
+          "type": "string"
+        },
+        "parent_media_content_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Parent Media Content Hash",
+          "type": "string"
+        },
+        "sample_rate_hz": {
+          "const": 16000,
+          "title": "Sample Rate Hz",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "codec",
+        "container_format",
+        "channels",
+        "sample_rate_hz",
+        "duration_ms",
+        "parent_media_content_hash",
+        "ffmpeg_content_hash",
+        "extraction_parameters_hash",
+        "output_content_hash"
+      ],
+      "title": "MediaAudioPayload",
+      "type": "object"
+    },
+    "NormalizedSegment": {
+      "additionalProperties": false,
+      "properties": {
+        "normalized_text": {
+          "maxLength": 20000,
+          "minLength": 1,
+          "title": "Normalized Text",
+          "type": "string"
+        },
+        "raw_segment_id": {
+          "pattern": "^segment_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Raw Segment Id",
+          "type": "string"
+        },
+        "raw_text": {
+          "maxLength": 20000,
+          "minLength": 1,
+          "title": "Raw Text",
+          "type": "string"
+        },
+        "segment_id": {
+          "pattern": "^segment_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Segment Id",
+          "type": "string"
+        },
+        "term_mappings": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Term Mappings",
+          "type": "array"
+        },
+        "unresolved_ambiguities": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Unresolved Ambiguities",
+          "type": "array"
+        }
+      },
+      "required": [
+        "segment_id",
+        "raw_segment_id",
+        "raw_text",
+        "normalized_text",
+        "term_mappings",
+        "unresolved_ambiguities"
+      ],
+      "title": "NormalizedSegment",
+      "type": "object"
+    },
+    "OcrEntry": {
+      "additionalProperties": false,
+      "properties": {
+        "confidence": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Confidence"
+        },
+        "frame_content_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Frame Content Hash",
+          "type": "string"
+        },
+        "frame_relative_path": {
+          "maxLength": 512,
+          "minLength": 1,
+          "title": "Frame Relative Path",
+          "type": "string"
+        },
+        "ocr_entry_id": {
+          "pattern": "^ocr_entry_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Ocr Entry Id",
+          "type": "string"
+        },
+        "raw_text": {
+          "maxLength": 20000,
+          "minLength": 1,
+          "title": "Raw Text",
+          "type": "string"
+        },
+        "timestamp_ms": {
+          "minimum": 0,
+          "title": "Timestamp Ms",
+          "type": "integer"
+        },
+        "trigger_reason": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Trigger Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "ocr_entry_id",
+        "frame_relative_path",
+        "frame_content_hash",
+        "timestamp_ms",
+        "raw_text",
+        "trigger_reason"
+      ],
+      "title": "OcrEntry",
+      "type": "object"
+    },
+    "OcrGateDecisionArtifactV1_2": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Artifact Hash",
+          "type": "string"
+        },
+        "artifact_id": {
+          "pattern": "^artifact_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "artifact_schema_version": {
+          "const": "v02_business_artifact_v1.2.0",
+          "title": "Artifact Schema Version",
+          "type": "string"
+        },
+        "artifact_type": {
+          "const": "ocr.gate_decision",
+          "title": "Artifact Type",
+          "type": "string"
+        },
+        "created_at": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?Z$",
+          "title": "Created At",
+          "type": "string"
+        },
+        "dag_node_id": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Dag Node Id",
+          "type": "string"
+        },
+        "payload": {
+          "$ref": "#/$defs/OcrGateDecisionPayload"
+        },
+        "run_id": {
+          "pattern": "^run_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Run Id",
+          "type": "string"
+        },
+        "stage_id": {
+          "enum": [
+            "S01",
+            "S02"
+          ],
+          "title": "Stage Id",
+          "type": "string"
+        },
+        "upstream_artifact_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Upstream Artifact Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "artifact_schema_version",
+        "artifact_id",
+        "artifact_type",
+        "run_id",
+        "stage_id",
+        "dag_node_id",
+        "upstream_artifact_ids",
+        "created_at",
+        "artifact_hash",
+        "payload"
+      ],
+      "title": "OcrGateDecisionArtifactV1_2",
+      "type": "object"
+    },
+    "OcrGateDecisionPayload": {
+      "additionalProperties": false,
+      "properties": {
+        "adapter_profile_version": {
+          "anyOf": [
+            {
+              "maxLength": 120,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Adapter Profile Version"
+        },
+        "frame_budget": {
+          "$ref": "#/$defs/FrameBudget"
+        },
+        "gate_state": {
+          "enum": [
+            "NOT_APPLICABLE",
+            "REQUIRED_BLOCKED",
+            "EXECUTED"
+          ],
+          "title": "Gate State",
+          "type": "string"
+        },
+        "input_bindings": {
+          "items": {
+            "$ref": "#/$defs/ArtifactBinding"
+          },
+          "minItems": 1,
+          "title": "Input Bindings",
+          "type": "array"
+        },
+        "trigger_basis": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Trigger Basis",
+          "type": "array"
+        }
+      },
+      "required": [
+        "gate_state",
+        "trigger_basis",
+        "input_bindings",
+        "frame_budget"
+      ],
+      "title": "OcrGateDecisionPayload",
+      "type": "object"
+    },
+    "OcrResultArtifactV1_2": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Artifact Hash",
+          "type": "string"
+        },
+        "artifact_id": {
+          "pattern": "^artifact_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "artifact_schema_version": {
+          "const": "v02_business_artifact_v1.2.0",
+          "title": "Artifact Schema Version",
+          "type": "string"
+        },
+        "artifact_type": {
+          "const": "ocr.result",
+          "title": "Artifact Type",
+          "type": "string"
+        },
+        "created_at": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?Z$",
+          "title": "Created At",
+          "type": "string"
+        },
+        "dag_node_id": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Dag Node Id",
+          "type": "string"
+        },
+        "payload": {
+          "$ref": "#/$defs/OcrResultPayload"
+        },
+        "run_id": {
+          "pattern": "^run_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Run Id",
+          "type": "string"
+        },
+        "stage_id": {
+          "enum": [
+            "S01",
+            "S02"
+          ],
+          "title": "Stage Id",
+          "type": "string"
+        },
+        "upstream_artifact_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Upstream Artifact Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "artifact_schema_version",
+        "artifact_id",
+        "artifact_type",
+        "run_id",
+        "stage_id",
+        "dag_node_id",
+        "upstream_artifact_ids",
+        "created_at",
+        "artifact_hash",
+        "payload"
+      ],
+      "title": "OcrResultArtifactV1_2",
+      "type": "object"
+    },
+    "OcrResultPayload": {
+      "additionalProperties": false,
+      "properties": {
+        "engine_name": {
+          "maxLength": 120,
+          "minLength": 1,
+          "title": "Engine Name",
+          "type": "string"
+        },
+        "engine_revision": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Engine Revision",
+          "type": "string"
+        },
+        "entries": {
+          "items": {
+            "$ref": "#/$defs/OcrEntry"
+          },
+          "minItems": 1,
+          "title": "Entries",
+          "type": "array"
+        },
+        "gate_decision_artifact_id": {
+          "pattern": "^artifact_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Gate Decision Artifact Id",
+          "type": "string"
+        },
+        "profile_version": {
+          "maxLength": 120,
+          "minLength": 1,
+          "title": "Profile Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "gate_decision_artifact_id",
+        "engine_name",
+        "engine_revision",
+        "profile_version",
+        "entries"
+      ],
+      "title": "OcrResultPayload",
+      "type": "object"
+    },
+    "ParentClaimRevisionV1_2": {
+      "additionalProperties": false,
+      "properties": {
+        "display_no": {
+          "minimum": 1,
+          "title": "Display No",
+          "type": "integer"
+        },
+        "normalized_text": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Normalized Text"
+        },
+        "parent_claim_id": {
+          "pattern": "^claim_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Parent Claim Id",
+          "type": "string"
+        },
+        "parent_revision_id": {
+          "pattern": "^parent_claim_revision_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Parent Revision Id",
+          "type": "string"
+        },
+        "preview": {
+          "anyOf": [
+            {
+              "maxLength": 500,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Preview"
+        },
+        "revision_no": {
+          "minimum": 1,
+          "title": "Revision No",
+          "type": "integer"
+        },
+        "source_spans": {
+          "items": {
+            "$ref": "#/$defs/TimeLocator"
+          },
+          "minItems": 1,
+          "title": "Source Spans",
+          "type": "array"
+        },
+        "supersedes_revision_id": {
+          "anyOf": [
+            {
+              "pattern": "^parent_claim_revision_[0-9a-hjkmnp-tv-z]{26}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Supersedes Revision Id"
+        },
+        "taxonomy_version": {
+          "title": "Taxonomy Version",
+          "type": "string"
+        },
+        "text": {
+          "$ref": "#/$defs/ClaimTextStorageV1_2"
+        },
+        "writer_role": {
+          "enum": [
+            "claim_extractor",
+            "authorized_human"
+          ],
+          "title": "Writer Role",
+          "type": "string"
+        }
+      },
+      "required": [
+        "parent_claim_id",
+        "parent_revision_id",
+        "revision_no",
+        "display_no",
+        "text",
+        "source_spans",
+        "taxonomy_version",
+        "writer_role"
+      ],
+      "title": "ParentClaimRevisionV1_2",
+      "type": "object"
+    },
+    "RebuiltReportArtifactV1_2": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Artifact Hash",
+          "type": "string"
+        },
+        "artifact_id": {
+          "pattern": "^artifact_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "artifact_schema_version": {
+          "const": "v02_business_artifact_v1.2.0",
+          "title": "Artifact Schema Version",
+          "type": "string"
+        },
+        "artifact_type": {
+          "const": "report.rebuilt",
+          "title": "Artifact Type",
+          "type": "string"
+        },
+        "created_at": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?Z$",
+          "title": "Created At",
+          "type": "string"
+        },
+        "dag_node_id": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Dag Node Id",
+          "type": "string"
+        },
+        "payload": {
+          "$ref": "#/$defs/RebuiltReportPayload"
+        },
+        "run_id": {
+          "pattern": "^run_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Run Id",
+          "type": "string"
+        },
+        "stage_id": {
+          "enum": [
+            "S01",
+            "S02"
+          ],
+          "title": "Stage Id",
+          "type": "string"
+        },
+        "upstream_artifact_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Upstream Artifact Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "artifact_schema_version",
+        "artifact_id",
+        "artifact_type",
+        "run_id",
+        "stage_id",
+        "dag_node_id",
+        "upstream_artifact_ids",
+        "created_at",
+        "artifact_hash",
+        "payload"
+      ],
+      "title": "RebuiltReportArtifactV1_2",
+      "type": "object"
+    },
+    "RebuiltReportPayload": {
+      "additionalProperties": false,
+      "properties": {
+        "before_after_summary": {
+          "maxLength": 5000,
+          "minLength": 1,
+          "title": "Before After Summary",
+          "type": "string"
+        },
+        "claim_refs": {
+          "items": {
+            "$ref": "#/$defs/ReportClaimRef"
+          },
+          "minItems": 1,
+          "title": "Claim Refs",
+          "type": "array"
+        },
+        "deterministic_template_version": {
+          "maxLength": 120,
+          "minLength": 1,
+          "title": "Deterministic Template Version",
+          "type": "string"
+        },
+        "input_bindings": {
+          "items": {
+            "$ref": "#/$defs/ArtifactBinding"
+          },
+          "minItems": 2,
+          "title": "Input Bindings",
+          "type": "array"
+        },
+        "summary": {
+          "maxLength": 20000,
+          "minLength": 1,
+          "title": "Summary",
+          "type": "string"
+        }
+      },
+      "required": [
+        "input_bindings",
+        "summary",
+        "claim_refs",
+        "deterministic_template_version",
+        "before_after_summary"
+      ],
+      "title": "RebuiltReportPayload",
+      "type": "object"
+    },
+    "ReportClaimRef": {
+      "additionalProperties": false,
+      "properties": {
+        "claim_id": {
+          "pattern": "^claim_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Claim Id",
+          "type": "string"
+        },
+        "verdict_id": {
+          "pattern": "^verdict_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Verdict Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "claim_id",
+        "verdict_id"
+      ],
+      "title": "ReportClaimRef",
+      "type": "object"
+    },
+    "RetrievalAttemptV1_2": {
+      "additionalProperties": false,
+      "properties": {
+        "access_status": {
+          "enum": [
+            "accessible",
+            "source_blocked",
+            "not_found",
+            "access_error"
+          ],
+          "title": "Access Status",
+          "type": "string"
+        },
+        "attempted_at": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?Z$",
+          "title": "Attempted At",
+          "type": "string"
+        },
+        "attempted_locator": {
+          "maxLength": 2048,
+          "minLength": 1,
+          "title": "Attempted Locator",
+          "type": "string"
+        },
+        "evidence_revision_id": {
+          "anyOf": [
+            {
+              "pattern": "^evidence_revision_[0-9a-hjkmnp-tv-z]{26}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Evidence Revision Id"
+        },
+        "retrieval_attempt_id": {
+          "pattern": "^retrieval_attempt_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Retrieval Attempt Id",
+          "type": "string"
+        },
+        "retrieval_batch_id": {
+          "pattern": "^retrieval_batch_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Retrieval Batch Id",
+          "type": "string"
+        },
+        "writer_role": {
+          "const": "retriever",
+          "title": "Writer Role",
+          "type": "string"
+        }
+      },
+      "required": [
+        "retrieval_attempt_id",
+        "retrieval_batch_id",
+        "attempted_locator",
+        "access_status",
+        "attempted_at",
+        "writer_role"
+      ],
+      "title": "RetrievalAttemptV1_2",
+      "type": "object"
+    },
+    "ScreeningSyncArtifactV1_2": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Artifact Hash",
+          "type": "string"
+        },
+        "artifact_id": {
+          "pattern": "^artifact_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "artifact_schema_version": {
+          "const": "v02_business_artifact_v1.2.0",
+          "title": "Artifact Schema Version",
+          "type": "string"
+        },
+        "artifact_type": {
+          "const": "screening.sync_record",
+          "title": "Artifact Type",
+          "type": "string"
+        },
+        "created_at": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?Z$",
+          "title": "Created At",
+          "type": "string"
+        },
+        "dag_node_id": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Dag Node Id",
+          "type": "string"
+        },
+        "payload": {
+          "$ref": "#/$defs/ScreeningSyncPayload"
+        },
+        "run_id": {
+          "pattern": "^run_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Run Id",
+          "type": "string"
+        },
+        "stage_id": {
+          "enum": [
+            "S01",
+            "S02"
+          ],
+          "title": "Stage Id",
+          "type": "string"
+        },
+        "upstream_artifact_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Upstream Artifact Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "artifact_schema_version",
+        "artifact_id",
+        "artifact_type",
+        "run_id",
+        "stage_id",
+        "dag_node_id",
+        "upstream_artifact_ids",
+        "created_at",
+        "artifact_hash",
+        "payload"
+      ],
+      "title": "ScreeningSyncArtifactV1_2",
+      "type": "object"
+    },
+    "ScreeningSyncPayload": {
+      "additionalProperties": false,
+      "properties": {
+        "claim_ids": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Claim Ids",
+          "type": "array"
+        },
+        "execution_authorized": {
+          "const": false,
+          "title": "Execution Authorized",
+          "type": "boolean"
+        },
+        "next_stage": {
+          "const": "S03",
+          "title": "Next Stage",
+          "type": "string"
+        },
+        "selected_report": {
+          "$ref": "#/$defs/ArtifactBinding"
+        },
+        "selected_report_kind": {
+          "enum": [
+            "machine",
+            "rebuilt"
+          ],
+          "title": "Selected Report Kind",
+          "type": "string"
+        },
+        "source_depth_terminal": {
+          "enum": [
+            "NO_DEPTH",
+            "IMPORTED"
+          ],
+          "title": "Source Depth Terminal",
+          "type": "string"
+        }
+      },
+      "required": [
+        "selected_report",
+        "selected_report_kind",
+        "claim_ids",
+        "source_depth_terminal",
+        "next_stage",
+        "execution_authorized"
+      ],
+      "title": "ScreeningSyncPayload",
+      "type": "object"
+    },
+    "SourceDepthDecisionArtifactV1_2": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Artifact Hash",
+          "type": "string"
+        },
+        "artifact_id": {
+          "pattern": "^artifact_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "artifact_schema_version": {
+          "const": "v02_business_artifact_v1.2.0",
+          "title": "Artifact Schema Version",
+          "type": "string"
+        },
+        "artifact_type": {
+          "const": "source_depth.decision",
+          "title": "Artifact Type",
+          "type": "string"
+        },
+        "created_at": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?Z$",
+          "title": "Created At",
+          "type": "string"
+        },
+        "dag_node_id": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Dag Node Id",
+          "type": "string"
+        },
+        "payload": {
+          "$ref": "#/$defs/SourceDepthDecisionPayload"
+        },
+        "run_id": {
+          "pattern": "^run_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Run Id",
+          "type": "string"
+        },
+        "stage_id": {
+          "enum": [
+            "S01",
+            "S02"
+          ],
+          "title": "Stage Id",
+          "type": "string"
+        },
+        "upstream_artifact_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Upstream Artifact Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "artifact_schema_version",
+        "artifact_id",
+        "artifact_type",
+        "run_id",
+        "stage_id",
+        "dag_node_id",
+        "upstream_artifact_ids",
+        "created_at",
+        "artifact_hash",
+        "payload"
+      ],
+      "title": "SourceDepthDecisionArtifactV1_2",
+      "type": "object"
+    },
+    "SourceDepthDecisionPayload": {
+      "additionalProperties": false,
+      "properties": {
+        "route": {
+          "enum": [
+            "no_depth",
+            "depth"
+          ],
+          "title": "Route",
+          "type": "string"
+        },
+        "targets": {
+          "items": {
+            "$ref": "#/$defs/SourceDepthTarget"
+          },
+          "title": "Targets",
+          "type": "array"
+        }
+      },
+      "required": [
+        "route",
+        "targets"
+      ],
+      "title": "SourceDepthDecisionPayload",
+      "type": "object"
+    },
+    "SourceDepthImportValidationArtifactV1_2": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Artifact Hash",
+          "type": "string"
+        },
+        "artifact_id": {
+          "pattern": "^artifact_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "artifact_schema_version": {
+          "const": "v02_business_artifact_v1.2.0",
+          "title": "Artifact Schema Version",
+          "type": "string"
+        },
+        "artifact_type": {
+          "const": "source_depth.import_validation",
+          "title": "Artifact Type",
+          "type": "string"
+        },
+        "created_at": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?Z$",
+          "title": "Created At",
+          "type": "string"
+        },
+        "dag_node_id": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Dag Node Id",
+          "type": "string"
+        },
+        "payload": {
+          "$ref": "#/$defs/SourceDepthImportValidationPayload"
+        },
+        "run_id": {
+          "pattern": "^run_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Run Id",
+          "type": "string"
+        },
+        "stage_id": {
+          "enum": [
+            "S01",
+            "S02"
+          ],
+          "title": "Stage Id",
+          "type": "string"
+        },
+        "upstream_artifact_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Upstream Artifact Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "artifact_schema_version",
+        "artifact_id",
+        "artifact_type",
+        "run_id",
+        "stage_id",
+        "dag_node_id",
+        "upstream_artifact_ids",
+        "created_at",
+        "artifact_hash",
+        "payload"
+      ],
+      "title": "SourceDepthImportValidationArtifactV1_2",
+      "type": "object"
+    },
+    "SourceDepthImportValidationPayload": {
+      "additionalProperties": false,
+      "properties": {
+        "conflicts": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Conflicts",
+          "type": "array"
+        },
+        "deduplicated_document_count": {
+          "minimum": 0,
+          "title": "Deduplicated Document Count",
+          "type": "integer"
+        },
+        "mapped_claim_ids": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Mapped Claim Ids",
+          "type": "array"
+        },
+        "rejected_count": {
+          "minimum": 0,
+          "title": "Rejected Count",
+          "type": "integer"
+        },
+        "source_depth_result_artifact_id": {
+          "pattern": "^artifact_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Source Depth Result Artifact Id",
+          "type": "string"
+        },
+        "sources": {
+          "items": {
+            "$ref": "#/$defs/ImportSourceRecord"
+          },
+          "minItems": 1,
+          "title": "Sources",
+          "type": "array"
+        }
+      },
+      "required": [
+        "source_depth_result_artifact_id",
+        "mapped_claim_ids",
+        "deduplicated_document_count",
+        "sources",
+        "conflicts",
+        "rejected_count"
+      ],
+      "title": "SourceDepthImportValidationPayload",
+      "type": "object"
+    },
+    "SourceDepthPromptArtifactV1_2": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Artifact Hash",
+          "type": "string"
+        },
+        "artifact_id": {
+          "pattern": "^artifact_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "artifact_schema_version": {
+          "const": "v02_business_artifact_v1.2.0",
+          "title": "Artifact Schema Version",
+          "type": "string"
+        },
+        "artifact_type": {
+          "const": "source_depth.prompt",
+          "title": "Artifact Type",
+          "type": "string"
+        },
+        "created_at": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?Z$",
+          "title": "Created At",
+          "type": "string"
+        },
+        "dag_node_id": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Dag Node Id",
+          "type": "string"
+        },
+        "payload": {
+          "$ref": "#/$defs/SourceDepthPromptPayload"
+        },
+        "run_id": {
+          "pattern": "^run_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Run Id",
+          "type": "string"
+        },
+        "stage_id": {
+          "enum": [
+            "S01",
+            "S02"
+          ],
+          "title": "Stage Id",
+          "type": "string"
+        },
+        "upstream_artifact_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Upstream Artifact Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "artifact_schema_version",
+        "artifact_id",
+        "artifact_type",
+        "run_id",
+        "stage_id",
+        "dag_node_id",
+        "upstream_artifact_ids",
+        "created_at",
+        "artifact_hash",
+        "payload"
+      ],
+      "title": "SourceDepthPromptArtifactV1_2",
+      "type": "object"
+    },
+    "SourceDepthPromptPayload": {
+      "additionalProperties": false,
+      "properties": {
+        "bounded_context": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Bounded Context",
+          "type": "array"
+        },
+        "current_evidence_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Current Evidence Ids",
+          "type": "array"
+        },
+        "require_canonical_urls": {
+          "const": true,
+          "title": "Require Canonical Urls",
+          "type": "boolean"
+        },
+        "return_contract_version": {
+          "const": "source_depth_manual_return_v1.0.0",
+          "title": "Return Contract Version",
+          "type": "string"
+        },
+        "source_depth_request_id": {
+          "pattern": "^source_depth_request_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Source Depth Request Id",
+          "type": "string"
+        },
+        "target_claims": {
+          "items": {
+            "$ref": "#/$defs/SourceDepthTarget"
+          },
+          "minItems": 1,
+          "title": "Target Claims",
+          "type": "array"
+        }
+      },
+      "required": [
+        "source_depth_request_id",
+        "target_claims",
+        "bounded_context",
+        "current_evidence_ids",
+        "return_contract_version",
+        "require_canonical_urls"
+      ],
+      "title": "SourceDepthPromptPayload",
+      "type": "object"
+    },
+    "SourceDepthResultArtifactV1_2": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Artifact Hash",
+          "type": "string"
+        },
+        "artifact_id": {
+          "pattern": "^artifact_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "artifact_schema_version": {
+          "const": "v02_business_artifact_v1.2.0",
+          "title": "Artifact Schema Version",
+          "type": "string"
+        },
+        "artifact_type": {
+          "const": "source_depth.result",
+          "title": "Artifact Type",
+          "type": "string"
+        },
+        "created_at": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?Z$",
+          "title": "Created At",
+          "type": "string"
+        },
+        "dag_node_id": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Dag Node Id",
+          "type": "string"
+        },
+        "payload": {
+          "$ref": "#/$defs/SourceDepthResultPayload"
+        },
+        "run_id": {
+          "pattern": "^run_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Run Id",
+          "type": "string"
+        },
+        "stage_id": {
+          "enum": [
+            "S01",
+            "S02"
+          ],
+          "title": "Stage Id",
+          "type": "string"
+        },
+        "upstream_artifact_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Upstream Artifact Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "artifact_schema_version",
+        "artifact_id",
+        "artifact_type",
+        "run_id",
+        "stage_id",
+        "dag_node_id",
+        "upstream_artifact_ids",
+        "created_at",
+        "artifact_hash",
+        "payload"
+      ],
+      "title": "SourceDepthResultArtifactV1_2",
+      "type": "object"
+    },
+    "SourceDepthResultPayload": {
+      "additionalProperties": false,
+      "properties": {
+        "capture_mode": {
+          "const": "manual_gemini_web",
+          "title": "Capture Mode",
+          "type": "string"
+        },
+        "prompt_artifact_id": {
+          "pattern": "^artifact_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Prompt Artifact Id",
+          "type": "string"
+        },
+        "raw_content": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "items": {},
+              "type": "array"
+            }
+          ],
+          "title": "Raw Content"
+        },
+        "raw_content_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Raw Content Hash",
+          "type": "string"
+        },
+        "received_at": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?Z$",
+          "title": "Received At",
+          "type": "string"
+        },
+        "source_depth_request_id": {
+          "pattern": "^source_depth_request_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Source Depth Request Id",
+          "type": "string"
+        },
+        "source_file": {
+          "$ref": "#/$defs/FileBinding"
+        },
+        "visible_model": {
+          "$ref": "#/$defs/VisibleModelIdentity"
+        }
+      },
+      "required": [
+        "capture_mode",
+        "source_depth_request_id",
+        "prompt_artifact_id",
+        "source_file",
+        "visible_model",
+        "received_at",
+        "raw_content_hash",
+        "raw_content"
+      ],
+      "title": "SourceDepthResultPayload",
+      "type": "object"
+    },
+    "SourceDepthTarget": {
+      "additionalProperties": false,
+      "properties": {
+        "claim_id": {
+          "pattern": "^claim_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Claim Id",
+          "type": "string"
+        },
+        "gap": {
+          "maxLength": 2000,
+          "minLength": 1,
+          "title": "Gap",
+          "type": "string"
+        },
+        "preferred_source_types": {
+          "items": {
+            "enum": [
+              "official",
+              "primary_report",
+              "paper",
+              "database"
+            ],
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Preferred Source Types",
+          "type": "array"
+        }
+      },
+      "required": [
+        "claim_id",
+        "gap",
+        "preferred_source_types"
+      ],
+      "title": "SourceDepthTarget",
+      "type": "object"
+    },
+    "SplitSetMemberV1_2": {
+      "additionalProperties": false,
+      "properties": {
+        "atomic_revision_id": {
+          "pattern": "^atomic_claim_revision_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Atomic Revision Id",
+          "type": "string"
+        },
+        "member_id": {
+          "pattern": "^split_member_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Member Id",
+          "type": "string"
+        },
+        "ordinal": {
+          "minimum": 0,
+          "title": "Ordinal",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "member_id",
+        "atomic_revision_id",
+        "ordinal"
+      ],
+      "title": "SplitSetMemberV1_2",
+      "type": "object"
+    },
+    "TimeLocator": {
+      "additionalProperties": false,
+      "properties": {
+        "end_ms": {
+          "exclusiveMinimum": 0,
+          "title": "End Ms",
+          "type": "integer"
+        },
+        "start_ms": {
+          "minimum": 0,
+          "title": "Start Ms",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "start_ms",
+        "end_ms"
+      ],
+      "title": "TimeLocator",
+      "type": "object"
+    },
+    "TranscriptAlignmentArtifactV1_2": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Artifact Hash",
+          "type": "string"
+        },
+        "artifact_id": {
+          "pattern": "^artifact_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "artifact_schema_version": {
+          "const": "v02_business_artifact_v1.2.0",
+          "title": "Artifact Schema Version",
+          "type": "string"
+        },
+        "artifact_type": {
+          "const": "transcript.alignment",
+          "title": "Artifact Type",
+          "type": "string"
+        },
+        "created_at": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?Z$",
+          "title": "Created At",
+          "type": "string"
+        },
+        "dag_node_id": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Dag Node Id",
+          "type": "string"
+        },
+        "payload": {
+          "$ref": "#/$defs/TranscriptAlignmentPayload"
+        },
+        "run_id": {
+          "pattern": "^run_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Run Id",
+          "type": "string"
+        },
+        "stage_id": {
+          "enum": [
+            "S01",
+            "S02"
+          ],
+          "title": "Stage Id",
+          "type": "string"
+        },
+        "upstream_artifact_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Upstream Artifact Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "artifact_schema_version",
+        "artifact_id",
+        "artifact_type",
+        "run_id",
+        "stage_id",
+        "dag_node_id",
+        "upstream_artifact_ids",
+        "created_at",
+        "artifact_hash",
+        "payload"
+      ],
+      "title": "TranscriptAlignmentArtifactV1_2",
+      "type": "object"
+    },
+    "TranscriptAlignmentPayload": {
+      "additionalProperties": false,
+      "properties": {
+        "alignments": {
+          "items": {
+            "$ref": "#/$defs/AlignmentEntry"
+          },
+          "minItems": 1,
+          "title": "Alignments",
+          "type": "array"
+        },
+        "complete": {
+          "const": true,
+          "title": "Complete",
+          "type": "boolean"
+        },
+        "normalized_transcript_artifact_id": {
+          "pattern": "^artifact_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Normalized Transcript Artifact Id",
+          "type": "string"
+        },
+        "ocr_gate_decision_artifact_id": {
+          "pattern": "^artifact_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Ocr Gate Decision Artifact Id",
+          "type": "string"
+        },
+        "ocr_result_artifact_id": {
+          "anyOf": [
+            {
+              "pattern": "^artifact_[0-9a-hjkmnp-tv-z]{26}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ocr Result Artifact Id"
+        },
+        "raw_transcript_artifact_id": {
+          "pattern": "^artifact_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Raw Transcript Artifact Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "raw_transcript_artifact_id",
+        "normalized_transcript_artifact_id",
+        "ocr_gate_decision_artifact_id",
+        "complete",
+        "alignments"
+      ],
+      "title": "TranscriptAlignmentPayload",
+      "type": "object"
+    },
+    "TranscriptNormalizedArtifactV1_2": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Artifact Hash",
+          "type": "string"
+        },
+        "artifact_id": {
+          "pattern": "^artifact_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "artifact_schema_version": {
+          "const": "v02_business_artifact_v1.2.0",
+          "title": "Artifact Schema Version",
+          "type": "string"
+        },
+        "artifact_type": {
+          "const": "transcript.normalized",
+          "title": "Artifact Type",
+          "type": "string"
+        },
+        "created_at": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?Z$",
+          "title": "Created At",
+          "type": "string"
+        },
+        "dag_node_id": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Dag Node Id",
+          "type": "string"
+        },
+        "payload": {
+          "$ref": "#/$defs/TranscriptNormalizedPayload"
+        },
+        "run_id": {
+          "pattern": "^run_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Run Id",
+          "type": "string"
+        },
+        "stage_id": {
+          "enum": [
+            "S01",
+            "S02"
+          ],
+          "title": "Stage Id",
+          "type": "string"
+        },
+        "upstream_artifact_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Upstream Artifact Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "artifact_schema_version",
+        "artifact_id",
+        "artifact_type",
+        "run_id",
+        "stage_id",
+        "dag_node_id",
+        "upstream_artifact_ids",
+        "created_at",
+        "artifact_hash",
+        "payload"
+      ],
+      "title": "TranscriptNormalizedArtifactV1_2",
+      "type": "object"
+    },
+    "TranscriptNormalizedPayload": {
+      "additionalProperties": false,
+      "properties": {
+        "preserves_raw": {
+          "const": true,
+          "title": "Preserves Raw",
+          "type": "boolean"
+        },
+        "raw_transcript_artifact_id": {
+          "pattern": "^artifact_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Raw Transcript Artifact Id",
+          "type": "string"
+        },
+        "segments": {
+          "items": {
+            "$ref": "#/$defs/NormalizedSegment"
+          },
+          "minItems": 1,
+          "title": "Segments",
+          "type": "array"
+        }
+      },
+      "required": [
+        "raw_transcript_artifact_id",
+        "preserves_raw",
+        "segments"
+      ],
+      "title": "TranscriptNormalizedPayload",
+      "type": "object"
+    },
+    "TranscriptPathDecisionArtifactV1_2": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Artifact Hash",
+          "type": "string"
+        },
+        "artifact_id": {
+          "pattern": "^artifact_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "artifact_schema_version": {
+          "const": "v02_business_artifact_v1.2.0",
+          "title": "Artifact Schema Version",
+          "type": "string"
+        },
+        "artifact_type": {
+          "const": "transcript.path_decision",
+          "title": "Artifact Type",
+          "type": "string"
+        },
+        "created_at": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?Z$",
+          "title": "Created At",
+          "type": "string"
+        },
+        "dag_node_id": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Dag Node Id",
+          "type": "string"
+        },
+        "payload": {
+          "$ref": "#/$defs/TranscriptPathDecisionPayload"
+        },
+        "run_id": {
+          "pattern": "^run_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Run Id",
+          "type": "string"
+        },
+        "stage_id": {
+          "enum": [
+            "S01",
+            "S02"
+          ],
+          "title": "Stage Id",
+          "type": "string"
+        },
+        "upstream_artifact_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Upstream Artifact Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "artifact_schema_version",
+        "artifact_id",
+        "artifact_type",
+        "run_id",
+        "stage_id",
+        "dag_node_id",
+        "upstream_artifact_ids",
+        "created_at",
+        "artifact_hash",
+        "payload"
+      ],
+      "title": "TranscriptPathDecisionArtifactV1_2",
+      "type": "object"
+    },
+    "TranscriptPathDecisionPayload": {
+      "additionalProperties": false,
+      "properties": {
+        "media_artifact_id": {
+          "pattern": "^artifact_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Media Artifact Id",
+          "type": "string"
+        },
+        "parent_media_validation": {
+          "$ref": "#/$defs/ArtifactBinding"
+        },
+        "selected_path": {
+          "const": "audio_asr",
+          "title": "Selected Path",
+          "type": "string"
+        },
+        "subtitle_status": {
+          "enum": [
+            "not_registered",
+            "not_authorized"
+          ],
+          "title": "Subtitle Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "selected_path",
+        "subtitle_status",
+        "parent_media_validation",
+        "media_artifact_id"
+      ],
+      "title": "TranscriptPathDecisionPayload",
+      "type": "object"
+    },
+    "TranscriptRawArtifactV1_2": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Artifact Hash",
+          "type": "string"
+        },
+        "artifact_id": {
+          "pattern": "^artifact_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "artifact_schema_version": {
+          "const": "v02_business_artifact_v1.2.0",
+          "title": "Artifact Schema Version",
+          "type": "string"
+        },
+        "artifact_type": {
+          "const": "transcript.raw",
+          "title": "Artifact Type",
+          "type": "string"
+        },
+        "created_at": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?Z$",
+          "title": "Created At",
+          "type": "string"
+        },
+        "dag_node_id": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Dag Node Id",
+          "type": "string"
+        },
+        "payload": {
+          "$ref": "#/$defs/TranscriptRawPayload"
+        },
+        "run_id": {
+          "pattern": "^run_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Run Id",
+          "type": "string"
+        },
+        "stage_id": {
+          "enum": [
+            "S01",
+            "S02"
+          ],
+          "title": "Stage Id",
+          "type": "string"
+        },
+        "upstream_artifact_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Upstream Artifact Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "artifact_schema_version",
+        "artifact_id",
+        "artifact_type",
+        "run_id",
+        "stage_id",
+        "dag_node_id",
+        "upstream_artifact_ids",
+        "created_at",
+        "artifact_hash",
+        "payload"
+      ],
+      "title": "TranscriptRawArtifactV1_2",
+      "type": "object"
+    },
+    "TranscriptRawPayload": {
+      "additionalProperties": false,
+      "properties": {
+        "asr_engine": {
+          "const": "faster-whisper",
+          "title": "Asr Engine",
+          "type": "string"
+        },
+        "asr_engine_version": {
+          "maxLength": 80,
+          "minLength": 1,
+          "title": "Asr Engine Version",
+          "type": "string"
+        },
+        "asr_model": {
+          "const": "large-v3",
+          "title": "Asr Model",
+          "type": "string"
+        },
+        "asr_model_revision": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Asr Model Revision",
+          "type": "string"
+        },
+        "asr_parameters_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Asr Parameters Hash",
+          "type": "string"
+        },
+        "language": {
+          "const": "zh",
+          "title": "Language",
+          "type": "string"
+        },
+        "parent_audio_artifact_id": {
+          "pattern": "^artifact_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Parent Audio Artifact Id",
+          "type": "string"
+        },
+        "segments": {
+          "items": {
+            "$ref": "#/$defs/TranscriptSegment"
+          },
+          "minItems": 1,
+          "title": "Segments",
+          "type": "array"
+        }
+      },
+      "required": [
+        "parent_audio_artifact_id",
+        "asr_engine",
+        "asr_engine_version",
+        "asr_model",
+        "asr_model_revision",
+        "asr_parameters_hash",
+        "language",
+        "segments"
+      ],
+      "title": "TranscriptRawPayload",
+      "type": "object"
+    },
+    "TranscriptSegment": {
+      "additionalProperties": false,
+      "properties": {
+        "locator": {
+          "$ref": "#/$defs/TimeLocator"
+        },
+        "segment_id": {
+          "pattern": "^segment_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Segment Id",
+          "type": "string"
+        },
+        "text": {
+          "maxLength": 20000,
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        },
+        "uncertainty": {
+          "enum": [
+            "low",
+            "medium",
+            "high",
+            "unavailable"
+          ],
+          "title": "Uncertainty",
+          "type": "string"
+        },
+        "words": {
+          "items": {
+            "$ref": "#/$defs/WordTimestamp"
+          },
+          "title": "Words",
+          "type": "array"
+        }
+      },
+      "required": [
+        "segment_id",
+        "locator",
+        "text",
+        "words",
+        "uncertainty"
+      ],
+      "title": "TranscriptSegment",
+      "type": "object"
+    },
+    "VerdictCollectionArtifactV1_2": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Artifact Hash",
+          "type": "string"
+        },
+        "artifact_id": {
+          "pattern": "^artifact_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "artifact_schema_version": {
+          "const": "v02_business_artifact_v1.2.0",
+          "title": "Artifact Schema Version",
+          "type": "string"
+        },
+        "artifact_type": {
+          "const": "verdict.collection",
+          "title": "Artifact Type",
+          "type": "string"
+        },
+        "created_at": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?Z$",
+          "title": "Created At",
+          "type": "string"
+        },
+        "dag_node_id": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Dag Node Id",
+          "type": "string"
+        },
+        "payload": {
+          "$ref": "#/$defs/VerdictCollectionPayloadV1_2"
+        },
+        "run_id": {
+          "pattern": "^run_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Run Id",
+          "type": "string"
+        },
+        "stage_id": {
+          "enum": [
+            "S01",
+            "S02"
+          ],
+          "title": "Stage Id",
+          "type": "string"
+        },
+        "upstream_artifact_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Upstream Artifact Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "artifact_schema_version",
+        "artifact_id",
+        "artifact_type",
+        "run_id",
+        "stage_id",
+        "dag_node_id",
+        "upstream_artifact_ids",
+        "created_at",
+        "artifact_hash",
+        "payload"
+      ],
+      "title": "VerdictCollectionArtifactV1_2",
+      "type": "object"
+    },
+    "VerdictCollectionPayloadV1_2": {
+      "additionalProperties": false,
+      "properties": {
+        "atomic_claim_collection_artifact_id": {
+          "pattern": "^artifact_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Atomic Claim Collection Artifact Id",
+          "type": "string"
+        },
+        "evidence_collection_artifact_id": {
+          "pattern": "^artifact_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Evidence Collection Artifact Id",
+          "type": "string"
+        },
+        "inclusion_recommendations": {
+          "items": {
+            "$ref": "#/$defs/MachineInclusionRecommendationV1_2"
+          },
+          "title": "Inclusion Recommendations",
+          "type": "array"
+        },
+        "machine_assessments": {
+          "items": {
+            "$ref": "#/$defs/MachineClaimAssessmentV1_2"
+          },
+          "title": "Machine Assessments",
+          "type": "array"
+        }
+      },
+      "required": [
+        "atomic_claim_collection_artifact_id",
+        "evidence_collection_artifact_id",
+        "machine_assessments",
+        "inclusion_recommendations"
+      ],
+      "title": "VerdictCollectionPayloadV1_2",
+      "type": "object"
+    },
+    "VerdictEntityIndexArtifactV1_2": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Artifact Hash",
+          "type": "string"
+        },
+        "artifact_id": {
+          "pattern": "^artifact_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "artifact_schema_version": {
+          "const": "v02_business_artifact_v1.2.0",
+          "title": "Artifact Schema Version",
+          "type": "string"
+        },
+        "artifact_type": {
+          "const": "verdict.entity_index",
+          "title": "Artifact Type",
+          "type": "string"
+        },
+        "created_at": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?Z$",
+          "title": "Created At",
+          "type": "string"
+        },
+        "dag_node_id": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Dag Node Id",
+          "type": "string"
+        },
+        "payload": {
+          "$ref": "#/$defs/VerdictEntityIndexPayload"
+        },
+        "run_id": {
+          "pattern": "^run_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Run Id",
+          "type": "string"
+        },
+        "stage_id": {
+          "enum": [
+            "S01",
+            "S02"
+          ],
+          "title": "Stage Id",
+          "type": "string"
+        },
+        "upstream_artifact_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Upstream Artifact Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "artifact_schema_version",
+        "artifact_id",
+        "artifact_type",
+        "run_id",
+        "stage_id",
+        "dag_node_id",
+        "upstream_artifact_ids",
+        "created_at",
+        "artifact_hash",
+        "payload"
+      ],
+      "title": "VerdictEntityIndexArtifactV1_2",
+      "type": "object"
+    },
+    "VerdictEntityIndexPayload": {
+      "additionalProperties": false,
+      "properties": {
+        "claim_collection_artifact_id": {
+          "pattern": "^artifact_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Claim Collection Artifact Id",
+          "type": "string"
+        },
+        "container": {
+          "$ref": "#/$defs/ArtifactBinding"
+        },
+        "entries": {
+          "items": {
+            "$ref": "#/$defs/EntityIndexEntry"
+          },
+          "minItems": 1,
+          "title": "Entries",
+          "type": "array"
+        },
+        "evidence_collection_artifact_id": {
+          "pattern": "^artifact_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Evidence Collection Artifact Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "container",
+        "claim_collection_artifact_id",
+        "evidence_collection_artifact_id",
+        "entries"
+      ],
+      "title": "VerdictEntityIndexPayload",
+      "type": "object"
+    },
+    "VerdictItem": {
+      "additionalProperties": false,
+      "properties": {
+        "candidate_verdict": {
+          "enum": [
+            "supported",
+            "refuted",
+            "mixed",
+            "insufficient",
+            "unverifiable"
+          ],
+          "title": "Candidate Verdict",
+          "type": "string"
+        },
+        "claim_id": {
+          "pattern": "^claim_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Claim Id",
+          "type": "string"
+        },
+        "evidence_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Evidence Ids",
+          "type": "array"
+        },
+        "reason": {
+          "maxLength": 10000,
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        },
+        "review_status": {
+          "const": "machine_pending",
+          "title": "Review Status",
+          "type": "string"
+        },
+        "uncertainty": {
+          "enum": [
+            "low",
+            "medium",
+            "high"
+          ],
+          "title": "Uncertainty",
+          "type": "string"
+        },
+        "verdict_id": {
+          "pattern": "^verdict_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Verdict Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "verdict_id",
+        "claim_id",
+        "evidence_ids",
+        "candidate_verdict",
+        "reason",
+        "uncertainty",
+        "review_status"
+      ],
+      "title": "VerdictItem",
+      "type": "object"
+    },
+    "VerdictRebuiltCollectionArtifactV1_2": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Artifact Hash",
+          "type": "string"
+        },
+        "artifact_id": {
+          "pattern": "^artifact_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "artifact_schema_version": {
+          "const": "v02_business_artifact_v1.2.0",
+          "title": "Artifact Schema Version",
+          "type": "string"
+        },
+        "artifact_type": {
+          "const": "verdict.rebuilt_collection",
+          "title": "Artifact Type",
+          "type": "string"
+        },
+        "created_at": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?Z$",
+          "title": "Created At",
+          "type": "string"
+        },
+        "dag_node_id": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Dag Node Id",
+          "type": "string"
+        },
+        "payload": {
+          "$ref": "#/$defs/VerdictRebuiltCollectionPayload"
+        },
+        "run_id": {
+          "pattern": "^run_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Run Id",
+          "type": "string"
+        },
+        "stage_id": {
+          "enum": [
+            "S01",
+            "S02"
+          ],
+          "title": "Stage Id",
+          "type": "string"
+        },
+        "upstream_artifact_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Upstream Artifact Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "artifact_schema_version",
+        "artifact_id",
+        "artifact_type",
+        "run_id",
+        "stage_id",
+        "dag_node_id",
+        "upstream_artifact_ids",
+        "created_at",
+        "artifact_hash",
+        "payload"
+      ],
+      "title": "VerdictRebuiltCollectionArtifactV1_2",
+      "type": "object"
+    },
+    "VerdictRebuiltCollectionPayload": {
+      "additionalProperties": false,
+      "properties": {
+        "base_verdict": {
+          "$ref": "#/$defs/ArtifactBinding"
+        },
+        "before_after_summary": {
+          "maxLength": 5000,
+          "minLength": 1,
+          "title": "Before After Summary",
+          "type": "string"
+        },
+        "merged_evidence_artifact_id": {
+          "pattern": "^artifact_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Merged Evidence Artifact Id",
+          "type": "string"
+        },
+        "verdicts": {
+          "items": {
+            "$ref": "#/$defs/VerdictItem"
+          },
+          "minItems": 1,
+          "title": "Verdicts",
+          "type": "array"
+        }
+      },
+      "required": [
+        "base_verdict",
+        "merged_evidence_artifact_id",
+        "verdicts",
+        "before_after_summary"
+      ],
+      "title": "VerdictRebuiltCollectionPayload",
+      "type": "object"
+    },
+    "VisibleModelIdentity": {
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "enum": [
+            "ui_label",
+            "not_exposed"
+          ],
+          "title": "Source",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "reported",
+            "unavailable"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "maxLength": 160,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Value"
+        }
+      },
+      "required": [
+        "status",
+        "source"
+      ],
+      "title": "VisibleModelIdentity",
+      "type": "object"
+    },
+    "WarehouseExportBatchArtifactV1_2": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Artifact Hash",
+          "type": "string"
+        },
+        "artifact_id": {
+          "pattern": "^artifact_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "artifact_schema_version": {
+          "const": "v02_business_artifact_v1.2.0",
+          "title": "Artifact Schema Version",
+          "type": "string"
+        },
+        "artifact_type": {
+          "const": "warehouse.export_batch",
+          "title": "Artifact Type",
+          "type": "string"
+        },
+        "created_at": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?Z$",
+          "title": "Created At",
+          "type": "string"
+        },
+        "dag_node_id": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Dag Node Id",
+          "type": "string"
+        },
+        "payload": {
+          "$ref": "#/$defs/WarehouseExportBatchPayloadV1_2"
+        },
+        "run_id": {
+          "pattern": "^run_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Run Id",
+          "type": "string"
+        },
+        "stage_id": {
+          "enum": [
+            "S01",
+            "S02"
+          ],
+          "title": "Stage Id",
+          "type": "string"
+        },
+        "upstream_artifact_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Upstream Artifact Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "artifact_schema_version",
+        "artifact_id",
+        "artifact_type",
+        "run_id",
+        "stage_id",
+        "dag_node_id",
+        "upstream_artifact_ids",
+        "created_at",
+        "artifact_hash",
+        "payload"
+      ],
+      "title": "WarehouseExportBatchArtifactV1_2",
+      "type": "object"
+    },
+    "WarehouseExportBatchPayloadV1_2": {
+      "additionalProperties": false,
+      "properties": {
+        "export_id": {
+          "pattern": "^export_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Export Id",
+          "type": "string"
+        },
+        "exporter_versions": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "minProperties": 1,
+          "title": "Exporter Versions",
+          "type": "object"
+        },
+        "logical_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Logical Hash",
+          "type": "string"
+        },
+        "manifest_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Manifest Hash",
+          "type": "string"
+        },
+        "manifest_relative_path": {
+          "maxLength": 512,
+          "minLength": 1,
+          "title": "Manifest Relative Path",
+          "type": "string"
+        },
+        "projection_status": {
+          "const": "pending",
+          "title": "Projection Status",
+          "type": "string"
+        },
+        "row_count": {
+          "minimum": 1,
+          "title": "Row Count",
+          "type": "integer"
+        },
+        "row_counts": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "minProperties": 1,
+          "title": "Row Counts",
+          "type": "object"
+        },
+        "rows_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Rows Hash",
+          "type": "string"
+        },
+        "rows_relative_path": {
+          "maxLength": 512,
+          "minLength": 1,
+          "title": "Rows Relative Path",
+          "type": "string"
+        },
+        "run_id": {
+          "pattern": "^run_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Run Id",
+          "type": "string"
+        },
+        "schema_versions": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "minProperties": 1,
+          "title": "Schema Versions",
+          "type": "object"
+        },
+        "storage_root_ref": {
+          "const": "ubuntu_v02_claim_warehouse",
+          "title": "Storage Root Ref",
+          "type": "string"
+        },
+        "taxonomy_versions": {
+          "additionalProperties": {
+            "const": "truthfulness_taxonomy_v02.1.0",
+            "type": "string"
+          },
+          "maxProperties": 1,
+          "minProperties": 1,
+          "propertyNames": {
+            "const": "label_taxonomy_version"
+          },
+          "title": "Taxonomy Versions",
+          "type": "object"
+        }
+      },
+      "required": [
+        "export_id",
+        "run_id",
+        "storage_root_ref",
+        "manifest_relative_path",
+        "manifest_hash",
+        "rows_relative_path",
+        "rows_hash",
+        "logical_hash",
+        "row_count",
+        "row_counts",
+        "schema_versions",
+        "taxonomy_versions",
+        "exporter_versions",
+        "projection_status"
+      ],
+      "title": "WarehouseExportBatchPayloadV1_2",
+      "type": "object"
+    },
+    "WordTimestamp": {
+      "additionalProperties": false,
+      "properties": {
+        "end_ms": {
+          "exclusiveMinimum": 0,
+          "title": "End Ms",
+          "type": "integer"
+        },
+        "probability": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Probability"
+        },
+        "start_ms": {
+          "minimum": 0,
+          "title": "Start Ms",
+          "type": "integer"
+        },
+        "word": {
+          "maxLength": 240,
+          "minLength": 1,
+          "title": "Word",
+          "type": "string"
+        }
+      },
+      "required": [
+        "word",
+        "start_ms",
+        "end_ms"
+      ],
+      "title": "WordTimestamp",
+      "type": "object"
+    }
+  },
+  "$id": "urn:video-truthfulness:schema:v02-business-artifact:v1.2",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "anyOf": [
+    {
+      "$ref": "#/$defs/AcquisitionDecisionArtifactV1_2"
+    },
+    {
+      "$ref": "#/$defs/TranscriptPathDecisionArtifactV1_2"
+    },
+    {
+      "$ref": "#/$defs/MediaAudioArtifactV1_2"
+    },
+    {
+      "$ref": "#/$defs/TranscriptRawArtifactV1_2"
+    },
+    {
+      "$ref": "#/$defs/TranscriptNormalizedArtifactV1_2"
+    },
+    {
+      "$ref": "#/$defs/TranscriptAlignmentArtifactV1_2"
+    },
+    {
+      "$ref": "#/$defs/OcrGateDecisionArtifactV1_2"
+    },
+    {
+      "$ref": "#/$defs/OcrResultArtifactV1_2"
+    },
+    {
+      "$ref": "#/$defs/ClaimCollectionArtifactV1_2"
+    },
+    {
+      "$ref": "#/$defs/AtomicClaimCollectionArtifactV1_2"
+    },
+    {
+      "$ref": "#/$defs/ClaimEntityIndexArtifactV1_2"
+    },
+    {
+      "$ref": "#/$defs/EvidenceEntityIndexArtifactV1_2"
+    },
+    {
+      "$ref": "#/$defs/VerdictEntityIndexArtifactV1_2"
+    },
+    {
+      "$ref": "#/$defs/EvidenceCollectionArtifactV1_2"
+    },
+    {
+      "$ref": "#/$defs/VerdictCollectionArtifactV1_2"
+    },
+    {
+      "$ref": "#/$defs/MachineReportArtifactV1_2"
+    },
+    {
+      "$ref": "#/$defs/SourceDepthDecisionArtifactV1_2"
+    },
+    {
+      "$ref": "#/$defs/SourceDepthPromptArtifactV1_2"
+    },
+    {
+      "$ref": "#/$defs/SourceDepthResultArtifactV1_2"
+    },
+    {
+      "$ref": "#/$defs/SourceDepthImportValidationArtifactV1_2"
+    },
+    {
+      "$ref": "#/$defs/EvidenceMergedCollectionArtifactV1_2"
+    },
+    {
+      "$ref": "#/$defs/VerdictRebuiltCollectionArtifactV1_2"
+    },
+    {
+      "$ref": "#/$defs/RebuiltReportArtifactV1_2"
+    },
+    {
+      "$ref": "#/$defs/ScreeningSyncArtifactV1_2"
+    },
+    {
+      "$ref": "#/$defs/WarehouseExportBatchArtifactV1_2"
+    }
+  ],
+  "title": "Video Truthfulness V02 Business Artifact v1.2"
+}

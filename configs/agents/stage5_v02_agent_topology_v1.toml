@@ -1,0 +1,152 @@
+topology_version = "stage5_v02_agent_topology_v1.0.0"
+project_version = "v0.2"
+storage_version = "V02"
+release_id = "truthfulness_v0.2_youtube_video"
+dag_version = "youtube_truthfulness_dag_v1.2.0"
+covered_stages = ["S01", "S02"]
+execution_order = "serial_explicit_node"
+helper_max_concurrency = 1
+automatic_next_node = false
+automatic_dag_traversal = false
+repository_single_writer = "coordinator"
+telemetry_single_writer = "coordinator"
+
+[coordinator]
+actor_role = "codex_coordinator"
+agent_profile_version = "stage5_v02_coordinator_agent_v1.0.0"
+requested_provider = "openai"
+requested_model_name = "gpt-5.6-sol"
+requested_reasoning = "xhigh"
+invocation_surface = "codex_runtime"
+instrumentation_mode = "host_receipt"
+recording_mode = "retrospective_host_receipt"
+direct_read_policy = "stage5_execution_plan_exact_paths_only"
+tool_policy = "current_node_plan_and_granted_gate_only"
+network_policy = "current_node_plan_and_granted_gate_only"
+business_write_policy = "sole_writer"
+registry_write_policy = "sole_writer"
+event_write_policy = "sole_writer"
+observation_write_policy = "sole_writer"
+telemetry_write_policy = "sole_writer"
+execution_unit = "one_explicit_node"
+
+[helpers.transcript_claim_helper]
+actor_role = "transcript_claim_helper"
+agent_profile_version = "transcript_claim_helper_agent_v1.0.0"
+prompt_path = "configs/prompts/v02/transcript_claim_helper_v1.md"
+requested_provider = "openai"
+requested_model_name = "gpt-5.6-terra"
+requested_reasoning = "high"
+invocation_surface = "codex_runtime"
+instrumentation_mode = "host_receipt"
+recording_mode = "retrospective_host_receipt"
+direct_file_reads = 0
+repository_writes = 0
+shell_allowed = false
+browser_allowed = false
+network_allowed = false
+subagents_allowed = false
+core_window_seconds = 300
+context_before_seconds_max = 15
+context_after_seconds_max = 15
+max_calls_per_window = 1
+output_authority = "candidate_only"
+
+[helpers.evidence_lead_helper]
+actor_role = "evidence_lead_helper"
+agent_profile_version = "evidence_lead_helper_agent_v1.0.0"
+prompt_path = "configs/prompts/v02/evidence_lead_helper_v1.md"
+requested_provider = "openai"
+requested_model_name = "gpt-5.6-terra"
+requested_reasoning = "high"
+invocation_surface = "codex_runtime"
+instrumentation_mode = "host_receipt"
+recording_mode = "retrospective_host_receipt"
+direct_file_reads = 0
+repository_writes = 0
+shell_allowed = false
+subagents_allowed = false
+network_gate = "G1B"
+public_web_only = true
+cookies_allowed = false
+accounts_allowed = false
+credentials_allowed = false
+max_queries_per_claim = 3
+max_candidates_per_claim = 2
+max_queries_per_run = 60
+max_opens_per_run = 120
+cross_claim_expansion_allowed = false
+output_authority = "lead_only"
+
+[helpers.contract_auditor]
+actor_role = "contract_auditor"
+agent_profile_version = "contract_auditor_agent_v1.0.0"
+prompt_path = "configs/prompts/v02/contract_auditor_v1.md"
+requested_provider = "openai"
+requested_model_name = "gpt-5.6-terra"
+requested_reasoning = "high"
+invocation_surface = "codex_runtime"
+instrumentation_mode = "host_receipt"
+recording_mode = "retrospective_host_receipt"
+direct_read_policy = "plan_exact_contract_metadata_paths_only"
+repository_writes = 0
+shell_allowed = false
+browser_allowed = false
+network_allowed = false
+media_payload_allowed = false
+audio_payload_allowed = false
+full_transcript_allowed = false
+full_log_allowed = false
+chat_history_allowed = false
+max_calls_per_explicit_node = 1
+output_authority = "audit_result_only"
+
+[adapters.asr]
+actor_role = "asr_adapter"
+engine = "faster-whisper"
+requested_model_name = "large-v3"
+invocation_surface = "local_runtime"
+instrumentation_mode = "project_hook"
+recording_mode = "synchronous"
+runtime_download_allowed = false
+repository_writes = 0
+max_calls_per_complete_audio = 1
+token_status = "not_applicable"
+
+[adapters.ocr]
+actor_role = "ocr_adapter"
+requested_model_resolution = "exact_execution_plan_local_manifest"
+invocation_surface = "local_runtime"
+instrumentation_mode = "project_hook"
+recording_mode = "synchronous"
+runtime_download_allowed = false
+repository_writes = 0
+call_only_when_gate_state = "EXECUTED"
+max_frames_per_run = 24
+max_frames_per_trigger = 3
+token_status = "not_applicable"
+
+[external.gemini_web]
+actor_role = "gemini_web_user"
+operator = "user"
+interface = "browser_ui"
+codex_controlled = false
+cli_assumed = false
+api_assumed = false
+desktop_app_assumed = false
+polling_allowed = false
+timer_allowed = false
+automatic_timeout_allowed = false
+requested_model_resolution = "frozen_s02a_prompt_handoff"
+instrumentation_mode = "external_ui"
+recording_mode = "retrospective_manual_receipt"
+observed_model_source = "ui_label_or_not_exposed"
+token_default_status = "unavailable"
+
+[global_invariants]
+requested_is_observed = false
+helper_output_requires_coordinator_validation = true
+helper_output_can_publish_business_artifact = false
+helper_output_can_write_registry = false
+missing_host_receipt_status = "unavailable"
+zero_means_authoritative_zero_only = true

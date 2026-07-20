@@ -32,7 +32,7 @@ def _record(number: int, artifact_type: str, node_id: str, *, upstream: list[str
         size_bytes=number,
         content_hash=f"{number:064x}",
         producer_type="workflow",
-        schema_versions=["artifact_record_v1.0.0"],
+        schema_versions=["artifact_record_v1.1.0"],
         tool_versions={"synthetic": "1"},
         upstream_artifact_ids=upstream or [],
         authority_level="machine_derived",
@@ -72,6 +72,7 @@ def test_sqlite_is_rebuildable_and_cannot_write_back_to_jsonl() -> None:
         baseline_query = query_artifact(index_path, media.artifact_id)
         assert baseline_query is not None
         assert baseline_query["content_hash"] == media.content_hash
+        assert baseline_query["storage_root_ref"] == "repository"
 
         connection = sqlite3.connect(index_path)
         try:

@@ -1,0 +1,163 @@
+version = "model_telemetry_v1.0.0"
+hook_version = "model_telemetry_hook_v1.0.0"
+event_schema_version = "model_call_event_v1.0.0"
+summary_schema_version = "model_usage_summary_v1.0.0"
+covered_stages = ["S01", "S02"]
+ledger_filename = "model_calls.jsonl"
+summary_filename = "model_usage_summary.json"
+scope = "one_session"
+historical_backfill = false
+global_shared_ledger = false
+writer_id = "codex_coordinator"
+single_writer = true
+append_only = true
+canonical_jsonl = true
+hash_chain = true
+create_summary_after_close = true
+summary_no_clobber = true
+
+[lifecycle]
+event_types = ["model_call.started", "model_call.finished", "model_ledger.closed"]
+start_before_interceptable_call = true
+one_finish_per_start = true
+close_requires_unmatched_count_zero = true
+append_after_close = false
+duplicate_finish = false
+writer_head_conflict = "fail_closed"
+start_write_failure = "do_not_invoke"
+finish_write_failure = "do_not_publish_derived_artifact"
+
+[identity]
+requested_fields = ["name", "revision", "reasoning"]
+requested_model_required = true
+observed_fields = ["value", "status", "source", "match_status"]
+observed_statuses = ["reported", "unavailable"]
+observed_sources = ["provider_response", "runtime_metadata", "ui_label", "local_manifest", "not_exposed"]
+match_statuses = ["match", "mismatch", "unverifiable"]
+copy_requested_to_observed = false
+unavailable_value = "null"
+
+[call]
+kinds = ["llm", "asr", "ocr", "external_research"]
+invocation_surfaces = ["project_api", "codex_runtime", "browser_ui", "local_runtime"]
+instrumentation_modes = ["project_hook", "host_receipt", "external_ui"]
+recording_modes = ["synchronous", "retrospective_host_receipt", "retrospective_manual_receipt"]
+outcomes = ["succeeded", "failed", "cancelled"]
+contract_ref_fields = [
+  "workflow_version",
+  "workflow_hash",
+  "dag_version",
+  "dag_hash",
+  "prompt_version",
+  "prompt_hash",
+  "agent_profile_version",
+  "agent_profile_hash",
+]
+
+[timing]
+fields = ["wall_elapsed", "active_elapsed", "provider_elapsed"]
+statuses = ["measured", "derived", "unavailable", "not_applicable"]
+sources = ["monotonic_clock", "provider_timing", "receipt_interval", "not_exposed", "not_applicable"]
+derived_source = "receipt_interval"
+zero_requires_authoritative_measurement = true
+
+[tokens]
+fields = ["input_tokens", "output_tokens", "total_tokens", "cached_tokens", "reasoning_tokens"]
+statuses = ["measured", "derived", "unavailable", "not_applicable"]
+sources = ["provider_usage", "runtime_usage", "ui_usage", "sum_of_measured_components", "not_exposed", "not_applicable"]
+derived_total_requires_measured_input_and_output = true
+zero_requires_authoritative_measurement = true
+unavailable_value = "null"
+not_applicable_value = "null"
+estimate_from_text_length = false
+
+[instrumentation.project_hook]
+recording_mode = "synchronous"
+coverage_counter = "project_hook_coverage"
+required_for_interceptable_runner_calls = true
+
+[instrumentation.host_receipt]
+recording_mode = "retrospective_host_receipt"
+coverage_counter = "host_boundary_coverage"
+project_hook_coverage_claimed = false
+observed_model_without_receipt = "unavailable"
+tokens_without_receipt = "unavailable"
+
+[instrumentation.external_ui]
+recording_mode = "retrospective_manual_receipt"
+actor_role = "gemini_web_user"
+call_kind = "external_research"
+invocation_surface = "browser_ui"
+start_boundary = "s02_a_prompt_handoff_at"
+finish_boundary = "g2_result_ready_received_at"
+wall_elapsed_status = "derived"
+wall_elapsed_source = "receipt_interval"
+active_elapsed_without_ui_receipt = "unavailable"
+provider_elapsed_without_ui_receipt = "unavailable"
+tokens_without_ui_receipt = "unavailable"
+model_without_ui_label = "unavailable"
+polling_allowed = false
+
+[local.asr]
+provider = "local"
+actor_role = "asr_adapter"
+call_kind = "asr"
+invocation_surface = "local_runtime"
+instrumentation_mode = "project_hook"
+recording_mode = "synchronous"
+observed_model_source = "local_manifest"
+token_status = "not_applicable"
+audio_seconds_recorded_in = "observations.jsonl"
+
+[local.ocr]
+provider = "local"
+actor_role = "ocr_adapter"
+call_kind = "ocr"
+invocation_surface = "local_runtime"
+instrumentation_mode = "project_hook"
+recording_mode = "synchronous"
+emit_only_when_called = true
+observed_model_source = "local_manifest"
+token_status = "not_applicable"
+frame_count_recorded_in = "observations.jsonl"
+
+[summary]
+complete_requires_closed_ledger = true
+group_by = ["provider", "invocation_surface", "requested_model", "observed_model", "actor_role", "call_kind"]
+include_failed_count = true
+include_mismatch_count = true
+include_wall_elapsed_coverage = true
+include_token_coverage = true
+deterministic = true
+
+[publication]
+ledger_registered_as_business_artifact = false
+summary_registered_as_business_artifact = false
+observation_registered_as_business_artifact = false
+bind_with_execution_event_path_and_sha256 = true
+close_before_session_terminal_event = true
+
+[privacy]
+forbidden_keys = [
+  "prompt",
+  "prompt_text",
+  "response",
+  "response_text",
+  "url",
+  "uri",
+  "headers",
+  "request_headers",
+  "api_key",
+  "authorization",
+  "cookie",
+  "password",
+  "secret",
+  "absolute_path",
+]
+forbid_http_values = true
+forbid_private_absolute_paths = true
+max_text_length = 1024
+raw_prompt_allowed = false
+raw_response_allowed = false
+credentials_allowed = false
+account_identifiers_allowed = false

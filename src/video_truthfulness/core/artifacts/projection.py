@@ -7,26 +7,26 @@ import sqlite3
 from pathlib import Path
 from typing import Iterable
 
-from video_truthfulness.core.artifacts.models import ArtifactRecord
-from video_truthfulness.core.artifacts.registry import AppendOnlyRegistry
+from video_truthfulness.core.artifacts.models import ArtifactRecordView
+from video_truthfulness.core.artifacts.registry import AppendOnlyRegistry, RegistryEntry
 
 
-def _load_records(registries: Iterable[AppendOnlyRegistry]) -> list[ArtifactRecord]:
-    records: list[ArtifactRecord] = []
+def _load_entries(registries: Iterable[AppendOnlyRegistry]) -> list[RegistryEntry]:
+    entries: list[RegistryEntry] = []
     seen_record_ids: set[str] = set()
     for registry in registries:
-        for record in registry.read_records():
-            if record.record_id in seen_record_ids:
-                raise ValueError(f"Duplicate record_id across Registry scopes: {record.record_id}")
-            seen_record_ids.add(record.record_id)
-            records.append(record)
-    return records
+        for entry in registry.read_entries():
+            if entry.wire_record.record_id in seen_record_ids:
+                raise ValueError(f"Duplicate record_id across Registry scopes: {entry.wire_record.record_id}")
+            seen_record_ids.add(entry.wire_record.record_id)
+            entries.append(entry)
+    return entries
 
 
 def rebuild_sqlite_projection(output_path: Path, registries: Iterable[AppendOnlyRegistry]) -> dict[str, int]:
     """Delete/rebuild only the non-authoritative SQLite projection."""
 
-    records = _load_records(registries)
+    entries = _load_entries(registries)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     temporary = output_path.with_suffix(output_path.suffix + ".tmp")
     temporary.unlink(missing_ok=True)
@@ -43,6 +43,7 @@ def rebuild_sqlite_projection(output_path: Path, registries: Iterable[AppendOnly
                 previous_record_id TEXT,
                 recorded_at TEXT NOT NULL,
                 storage_scope TEXT NOT NULL,
+                source_registry_schema_version TEXT NOT NULL,
                 lifecycle_state TEXT NOT NULL,
                 validation_status TEXT NOT NULL,
                 raw_json TEXT NOT NULL,
@@ -53,10 +54,15 @@ def rebuild_sqlite_projection(output_path: Path, registries: Iterable[AppendOnly
                 current_record_id TEXT NOT NULL,
                 current_revision INTEGER NOT NULL,
                 artifact_type TEXT NOT NULL,
+                storage_root_ref TEXT NOT NULL,
                 relative_path TEXT NOT NULL,
                 content_hash TEXT NOT NULL,
                 run_id TEXT,
                 storage_scope TEXT NOT NULL,
+                release_id TEXT,
+                exp_id TEXT,
+                agent_profile_version TEXT,
+                agent_runtime_version TEXT,
                 lifecycle_state TEXT NOT NULL,
                 validation_status TEXT NOT NULL
             );
@@ -88,11 +94,24 @@ def rebuild_sqlite_projection(output_path: Path, registries: Iterable[AppendOnly
             );
             """
         )
-        latest: dict[str, ArtifactRecord] = {}
-        for record in records:
-            raw_json = json.dumps(record.model_dump(mode="json"), ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+        latest: dict[str, ArtifactRecordView] = {}
+        for entry in entries:
+            wire_record = entry.wire_record
+            record = entry.canonical_view
+            raw_json = json.dumps(
+                wire_record.model_dump(mode="json"),
+                ensure_ascii=False,
+                sort_keys=True,
+                separators=(",", ":"),
+            )
             connection.execute(
-                "INSERT INTO registry_records VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                """
+                INSERT INTO registry_records (
+                    record_id, artifact_id, record_revision, record_hash, previous_record_id,
+                    recorded_at, storage_scope, source_registry_schema_version,
+                    lifecycle_state, validation_status, raw_json
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
                 (
                     record.record_id,
                     record.artifact_id,
@@ -101,6 +120,7 @@ def rebuild_sqlite_projection(output_path: Path, registries: Iterable[AppendOnly
                     record.previous_record_id,
                     record.recorded_at.isoformat(),
                     record.storage_scope,
+                    record.source_registry_schema_version,
                     record.lifecycle_state,
                     record.validation_status,
                     raw_json,
@@ -109,16 +129,28 @@ def rebuild_sqlite_projection(output_path: Path, registries: Iterable[AppendOnly
             latest[record.artifact_id] = record
         for artifact_id, record in sorted(latest.items()):
             connection.execute(
-                "INSERT INTO artifacts VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                """
+                INSERT INTO artifacts (
+                    artifact_id, current_record_id, current_revision, artifact_type,
+                    storage_root_ref, relative_path, content_hash, run_id, storage_scope, release_id,
+                    exp_id, agent_profile_version, agent_runtime_version,
+                    lifecycle_state, validation_status
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
                 (
                     artifact_id,
                     record.record_id,
                     record.record_revision,
                     record.artifact_type,
+                    record.storage_root_ref,
                     record.relative_path,
                     record.content_hash,
                     record.run_id,
                     record.storage_scope,
+                    record.release_id,
+                    record.exp_id,
+                    record.agent_profile_version,
+                    record.agent_runtime_version,
                     record.lifecycle_state,
                     record.validation_status,
                 ),

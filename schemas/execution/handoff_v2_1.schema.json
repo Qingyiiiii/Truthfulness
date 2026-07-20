@@ -1,0 +1,1292 @@
+{
+  "$defs": {
+    "ArtifactScope": {
+      "additionalProperties": false,
+      "properties": {
+        "scope_type": {
+          "const": "artifact",
+          "title": "Scope Type",
+          "type": "string"
+        },
+        "artifact_id": {
+          "pattern": "^artifact_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "purpose": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Purpose",
+          "type": "string"
+        }
+      },
+      "required": [
+        "scope_type",
+        "artifact_id",
+        "purpose"
+      ],
+      "title": "ArtifactScope",
+      "type": "object"
+    },
+    "CodeRef": {
+      "additionalProperties": false,
+      "properties": {
+        "git_commit": {
+          "pattern": "^[0-9a-f]{40}$",
+          "title": "Git Commit",
+          "type": "string"
+        },
+        "working_tree_dirty": {
+          "title": "Working Tree Dirty",
+          "type": "boolean"
+        },
+        "working_tree_manifest_path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Working Tree Manifest Path"
+        },
+        "working_tree_manifest_hash": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Working Tree Manifest Hash"
+        }
+      },
+      "required": [
+        "git_commit",
+        "working_tree_dirty",
+        "working_tree_manifest_path",
+        "working_tree_manifest_hash"
+      ],
+      "title": "CodeRef",
+      "type": "object"
+    },
+    "CompletedAction": {
+      "additionalProperties": false,
+      "properties": {
+        "action_key": {
+          "maxLength": 120,
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Action Key",
+          "type": "string"
+        },
+        "summary": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Summary",
+          "type": "string"
+        },
+        "source_event_id": {
+          "pattern": "^event_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Source Event Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "action_key",
+        "summary",
+        "source_event_id"
+      ],
+      "title": "CompletedAction",
+      "type": "object"
+    },
+    "EventHead": {
+      "additionalProperties": false,
+      "properties": {
+        "event_id": {
+          "pattern": "^event_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Event Id",
+          "type": "string"
+        },
+        "sequence_no": {
+          "minimum": 1,
+          "title": "Sequence No",
+          "type": "integer"
+        },
+        "event_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Event Hash",
+          "type": "string"
+        },
+        "occurred_at": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?Z$",
+          "title": "Occurred At",
+          "type": "string"
+        }
+      },
+      "required": [
+        "event_id",
+        "sequence_no",
+        "event_hash",
+        "occurred_at"
+      ],
+      "title": "EventHead",
+      "type": "object"
+    },
+    "HandoffMetrics": {
+      "additionalProperties": false,
+      "properties": {
+        "event_count": {
+          "minimum": 1,
+          "title": "Event Count",
+          "type": "integer"
+        },
+        "actual_read_count": {
+          "minimum": 0,
+          "title": "Actual Read Count",
+          "type": "integer"
+        },
+        "actual_write_count": {
+          "minimum": 0,
+          "title": "Actual Write Count",
+          "type": "integer"
+        },
+        "input_artifact_count": {
+          "minimum": 0,
+          "title": "Input Artifact Count",
+          "type": "integer"
+        },
+        "output_artifact_count": {
+          "minimum": 0,
+          "title": "Output Artifact Count",
+          "type": "integer"
+        },
+        "validation_passed_count": {
+          "minimum": 0,
+          "title": "Validation Passed Count",
+          "type": "integer"
+        },
+        "validation_failed_count": {
+          "minimum": 0,
+          "title": "Validation Failed Count",
+          "type": "integer"
+        },
+        "out_of_scope_detection_count": {
+          "minimum": 0,
+          "title": "Out Of Scope Detection Count",
+          "type": "integer"
+        },
+        "rebuild_hash_match": {
+          "const": true,
+          "title": "Rebuild Hash Match",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "event_count",
+        "actual_read_count",
+        "actual_write_count",
+        "input_artifact_count",
+        "output_artifact_count",
+        "validation_passed_count",
+        "validation_failed_count",
+        "out_of_scope_detection_count",
+        "rebuild_hash_match"
+      ],
+      "title": "HandoffMetrics",
+      "type": "object"
+    },
+    "HumanDecisionRequirement": {
+      "additionalProperties": false,
+      "properties": {
+        "decision_artifact_id": {
+          "pattern": "^artifact_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Decision Artifact Id",
+          "type": "string"
+        },
+        "gate_node_id": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Gate Node Id",
+          "type": "string"
+        },
+        "reason": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "decision_artifact_id",
+        "gate_node_id",
+        "reason"
+      ],
+      "title": "HumanDecisionRequirement",
+      "type": "object"
+    },
+    "NextStageActionV2_1": {
+      "additionalProperties": false,
+      "description": "Explicit adjacent Workflow transition used only by HANDOFF v2.1.",
+      "properties": {
+        "action_type": {
+          "const": "next_stage",
+          "title": "Action Type",
+          "type": "string"
+        },
+        "next_stage": {
+          "pattern": "^S0[1-9]$",
+          "title": "Next Stage",
+          "type": "string"
+        },
+        "workflow_reference": {
+          "maxLength": 512,
+          "minLength": 1,
+          "title": "Workflow Reference",
+          "type": "string"
+        },
+        "prompt_reference": {
+          "maxLength": 512,
+          "minLength": 1,
+          "title": "Prompt Reference",
+          "type": "string"
+        },
+        "required_input_artifact_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Required Input Artifact Ids",
+          "type": "array"
+        },
+        "required_read_paths": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Required Read Paths",
+          "type": "array"
+        },
+        "reason": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        },
+        "target_workflow_version": {
+          "enum": [
+            "youtube_truthfulness_workflow_v1.1.0",
+            "youtube_truthfulness_workflow_v1.3.0"
+          ],
+          "title": "Target Workflow Version",
+          "type": "string"
+        },
+        "execution_authorized": {
+          "title": "Execution Authorized",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "action_type",
+        "next_stage",
+        "workflow_reference",
+        "prompt_reference",
+        "required_input_artifact_ids",
+        "required_read_paths",
+        "reason",
+        "target_workflow_version",
+        "execution_authorized"
+      ],
+      "title": "NextStageActionV2_1",
+      "type": "object"
+    },
+    "ObservedAccess": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_id": {
+          "anyOf": [
+            {
+              "pattern": "^artifact_[0-9a-hjkmnp-tv-z]{26}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Artifact Id"
+        },
+        "record_id": {
+          "anyOf": [
+            {
+              "pattern": "^record_[0-9a-hjkmnp-tv-z]{26}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Record Id"
+        },
+        "relative_path": {
+          "maxLength": 512,
+          "minLength": 1,
+          "title": "Relative Path",
+          "type": "string"
+        },
+        "content_hash_algorithm": {
+          "const": "sha256",
+          "title": "Content Hash Algorithm",
+          "type": "string"
+        },
+        "content_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Content Hash",
+          "type": "string"
+        },
+        "event_id": {
+          "pattern": "^event_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Event Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "artifact_id",
+        "record_id",
+        "relative_path",
+        "content_hash_algorithm",
+        "content_hash",
+        "event_id"
+      ],
+      "title": "ObservedAccess",
+      "type": "object"
+    },
+    "PathPrefixScope": {
+      "additionalProperties": false,
+      "properties": {
+        "scope_type": {
+          "const": "path_prefix",
+          "title": "Scope Type",
+          "type": "string"
+        },
+        "relative_path": {
+          "maxLength": 512,
+          "minLength": 1,
+          "title": "Relative Path",
+          "type": "string"
+        },
+        "recursive": {
+          "title": "Recursive",
+          "type": "boolean"
+        },
+        "purpose": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Purpose",
+          "type": "string"
+        }
+      },
+      "required": [
+        "scope_type",
+        "relative_path",
+        "recursive",
+        "purpose"
+      ],
+      "title": "PathPrefixScope",
+      "type": "object"
+    },
+    "PathScope": {
+      "additionalProperties": false,
+      "properties": {
+        "scope_type": {
+          "const": "path",
+          "title": "Scope Type",
+          "type": "string"
+        },
+        "relative_path": {
+          "maxLength": 512,
+          "minLength": 1,
+          "title": "Relative Path",
+          "type": "string"
+        },
+        "purpose": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Purpose",
+          "type": "string"
+        }
+      },
+      "required": [
+        "scope_type",
+        "relative_path",
+        "purpose"
+      ],
+      "title": "PathScope",
+      "type": "object"
+    },
+    "RegisteredArtifactRef": {
+      "additionalProperties": false,
+      "description": "Checkpoint Artifact reference; unlike event writes it must be Registry-backed.",
+      "properties": {
+        "artifact_id": {
+          "pattern": "^artifact_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "artifact_type": {
+          "pattern": "^[a-z][a-z0-9_]*(?:\\.[a-z][a-z0-9_]*)+$",
+          "title": "Artifact Type",
+          "type": "string"
+        },
+        "record_id": {
+          "pattern": "^record_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Record Id",
+          "type": "string"
+        },
+        "relative_path": {
+          "maxLength": 512,
+          "minLength": 1,
+          "title": "Relative Path",
+          "type": "string"
+        },
+        "content_hash_algorithm": {
+          "const": "sha256",
+          "title": "Content Hash Algorithm",
+          "type": "string"
+        },
+        "content_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Content Hash",
+          "type": "string"
+        },
+        "input_fingerprint": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Input Fingerprint"
+        },
+        "validation_status": {
+          "enum": [
+            "not_validated",
+            "passed",
+            "failed",
+            "partial"
+          ],
+          "title": "Validation Status",
+          "type": "string"
+        },
+        "lifecycle_state": {
+          "enum": [
+            "created",
+            "validated",
+            "frozen",
+            "stale",
+            "superseded",
+            "invalid",
+            "archived",
+            "purged"
+          ],
+          "title": "Lifecycle State",
+          "type": "string"
+        }
+      },
+      "required": [
+        "artifact_id",
+        "artifact_type",
+        "record_id",
+        "relative_path",
+        "content_hash_algorithm",
+        "content_hash",
+        "input_fingerprint",
+        "validation_status",
+        "lifecycle_state"
+      ],
+      "title": "RegisteredArtifactRef",
+      "type": "object"
+    },
+    "RegistryHead": {
+      "additionalProperties": false,
+      "properties": {
+        "registry_scope": {
+          "enum": [
+            "run",
+            "cross_run"
+          ],
+          "title": "Registry Scope",
+          "type": "string"
+        },
+        "relative_path": {
+          "maxLength": 512,
+          "minLength": 1,
+          "title": "Relative Path",
+          "type": "string"
+        },
+        "content_hash_algorithm": {
+          "const": "sha256",
+          "title": "Content Hash Algorithm",
+          "type": "string"
+        },
+        "content_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Content Hash",
+          "type": "string"
+        },
+        "record_count": {
+          "minimum": 0,
+          "title": "Record Count",
+          "type": "integer"
+        },
+        "artifact_count": {
+          "minimum": 0,
+          "title": "Artifact Count",
+          "type": "integer"
+        },
+        "head_record_id": {
+          "anyOf": [
+            {
+              "pattern": "^record_[0-9a-hjkmnp-tv-z]{26}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Head Record Id"
+        },
+        "head_record_hash": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Head Record Hash"
+        }
+      },
+      "required": [
+        "registry_scope",
+        "relative_path",
+        "content_hash_algorithm",
+        "content_hash",
+        "record_count",
+        "artifact_count",
+        "head_record_id",
+        "head_record_hash"
+      ],
+      "title": "RegistryHead",
+      "type": "object"
+    },
+    "RemainingAction": {
+      "additionalProperties": false,
+      "properties": {
+        "action_key": {
+          "maxLength": 120,
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Action Key",
+          "type": "string"
+        },
+        "summary": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Summary",
+          "type": "string"
+        }
+      },
+      "required": [
+        "action_key",
+        "summary"
+      ],
+      "title": "RemainingAction",
+      "type": "object"
+    },
+    "ReturnToStageAction": {
+      "additionalProperties": false,
+      "properties": {
+        "action_type": {
+          "const": "return_to_stage",
+          "title": "Action Type",
+          "type": "string"
+        },
+        "target_stage": {
+          "pattern": "^S0[1-9]$",
+          "title": "Target Stage",
+          "type": "string"
+        },
+        "workflow_reference": {
+          "maxLength": 512,
+          "minLength": 1,
+          "title": "Workflow Reference",
+          "type": "string"
+        },
+        "prompt_reference": {
+          "maxLength": 512,
+          "minLength": 1,
+          "title": "Prompt Reference",
+          "type": "string"
+        },
+        "required_input_artifact_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Required Input Artifact Ids",
+          "type": "array"
+        },
+        "required_read_paths": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Required Read Paths",
+          "type": "array"
+        },
+        "reason": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "action_type",
+        "target_stage",
+        "workflow_reference",
+        "prompt_reference",
+        "required_input_artifact_ids",
+        "required_read_paths",
+        "reason"
+      ],
+      "title": "ReturnToStageAction",
+      "type": "object"
+    },
+    "Risk": {
+      "additionalProperties": false,
+      "properties": {
+        "risk_key": {
+          "maxLength": 120,
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Risk Key",
+          "type": "string"
+        },
+        "severity": {
+          "enum": [
+            "low",
+            "medium",
+            "high",
+            "critical"
+          ],
+          "title": "Severity",
+          "type": "string"
+        },
+        "summary": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Summary",
+          "type": "string"
+        },
+        "mitigation": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Mitigation",
+          "type": "string"
+        },
+        "blocking": {
+          "title": "Blocking",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "risk_key",
+        "severity",
+        "summary",
+        "mitigation",
+        "blocking"
+      ],
+      "title": "Risk",
+      "type": "object"
+    },
+    "TerminateAction": {
+      "additionalProperties": false,
+      "properties": {
+        "action_type": {
+          "const": "terminate",
+          "title": "Action Type",
+          "type": "string"
+        },
+        "termination_kind": {
+          "enum": [
+            "project_complete",
+            "process_terminated",
+            "terminal_failure"
+          ],
+          "title": "Termination Kind",
+          "type": "string"
+        },
+        "reason": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "action_type",
+        "termination_kind",
+        "reason"
+      ],
+      "title": "TerminateAction",
+      "type": "object"
+    },
+    "ValidationSummary": {
+      "additionalProperties": false,
+      "properties": {
+        "overall_status": {
+          "enum": [
+            "passed",
+            "failed",
+            "partial",
+            "not_run"
+          ],
+          "title": "Overall Status",
+          "type": "string"
+        },
+        "passed_count": {
+          "minimum": 0,
+          "title": "Passed Count",
+          "type": "integer"
+        },
+        "failed_count": {
+          "minimum": 0,
+          "title": "Failed Count",
+          "type": "integer"
+        },
+        "partial_count": {
+          "minimum": 0,
+          "title": "Partial Count",
+          "type": "integer"
+        },
+        "validators": {
+          "items": {
+            "$ref": "#/$defs/ValidatorResult"
+          },
+          "title": "Validators",
+          "type": "array"
+        }
+      },
+      "required": [
+        "overall_status",
+        "passed_count",
+        "failed_count",
+        "partial_count",
+        "validators"
+      ],
+      "title": "ValidationSummary",
+      "type": "object"
+    },
+    "ValidatorResult": {
+      "additionalProperties": false,
+      "properties": {
+        "validator_id": {
+          "maxLength": 160,
+          "pattern": "^[a-z][a-z0-9_.-]*$",
+          "title": "Validator Id",
+          "type": "string"
+        },
+        "validator_version": {
+          "maxLength": 120,
+          "minLength": 1,
+          "title": "Validator Version",
+          "type": "string"
+        },
+        "result": {
+          "enum": [
+            "passed",
+            "failed",
+            "partial"
+          ],
+          "title": "Result",
+          "type": "string"
+        },
+        "validation_artifact_id": {
+          "anyOf": [
+            {
+              "pattern": "^artifact_[0-9a-hjkmnp-tv-z]{26}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Validation Artifact Id"
+        }
+      },
+      "required": [
+        "validator_id",
+        "validator_version",
+        "result",
+        "validation_artifact_id"
+      ],
+      "title": "ValidatorResult",
+      "type": "object"
+    },
+    "WaitForHumanAction": {
+      "additionalProperties": false,
+      "properties": {
+        "action_type": {
+          "const": "wait_for_human",
+          "title": "Action Type",
+          "type": "string"
+        },
+        "decision_artifact_ids": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Decision Artifact Ids",
+          "type": "array"
+        },
+        "reason": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "action_type",
+        "decision_artifact_ids",
+        "reason"
+      ],
+      "title": "WaitForHumanAction",
+      "type": "object"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Stage-scoped Workflow transition contract for Stage 5.",
+  "properties": {
+    "handoff_version": {
+      "const": "handoff_v2.1.0",
+      "title": "Handoff Version",
+      "type": "string"
+    },
+    "handoff_artifact_id": {
+      "pattern": "^artifact_[0-9a-hjkmnp-tv-z]{26}$",
+      "title": "Handoff Artifact Id",
+      "type": "string"
+    },
+    "handoff_scope": {
+      "enum": [
+        "run",
+        "project"
+      ],
+      "title": "Handoff Scope",
+      "type": "string"
+    },
+    "project_version": {
+      "const": "v0.2",
+      "title": "Project Version",
+      "type": "string"
+    },
+    "storage_version": {
+      "const": "V02",
+      "title": "Storage Version",
+      "type": "string"
+    },
+    "release_id": {
+      "const": "truthfulness_v0.2_youtube_video",
+      "title": "Release Id",
+      "type": "string"
+    },
+    "task_id": {
+      "pattern": "^task_[0-9a-hjkmnp-tv-z]{26}$",
+      "title": "Task Id",
+      "type": "string"
+    },
+    "session_id": {
+      "pattern": "^session_[0-9a-hjkmnp-tv-z]{26}$",
+      "title": "Session Id",
+      "type": "string"
+    },
+    "attempt_no": {
+      "minimum": 1,
+      "title": "Attempt No",
+      "type": "integer"
+    },
+    "run_id": {
+      "anyOf": [
+        {
+          "pattern": "^run_[0-9a-hjkmnp-tv-z]{26}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Run Id"
+    },
+    "stage_id": {
+      "pattern": "^S0[1-9]$",
+      "title": "Stage Id",
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "COMPLETED",
+        "FAILED",
+        "WAITING_FOR_HUMAN",
+        "BLOCKED_BY_INPUT",
+        "SKIPPED_BY_GATE"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "parent_checkpoint_id": {
+      "anyOf": [
+        {
+          "pattern": "^checkpoint_[0-9a-hjkmnp-tv-z]{26}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Parent Checkpoint Id"
+    },
+    "checkpoint_id": {
+      "pattern": "^checkpoint_[0-9a-hjkmnp-tv-z]{26}$",
+      "title": "Checkpoint Id",
+      "type": "string"
+    },
+    "agent_profile_version": {
+      "pattern": "^[a-z][a-z0-9_]*_agent_v[0-9]+\\.[0-9]+\\.[0-9]+$",
+      "title": "Agent Profile Version",
+      "type": "string"
+    },
+    "agent_runtime_version": {
+      "maxLength": 120,
+      "minLength": 1,
+      "title": "Agent Runtime Version",
+      "type": "string"
+    },
+    "workflow_version": {
+      "enum": [
+        "youtube_truthfulness_workflow_v1.1.0",
+        "youtube_truthfulness_workflow_v1.3.0"
+      ]
+    },
+    "dag_version": {
+      "const": "youtube_truthfulness_dag_v1.2.0",
+      "title": "Dag Version",
+      "type": "string"
+    },
+    "schema_versions": {
+      "items": {
+        "pattern": "^[a-z][a-z0-9_]*_v[0-9]+\\.[0-9]+\\.[0-9]+$",
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Schema Versions",
+      "type": "array",
+      "contains": {
+        "const": "handoff_v2.1.0"
+      }
+    },
+    "prompt_version": {
+      "pattern": "^[a-z][a-z0-9_]*_prompt_v[0-9]+\\.[0-9]+\\.[0-9]+$",
+      "title": "Prompt Version",
+      "type": "string"
+    },
+    "code_ref": {
+      "$ref": "#/$defs/CodeRef"
+    },
+    "source_event_head": {
+      "$ref": "#/$defs/EventHead"
+    },
+    "source_registry_heads": {
+      "items": {
+        "$ref": "#/$defs/RegistryHead"
+      },
+      "minItems": 1,
+      "title": "Source Registry Heads",
+      "type": "array"
+    },
+    "input_artifacts": {
+      "items": {
+        "$ref": "#/$defs/RegisteredArtifactRef"
+      },
+      "title": "Input Artifacts",
+      "type": "array"
+    },
+    "output_artifacts": {
+      "items": {
+        "$ref": "#/$defs/RegisteredArtifactRef"
+      },
+      "title": "Output Artifacts",
+      "type": "array"
+    },
+    "declared_read_set": {
+      "items": {
+        "discriminator": {
+          "mapping": {
+            "artifact": "#/$defs/ArtifactScope",
+            "path": "#/$defs/PathScope",
+            "path_prefix": "#/$defs/PathPrefixScope"
+          },
+          "propertyName": "scope_type"
+        },
+        "oneOf": [
+          {
+            "$ref": "#/$defs/ArtifactScope"
+          },
+          {
+            "$ref": "#/$defs/PathScope"
+          },
+          {
+            "$ref": "#/$defs/PathPrefixScope"
+          }
+        ]
+      },
+      "title": "Declared Read Set",
+      "type": "array"
+    },
+    "declared_write_set": {
+      "items": {
+        "discriminator": {
+          "mapping": {
+            "artifact": "#/$defs/ArtifactScope",
+            "path": "#/$defs/PathScope",
+            "path_prefix": "#/$defs/PathPrefixScope"
+          },
+          "propertyName": "scope_type"
+        },
+        "oneOf": [
+          {
+            "$ref": "#/$defs/ArtifactScope"
+          },
+          {
+            "$ref": "#/$defs/PathScope"
+          },
+          {
+            "$ref": "#/$defs/PathPrefixScope"
+          }
+        ]
+      },
+      "title": "Declared Write Set",
+      "type": "array"
+    },
+    "actual_read_set": {
+      "items": {
+        "$ref": "#/$defs/ObservedAccess"
+      },
+      "title": "Actual Read Set",
+      "type": "array"
+    },
+    "actual_write_set": {
+      "items": {
+        "$ref": "#/$defs/ObservedAccess"
+      },
+      "title": "Actual Write Set",
+      "type": "array"
+    },
+    "invalidated_artifacts": {
+      "items": {
+        "$ref": "#/$defs/RegisteredArtifactRef"
+      },
+      "title": "Invalidated Artifacts",
+      "type": "array"
+    },
+    "completed_actions": {
+      "items": {
+        "$ref": "#/$defs/CompletedAction"
+      },
+      "title": "Completed Actions",
+      "type": "array"
+    },
+    "remaining_actions": {
+      "items": {
+        "$ref": "#/$defs/RemainingAction"
+      },
+      "title": "Remaining Actions",
+      "type": "array"
+    },
+    "risks": {
+      "items": {
+        "$ref": "#/$defs/Risk"
+      },
+      "title": "Risks",
+      "type": "array"
+    },
+    "human_decisions_required": {
+      "items": {
+        "$ref": "#/$defs/HumanDecisionRequirement"
+      },
+      "title": "Human Decisions Required",
+      "type": "array"
+    },
+    "validation_summary": {
+      "$ref": "#/$defs/ValidationSummary"
+    },
+    "metrics": {
+      "$ref": "#/$defs/HandoffMetrics"
+    },
+    "next_action": {
+      "discriminator": {
+        "mapping": {
+          "next_stage": "#/$defs/NextStageActionV2_1",
+          "return_to_stage": "#/$defs/ReturnToStageAction",
+          "terminate": "#/$defs/TerminateAction",
+          "wait_for_human": "#/$defs/WaitForHumanAction"
+        },
+        "propertyName": "action_type"
+      },
+      "oneOf": [
+        {
+          "$ref": "#/$defs/NextStageActionV2_1"
+        },
+        {
+          "$ref": "#/$defs/WaitForHumanAction"
+        },
+        {
+          "$ref": "#/$defs/ReturnToStageAction"
+        },
+        {
+          "$ref": "#/$defs/TerminateAction"
+        }
+      ],
+      "title": "Next Action"
+    },
+    "render_profile_version": {
+      "pattern": "^handoff_markdown_renderer_v[0-9]+\\.[0-9]+\\.[0-9]+$",
+      "title": "Render Profile Version",
+      "type": "string"
+    },
+    "created_at": {
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?Z$",
+      "title": "Created At",
+      "type": "string"
+    },
+    "handoff_hash": {
+      "$ref": "#/$defs/sha256"
+    }
+  },
+  "required": [
+    "handoff_version",
+    "handoff_artifact_id",
+    "handoff_scope",
+    "project_version",
+    "storage_version",
+    "release_id",
+    "task_id",
+    "session_id",
+    "attempt_no",
+    "run_id",
+    "stage_id",
+    "status",
+    "parent_checkpoint_id",
+    "checkpoint_id",
+    "agent_profile_version",
+    "agent_runtime_version",
+    "workflow_version",
+    "dag_version",
+    "schema_versions",
+    "prompt_version",
+    "code_ref",
+    "source_event_head",
+    "source_registry_heads",
+    "input_artifacts",
+    "output_artifacts",
+    "declared_read_set",
+    "declared_write_set",
+    "actual_read_set",
+    "actual_write_set",
+    "invalidated_artifacts",
+    "completed_actions",
+    "remaining_actions",
+    "risks",
+    "human_decisions_required",
+    "validation_summary",
+    "metrics",
+    "next_action",
+    "render_profile_version",
+    "created_at",
+    "handoff_hash"
+  ],
+  "title": "Video Truthfulness Machine HANDOFF v2.1",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:video-truthfulness:schema:handoff:v2.1",
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "stage_id": {
+            "const": "S02"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "workflow_version": {
+            "const": "youtube_truthfulness_workflow_v1.3.0"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "workflow_version": {
+            "const": "youtube_truthfulness_workflow_v1.1.0"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "next_action": {
+            "properties": {"action_type": {"const": "next_stage"}},
+            "required": ["action_type"]
+          }
+        }
+      },
+      "then": {
+        "oneOf": [
+          {
+            "properties": {
+              "stage_id": {"const": "S01"},
+              "next_action": {
+                "properties": {
+                  "next_stage": {"const": "S02"},
+                  "target_workflow_version": {"const": "youtube_truthfulness_workflow_v1.3.0"},
+                  "execution_authorized": {"const": true}
+                },
+                "required": ["next_stage", "target_workflow_version", "execution_authorized"]
+              }
+            }
+          },
+          {
+            "properties": {
+              "stage_id": {"const": "S02"},
+              "next_action": {
+                "properties": {
+                  "next_stage": {"const": "S03"},
+                  "target_workflow_version": {"const": "youtube_truthfulness_workflow_v1.1.0"},
+                  "execution_authorized": {"const": false}
+                },
+                "required": ["next_stage", "target_workflow_version", "execution_authorized"]
+              }
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

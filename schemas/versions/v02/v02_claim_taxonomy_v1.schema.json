@@ -1,0 +1,556 @@
+{
+  "": {
+    "labelGroup": {
+      "additionalProperties": false,
+      "properties": {
+        "cardinality": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "codes": {
+          "items": {
+            "pattern": "^[a-z][a-z0-9_]*$",
+            "type": "string"
+          },
+          "minItems": 1,
+          "type": "array",
+          "uniqueItems": true
+        },
+        "display_zh": {
+          "additionalProperties": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "minProperties": 1,
+          "type": "object"
+        },
+        "error_codes": {
+          "items": {
+            "pattern": "^E_[A-Z0-9_]+$",
+            "type": "string"
+          },
+          "minItems": 1,
+          "type": "array",
+          "uniqueItems": true
+        },
+        "human_permission": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "machine_permission": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "not_applicable_policy": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "nullable": {
+          "type": "boolean"
+        },
+        "target": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "taxonomy_version": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "taxonomy_version",
+        "target",
+        "cardinality",
+        "nullable",
+        "not_applicable_policy",
+        "machine_permission",
+        "human_permission",
+        "codes",
+        "display_zh",
+        "error_codes"
+      ],
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "cross_axis_rules": {
+      "const": {
+        "blocked_attempt_can_coexist_with_has_evidence": true,
+        "empty_evidence_collection_allowed": true,
+        "no_evidence_allows_clue_only": true,
+        "no_evidence_allows_formal_evidence": false,
+        "parent_gold_inherited_from_children": false,
+        "source_blocked_implies_no_evidence": false,
+        "unresolved_split_blocks_s02": true
+      }
+    },
+    "label_groups": {
+      "additionalProperties": false,
+      "properties": {
+        "access_status": {
+          "allOf": [
+            {
+              "": "#//labelGroup"
+            },
+            {
+              "const": {
+                "cardinality": "exactly_one",
+                "codes": [
+                  "accessible",
+                  "source_blocked",
+                  "not_found",
+                  "access_error"
+                ],
+                "display_zh": {
+                  "access_error": "访问错误",
+                  "accessible": "可访问",
+                  "not_found": "未找到",
+                  "source_blocked": "来源被屏蔽"
+                },
+                "error_codes": [
+                  "E_ACCESS_STATUS_CONFLICT"
+                ],
+                "human_permission": "read_only",
+                "machine_permission": "retriever_write",
+                "not_applicable_policy": "forbidden",
+                "nullable": false,
+                "target": "retrieval_attempt",
+                "taxonomy_version": "truthfulness_taxonomy_v02.1.0"
+              }
+            }
+          ]
+        },
+        "checkability": {
+          "allOf": [
+            {
+              "": "#//labelGroup"
+            },
+            {
+              "const": {
+                "cardinality": "exactly_one",
+                "codes": [
+                  "checkable",
+                  "context_only",
+                  "not_checkable"
+                ],
+                "display_zh": {
+                  "checkable": "可核验",
+                  "context_only": "仅语境依赖",
+                  "not_checkable": "不可核验"
+                },
+                "error_codes": [
+                  "E_CHECKABLE_VERDICT_REQUIRED",
+                  "E_CONTEXT_DEPENDENCY_REQUIRED",
+                  "E_NOT_CHECKABLE_LABEL_CONFLICT"
+                ],
+                "human_permission": "successor_write",
+                "machine_permission": "candidate_write",
+                "not_applicable_policy": "forbidden",
+                "nullable": false,
+                "target": "atomic_claim_revision",
+                "taxonomy_version": "truthfulness_taxonomy_v02.1.0"
+              }
+            }
+          ]
+        },
+        "evidence_availability": {
+          "allOf": [
+            {
+              "": "#//labelGroup"
+            },
+            {
+              "const": {
+                "cardinality": "exactly_one_per_claim_and_retrieval_batch",
+                "codes": [
+                  "pending",
+                  "has_evidence",
+                  "no_evidence"
+                ],
+                "display_zh": {
+                  "has_evidence": "有证据",
+                  "no_evidence": "无证据",
+                  "pending": "待检索或待评估"
+                },
+                "error_codes": [
+                  "E_NO_EVIDENCE_WITH_OPEN_SEARCH"
+                ],
+                "human_permission": "read_only",
+                "machine_permission": "batch_closer_write",
+                "not_applicable_policy": "omit_before_retrieval",
+                "nullable": false,
+                "target": "evidence_availability",
+                "taxonomy_version": "truthfulness_taxonomy_v02.1.0"
+              }
+            }
+          ]
+        },
+        "evidence_relation": {
+          "allOf": [
+            {
+              "": "#//labelGroup"
+            },
+            {
+              "const": {
+                "cardinality": "exactly_one_for_evidence_or_clue",
+                "codes": [
+                  "supports",
+                  "refutes",
+                  "context",
+                  "conflicts",
+                  "unresolved"
+                ],
+                "display_zh": {
+                  "conflicts": "来源彼此冲突",
+                  "context": "提供语境",
+                  "refutes": "反驳",
+                  "supports": "支持",
+                  "unresolved": "尚未解决"
+                },
+                "error_codes": [
+                  "E_EVIDENCE_RELATION_REQUIRED"
+                ],
+                "human_permission": "successor_write",
+                "machine_permission": "candidate_write",
+                "not_applicable_policy": "nullable_only_when_rejected_with_reason",
+                "nullable": true,
+                "target": "claim_evidence_link",
+                "taxonomy_version": "truthfulness_taxonomy_v02.1.0"
+              }
+            }
+          ]
+        },
+        "evidence_strength": {
+          "allOf": [
+            {
+              "": "#//labelGroup"
+            },
+            {
+              "const": {
+                "cardinality": "exactly_one_for_formal_evidence",
+                "codes": [
+                  "high",
+                  "medium",
+                  "low"
+                ],
+                "display_zh": {
+                  "high": "高",
+                  "low": "低",
+                  "medium": "中"
+                },
+                "error_codes": [
+                  "E_STRENGTH_NOT_APPLICABLE"
+                ],
+                "human_permission": "successor_write",
+                "machine_permission": "candidate_write",
+                "not_applicable_policy": "null_for_clue_or_rejected",
+                "nullable": true,
+                "target": "claim_evidence_link",
+                "taxonomy_version": "truthfulness_taxonomy_v02.1.0"
+              }
+            }
+          ]
+        },
+        "human_gold": {
+          "allOf": [
+            {
+              "": "#//labelGroup"
+            },
+            {
+              "const": {
+                "cardinality": "at_most_one_current_per_target",
+                "codes": [
+                  "gold_supports",
+                  "gold_partially_supports",
+                  "gold_refutes",
+                  "gold_misleading",
+                  "gold_missing_context",
+                  "gold_insufficient_evidence",
+                  "gold_uncheckable"
+                ],
+                "display_zh": {
+                  "gold_insufficient_evidence": "黄金证据不足",
+                  "gold_misleading": "黄金误导性",
+                  "gold_missing_context": "黄金缺失语境",
+                  "gold_partially_supports": "黄金部分支持",
+                  "gold_refutes": "黄金反驳",
+                  "gold_supports": "黄金支持",
+                  "gold_uncheckable": "黄金无法核实"
+                },
+                "error_codes": [
+                  "E_GOLD_SUPPORT_SCOPE_MISMATCH",
+                  "E_GOLD_PARTIAL_SCOPE_REQUIRED",
+                  "E_GOLD_REFUTES_EVIDENCE_REQUIRED",
+                  "E_GOLD_MISLEADING_REASON_REQUIRED",
+                  "E_GOLD_CONTEXT_REQUIRED",
+                  "E_GOLD_SEARCH_CLOSURE_REQUIRED",
+                  "E_GOLD_UNCHECKABLE_SCOPE"
+                ],
+                "human_permission": "canonical_write",
+                "machine_permission": "forbidden",
+                "not_applicable_policy": "omit_until_approved",
+                "nullable": true,
+                "target": "gold_label",
+                "taxonomy_version": "truthfulness_taxonomy_v02.1.0"
+              }
+            }
+          ]
+        },
+        "inclusion_decision": {
+          "allOf": [
+            {
+              "": "#//labelGroup"
+            },
+            {
+              "const": {
+                "cardinality": "at_most_one_current_per_atomic_claim",
+                "codes": [
+                  "included",
+                  "excluded",
+                  "pending"
+                ],
+                "display_zh": {
+                  "excluded": "排除",
+                  "included": "包含",
+                  "pending": "待定"
+                },
+                "error_codes": [
+                  "E_INCLUSION_WRITER_FORBIDDEN",
+                  "E_EXCLUSION_REASON_REQUIRED",
+                  "E_PENDING_AS_VERDICT",
+                  "E_INCLUSION_DATASET_GATE"
+                ],
+                "human_permission": "canonical_write",
+                "machine_permission": "separate_recommendation_only",
+                "not_applicable_policy": "omit_before_human_decision",
+                "nullable": true,
+                "target": "human_claim_inclusion_decision",
+                "taxonomy_version": "truthfulness_taxonomy_v02.1.0"
+              }
+            }
+          ]
+        },
+        "machine_verdict": {
+          "allOf": [
+            {
+              "": "#//labelGroup"
+            },
+            {
+              "const": {
+                "cardinality": "exactly_one_current_per_eligible_atomic_claim",
+                "codes": [
+                  "supported",
+                  "refuted",
+                  "mixed",
+                  "insufficient",
+                  "unverifiable"
+                ],
+                "display_zh": {
+                  "insufficient": "机器候选证据不足",
+                  "mixed": "机器候选混合",
+                  "refuted": "机器候选反驳",
+                  "supported": "机器候选支持",
+                  "unverifiable": "机器候选无法核验"
+                },
+                "error_codes": [
+                  "E_MACHINE_VERDICT_SCOPE"
+                ],
+                "human_permission": "read_only",
+                "machine_permission": "canonical_write",
+                "not_applicable_policy": "omit_for_context_only",
+                "nullable": false,
+                "target": "machine_claim_assessment",
+                "taxonomy_version": "truthfulness_taxonomy_v02.1.0"
+              }
+            }
+          ]
+        },
+        "source_kind": {
+          "allOf": [
+            {
+              "": "#//labelGroup"
+            },
+            {
+              "const": {
+                "cardinality": "exactly_one",
+                "codes": [
+                  "official",
+                  "primary_report",
+                  "paper",
+                  "database",
+                  "high_quality_secondary",
+                  "other"
+                ],
+                "display_zh": {
+                  "database": "结构化数据库",
+                  "high_quality_secondary": "高质量二手来源",
+                  "official": "官方来源",
+                  "other": "其他来源",
+                  "paper": "学术论文",
+                  "primary_report": "原始报道或一手报告"
+                },
+                "error_codes": [
+                  "E_SOURCE_KIND_INVALID"
+                ],
+                "human_permission": "successor_write",
+                "machine_permission": "candidate_write",
+                "not_applicable_policy": "forbidden",
+                "nullable": false,
+                "target": "evidence_revision",
+                "taxonomy_version": "truthfulness_taxonomy_v02.1.0"
+              }
+            }
+          ]
+        },
+        "source_role": {
+          "allOf": [
+            {
+              "": "#//labelGroup"
+            },
+            {
+              "const": {
+                "cardinality": "exactly_one_for_evidence_or_clue",
+                "codes": [
+                  "primary_source",
+                  "secondary_source"
+                ],
+                "display_zh": {
+                  "primary_source": "原始来源",
+                  "secondary_source": "次要来源"
+                },
+                "error_codes": [
+                  "E_SOURCE_ROLE_REQUIRED"
+                ],
+                "human_permission": "successor_write",
+                "machine_permission": "candidate_write",
+                "not_applicable_policy": "nullable_only_when_rejected",
+                "nullable": true,
+                "target": "claim_evidence_link",
+                "taxonomy_version": "truthfulness_taxonomy_v02.1.0"
+              }
+            }
+          ]
+        },
+        "split_status": {
+          "allOf": [
+            {
+              "": "#//labelGroup"
+            },
+            {
+              "const": {
+                "cardinality": "exactly_one_current_per_parent",
+                "codes": [
+                  "resolved_atomic",
+                  "needs_human_split"
+                ],
+                "display_zh": {
+                  "needs_human_split": "需要人工拆分",
+                  "resolved_atomic": "已完成原子拆分"
+                },
+                "error_codes": [
+                  "E_SPLIT_CHILD_REQUIRED",
+                  "E_SPLIT_UNRESOLVED_ELIGIBLE"
+                ],
+                "human_permission": "successor_write",
+                "machine_permission": "candidate_write",
+                "not_applicable_policy": "forbidden",
+                "nullable": false,
+                "target": "claim_split_set_revision",
+                "taxonomy_version": "truthfulness_taxonomy_v02.1.0"
+              }
+            }
+          ]
+        },
+        "use_status": {
+          "allOf": [
+            {
+              "": "#//labelGroup"
+            },
+            {
+              "const": {
+                "cardinality": "exactly_one",
+                "codes": [
+                  "evidence",
+                  "clue_only",
+                  "rejected"
+                ],
+                "display_zh": {
+                  "clue_only": "仅线索",
+                  "evidence": "正式证据",
+                  "rejected": "已拒绝"
+                },
+                "error_codes": [
+                  "E_CLUE_USED_AS_EVIDENCE"
+                ],
+                "human_permission": "successor_write",
+                "machine_permission": "candidate_write",
+                "not_applicable_policy": "omit_when_no_source_row",
+                "nullable": false,
+                "target": "claim_evidence_link",
+                "taxonomy_version": "truthfulness_taxonomy_v02.1.0"
+              }
+            }
+          ]
+        }
+      },
+      "required": [
+        "split_status",
+        "checkability",
+        "machine_verdict",
+        "human_gold",
+        "inclusion_decision",
+        "source_kind",
+        "source_role",
+        "access_status",
+        "use_status",
+        "evidence_strength",
+        "evidence_relation",
+        "evidence_availability"
+      ],
+      "type": "object"
+    },
+    "permissions": {
+      "const": {
+        "human_machine_verdict_write": "forbidden",
+        "machine_gold_write": "forbidden",
+        "machine_human_inclusion_write": "forbidden",
+        "one_authorized_human_can_approve_gold": true
+      }
+    },
+    "schema_version": {
+      "const": "claim_taxonomy_config_v1.0.0"
+    },
+    "text_storage": {
+      "const": {
+        "atomic_quality_warning_char_count": 5000,
+        "atomic_text_truncation_allowed": false,
+        "chunk_hash_algorithm": "sha256",
+        "chunk_index_origin": 0,
+        "inline_chunk_mode": "xor",
+        "inline_utf8_byte_limit": 262144,
+        "parent_text_truncation_allowed": false
+      }
+    },
+    "truthfulness_taxonomy_version": {
+      "const": "truthfulness_taxonomy_v02.1.0"
+    },
+    "v01_import_status": {
+      "const": "OUT_OF_SCOPE"
+    },
+    "v01_mapping_status": {
+      "const": "DEFERRED"
+    }
+  },
+  "required": [
+    "schema_version",
+    "truthfulness_taxonomy_version",
+    "v01_import_status",
+    "v01_mapping_status",
+    "text_storage",
+    "permissions",
+    "label_groups",
+    "cross_axis_rules"
+  ],
+  "title": "Video Truthfulness V02 Claim Taxonomy v1",
+  "type": "object"
+}

@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:video-truthfulness:schema:claim-warehouse-projection-attempt:v1",
+  "title": "Claim warehouse immutable projection attempt v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "projection_attempt_schema_version", "attempt_id", "load_plan_id",
+    "load_plan_hash", "attempt_no", "status", "last_completed_stage",
+    "phase_history",
+    "started_at", "completed_at", "error_code", "error_message",
+    "receipt_id", "receipt_hash", "attempt_hash"
+  ],
+  "properties": {
+    "projection_attempt_schema_version": {"const": "claim_warehouse_projection_attempt_v1.0.0"},
+    "attempt_id": {"$ref": "#/$defs/attemptId"},
+    "load_plan_id": {"$ref": "#/$defs/loadPlanId"},
+    "load_plan_hash": {"$ref": "#/$defs/sha256"},
+    "attempt_no": {"type": "integer", "minimum": 1},
+    "status": {"enum": ["succeeded", "failed"]},
+    "last_completed_stage": {"enum": ["load_plan", "export_validate", "parquet_staging", "parquet_validate", "parquet_publish", "duckdb_transaction", "receipt_publish", "registry_append"]},
+    "phase_history": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 8,
+      "items": {"$ref": "#/$defs/journalEntry"}
+    },
+    "started_at": {"$ref": "#/$defs/utc"},
+    "completed_at": {"$ref": "#/$defs/utc"},
+    "error_code": {"type": ["string", "null"], "pattern": "^[A-Z][A-Z0-9_]{2,95}$"},
+    "error_message": {"type": ["string", "null"], "maxLength": 1000},
+    "receipt_id": {"anyOf": [{"$ref": "#/$defs/loadReceiptId"}, {"type": "null"}]},
+    "receipt_hash": {"anyOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]},
+    "attempt_hash": {"$ref": "#/$defs/sha256"}
+  },
+  "$defs": {
+    "attemptId": {"type": "string", "pattern": "^attempt_[0-9a-hjkmnp-tv-z]{26}$"},
+    "loadPlanId": {"type": "string", "pattern": "^load_plan_[0-9a-hjkmnp-tv-z]{26}$"},
+    "loadReceiptId": {"type": "string", "pattern": "^load_receipt_[0-9a-hjkmnp-tv-z]{26}$"},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "utc": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?Z$"},
+    "journalEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sequence_no", "stage", "completed_at"],
+      "properties": {
+        "sequence_no": {"type": "integer", "minimum": 1, "maximum": 8},
+        "stage": {"enum": ["load_plan", "export_validate", "parquet_staging", "parquet_validate", "parquet_publish", "duckdb_transaction", "receipt_publish", "registry_append"]},
+        "completed_at": {"$ref": "#/$defs/utc"}
+      }
+    }
+  }
+}

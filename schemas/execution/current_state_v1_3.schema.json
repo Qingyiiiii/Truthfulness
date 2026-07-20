@@ -1,0 +1,141 @@
+{
+  "$defs": {
+    "sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    }
+  },
+  "$id": "urn:video-truthfulness:schema:current-state:v1.3",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Immutable S01 successor state; Loader progress is derived elsewhere.",
+  "properties": {
+    "current_state_version": {
+      "const": "current_state_v1.3.0",
+      "title": "Current State Version",
+      "type": "string"
+    },
+    "execution_closure_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Execution Closure Hash",
+      "type": "string"
+    },
+    "execution_plan_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Execution Plan Hash",
+      "type": "string"
+    },
+    "output_artifact_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Output Artifact Ids",
+      "type": "array"
+    },
+    "registry_file_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Registry File Sha256",
+      "type": "string"
+    },
+    "registry_head_record_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Registry Head Record Hash",
+      "type": "string"
+    },
+    "registry_head_record_id": {
+      "pattern": "^record_[0-9a-hjkmnp-tv-z]{26}$",
+      "title": "Registry Head Record Id",
+      "type": "string"
+    },
+    "registry_record_count": {
+      "minimum": 1,
+      "title": "Registry Record Count",
+      "type": "integer"
+    },
+    "run_id": {
+      "pattern": "^run_[0-9a-hjkmnp-tv-z]{26}$",
+      "title": "Run Id",
+      "type": "string"
+    },
+    "s02_execution_authorized": {
+      "const": false,
+      "title": "S02 Execution Authorized",
+      "type": "boolean"
+    },
+    "session_id": {
+      "pattern": "^session_[0-9a-hjkmnp-tv-z]{26}$",
+      "title": "Session Id",
+      "type": "string"
+    },
+    "state_hash": {
+      "$ref": "#/$defs/sha256"
+    },
+    "task_id": {
+      "pattern": "^task_[0-9a-hjkmnp-tv-z]{26}$",
+      "title": "Task Id",
+      "type": "string"
+    },
+    "terminal_event_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Terminal Event Hash",
+      "type": "string"
+    },
+    "terminal_event_id": {
+      "pattern": "^event_[0-9a-hjkmnp-tv-z]{26}$",
+      "title": "Terminal Event Id",
+      "type": "string"
+    },
+    "terminal_event_sequence_no": {
+      "minimum": 1,
+      "title": "Terminal Event Sequence No",
+      "type": "integer"
+    },
+    "terminal_state": {
+      "enum": [
+        "COMPLETED",
+        "WAITING_FOR_HUMAN"
+      ],
+      "title": "Terminal State",
+      "type": "string"
+    },
+    "warehouse_export_artifact_id": {
+      "pattern": "^artifact_[0-9a-hjkmnp-tv-z]{26}$",
+      "title": "Warehouse Export Artifact Id",
+      "type": "string"
+    },
+    "warehouse_export_logical_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Warehouse Export Logical Hash",
+      "type": "string"
+    },
+    "warehouse_projection_status": {
+      "const": "pending",
+      "title": "Warehouse Projection Status",
+      "type": "string"
+    }
+  },
+  "required": [
+    "current_state_version",
+    "run_id",
+    "task_id",
+    "session_id",
+    "execution_plan_hash",
+    "execution_closure_hash",
+    "terminal_state",
+    "terminal_event_id",
+    "terminal_event_hash",
+    "terminal_event_sequence_no",
+    "registry_record_count",
+    "registry_head_record_id",
+    "registry_head_record_hash",
+    "registry_file_sha256",
+    "output_artifact_ids",
+    "s02_execution_authorized",
+    "state_hash",
+    "warehouse_export_artifact_id",
+    "warehouse_export_logical_hash",
+    "warehouse_projection_status"
+  ],
+  "title": "Stage 5 S01 current state v1.3",
+  "type": "object"
+}

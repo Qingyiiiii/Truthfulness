@@ -1,0 +1,93 @@
+topology_version = "stage5_v02_agent_topology_v1.1.0"
+project_version = "v0.2"
+storage_version = "V02"
+release_id = "truthfulness_v0.2_youtube_video"
+workflow_version = "youtube_truthfulness_workflow_v1.3.0"
+dag_version = "youtube_truthfulness_dag_v1.4.0"
+previous_topology_path = "configs/agents/stage5_v02_agent_topology_v1.toml"
+previous_topology_sha256 = "af9b7a9c8d30e731fea11f7f921055fe0626bbf6fd7b4674db6226eed4fb9c32"
+execution_order = "serial_explicit_node"
+helper_max_concurrency = 1
+automatic_next_node = false
+automatic_dag_traversal = false
+real_s01_execution_authorized = false
+s02_execution_authorized = false
+gdb1_validation_scope = "synthetic_only"
+
+[inherited]
+coordinator_profile = "stage5_v02_coordinator_agent_v1.0.0"
+transcript_claim_helper_profile = "transcript_claim_helper_agent_v1.0.0"
+evidence_lead_helper_profile = "evidence_lead_helper_agent_v1.0.0"
+contract_auditor_profile = "contract_auditor_agent_v1.0.0"
+asr_adapter_profile = "inherited_v1_exact"
+ocr_adapter_profile = "inherited_v1_exact"
+inheritance_rule = "all_v1_0_permissions_and_budgets_unchanged"
+
+[s01_single_writer]
+actor_role = "codex_coordinator"
+agent_profile_version = "stage5_v02_coordinator_agent_v1.0.0"
+business_write_policy = "sole_writer"
+registry_write_policy = "sole_writer"
+event_write_policy = "sole_writer"
+publication_journal_write_policy = "sole_writer"
+terminal_finalizer_write_policy = "sole_writer"
+execution_unit = "one_explicit_node"
+
+[adapters.warehouse_export]
+actor_role = "warehouse_export_adapter"
+adapter_version = "warehouse_export_v1.0.0"
+invocation_surface = "in_process_local_runtime"
+node_id = "warehouse_export"
+stage_id = "S01"
+direct_read_policy = "validated_current_s01_business_artifacts_only"
+write_policy = "planned_export_package_and_s01_publication_controls_only"
+storage_root_ref = "ubuntu_v02_claim_warehouse"
+network_allowed = false
+model_calls_allowed = false
+media_reads_allowed = false
+transcript_source_expansion_allowed = false
+duckdb_allowed = false
+parquet_allowed = false
+create_new = true
+no_clobber = true
+projection_status_on_success = "pending"
+
+[warehouse_projection_single_writer]
+actor_role = "warehouse_loader"
+agent_profile_version = "claim_warehouse_loader_agent_v1.0.0"
+task_kind = "warehouse_projection"
+session_scope = "independent_from_source_s01"
+source_s01_terminal_required = true
+source_export_validation_required = true
+source_registry_prefix_validation_required = true
+source_s01_event_writes = 0
+source_s01_checkpoint_writes = 0
+source_s01_handoff_writes = 0
+parquet_write_policy = "single_writer_no_clobber"
+duckdb_write_policy = "single_writer_transaction"
+receipt_write_policy = "immutable_create_new"
+cross_run_registry_write_policy = "append_only_after_receipt"
+network_allowed = false
+model_calls_allowed = false
+media_reads_allowed = false
+real_projection_authorized = false
+
+[fresh_recovery]
+process_boundary = "fresh_python_process"
+exact_read_count = 5
+repository_write_count = 0
+dynamic_business_payload_read_count = 0
+warehouse_export_rows_read_count = 0
+duckdb_read_count = 0
+parquet_read_count = 0
+export_identity_verification = "checkpoint_handoff_registry_indirect_only"
+
+[global_invariants]
+machine_screening_can_write_gold = false
+loader_can_modify_business_facts = false
+loader_can_modify_source_s01 = false
+warehouse_projection_failure_changes_s01_terminal_state = false
+warehouse_projection_default_status = "pending"
+s03_requires_successful_projection_receipt = true
+real_media_fixture_allowed = false
+synthetic_fixture_only_before_user_s01_gate = true

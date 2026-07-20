@@ -1,0 +1,296 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:video-truthfulness:schema:stage5-execution-plan:v1",
+  "title": "Video Truthfulness Stage 5 Execution Plan v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "plan_version", "project_version", "storage_version", "release_id", "task_id", "session_id",
+    "attempt_no", "run_id", "stage_id", "node_id", "workflow_version", "dag_version",
+    "repository_root_ref", "task_directory", "session_directory", "read_paths", "read_bindings", "write_paths", "write_bindings", "expected_output_paths",
+    "expected_registry_head", "granted_gates", "network_allowed", "real_media_allowed", "telemetry",
+    "node_policy", "session_control", "publication", "manual_input", "plan_hash"
+  ],
+  "properties": {
+    "plan_version": {"const": "stage5_execution_plan_v1.0.0"},
+    "project_version": {"const": "v0.2"},
+    "storage_version": {"const": "V02"},
+    "release_id": {"const": "truthfulness_v0.2_youtube_video"},
+    "task_id": {"$ref": "#/$defs/taskId"},
+    "session_id": {"$ref": "#/$defs/sessionId"},
+    "attempt_no": {"type": "integer", "minimum": 1},
+    "run_id": {"$ref": "#/$defs/runId"},
+    "stage_id": {"enum": ["S01", "S02"]},
+    "node_id": {"$ref": "#/$defs/nodeId"},
+    "workflow_version": {"enum": ["youtube_truthfulness_workflow_v1.1.0", "youtube_truthfulness_workflow_v1.3.0"]},
+    "dag_version": {"const": "youtube_truthfulness_dag_v1.2.0"},
+    "repository_root_ref": {"const": "repository"},
+    "task_directory": {"$ref": "#/$defs/relativePath"},
+    "session_directory": {"$ref": "#/$defs/relativePath"},
+    "read_paths": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/relativePath"}},
+    "read_bindings": {"type": "array", "items": {"$ref": "#/$defs/planReadBinding"}},
+    "write_paths": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/relativePath"}},
+    "write_bindings": {"type": "array", "items": {"$ref": "#/$defs/writeBinding"}},
+    "expected_output_paths": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/relativePath"}},
+    "expected_registry_head": {"$ref": "#/$defs/registryHead"},
+    "granted_gates": {"type": "array", "uniqueItems": true, "items": {"enum": ["G0B", "G1A", "G1B", "G2", "G3"]}},
+    "network_allowed": {"type": "boolean"},
+    "real_media_allowed": {"type": "boolean"},
+    "telemetry": {"$ref": "#/$defs/telemetry"},
+    "node_policy": {"$ref": "#/$defs/nodePolicy"},
+    "session_control": {"$ref": "#/$defs/sessionControl"},
+    "publication": {"oneOf": [{"$ref": "#/$defs/publication"}, {"type": "null"}]},
+    "manual_input": {"oneOf": [{"$ref": "#/$defs/manualInput"}, {"type": "null"}]},
+    "plan_hash": {"$ref": "#/$defs/sha256"}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "taskId": {"type": "string", "pattern": "^task_[0-9a-hjkmnp-tv-z]{26}$"},
+    "sessionId": {"type": "string", "pattern": "^session_[0-9a-hjkmnp-tv-z]{26}$"},
+    "runId": {"type": "string", "pattern": "^run_[0-9a-hjkmnp-tv-z]{26}$"},
+    "artifactId": {"type": "string", "pattern": "^artifact_[0-9a-hjkmnp-tv-z]{26}$"},
+    "recordId": {"type": "string", "pattern": "^record_[0-9a-hjkmnp-tv-z]{26}$"},
+    "nodeId": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"},
+    "relativePath": {
+      "type": "string", "minLength": 1, "maxLength": 512,
+      "pattern": "^(?![~/])(?![A-Za-z]:)(?!.*(?:^|/)(?:\\.{1,2}|latest)(?:/|$))(?!.*[\\\\*?$%])[^\\\\]+$"
+    },
+    "stage2WorkflowEntry": {
+      "allOf": [
+        {"$ref": "#/$defs/relativePath"},
+        {"pattern": "^Optmize/workflows/02_[^/]+\\.md$"}
+      ]
+    },
+    "utcTimestamp": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?Z$"},
+    "registryHead": {
+      "type": "object", "additionalProperties": false,
+      "required": ["relative_path", "record_count", "head_record_id", "head_record_hash", "file_hash"],
+      "properties": {
+        "relative_path": {"$ref": "#/$defs/relativePath"}, "record_count": {"type": "integer", "minimum": 1},
+        "head_record_id": {"$ref": "#/$defs/recordId"}, "head_record_hash": {"$ref": "#/$defs/sha256"},
+        "file_hash": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "planReadBinding": {
+      "type": "object", "additionalProperties": false,
+      "required": ["relative_path", "binding_mode", "content_hash_algorithm", "content_hash", "size_bytes"],
+      "properties": {
+        "relative_path": {"$ref": "#/$defs/relativePath"},
+        "binding_mode": {"enum": ["frozen_hash", "materialize_once"]},
+        "content_hash_algorithm": {"const": "sha256"},
+        "content_hash": {"oneOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]},
+        "size_bytes": {"oneOf": [{"type": "integer", "minimum": 0}, {"type": "null"}]}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"binding_mode": {"const": "frozen_hash"}}, "required": ["binding_mode"]},
+          "then": {
+            "properties": {
+              "content_hash": {"$ref": "#/$defs/sha256"},
+              "size_bytes": {"type": "integer", "minimum": 0}
+            }
+          },
+          "else": {
+            "properties": {
+              "content_hash": {"type": "null"},
+              "size_bytes": {"type": "null"}
+            }
+          }
+        }
+      ]
+    },
+    "writeBinding": {
+      "type": "object", "additionalProperties": false,
+      "required": ["relative_path", "write_mode", "expected_content_hash"],
+      "properties": {
+        "relative_path": {"$ref": "#/$defs/relativePath"},
+        "write_mode": {"enum": ["create_new", "append_only_expected_head", "atomic_replace_expected_hash"]},
+        "expected_content_hash": {"oneOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"write_mode": {"const": "atomic_replace_expected_hash"}}, "required": ["write_mode"]},
+          "then": {"properties": {"expected_content_hash": {"$ref": "#/$defs/sha256"}}},
+          "else": {"properties": {"expected_content_hash": {"type": "null"}}}
+        }
+      ]
+    },
+    "nodePolicy": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "execution_kind", "required_gate", "expected_artifact_types", "objective",
+        "agent_profile_version", "agent_runtime_version", "prompt_version", "contract_files"
+      ],
+      "properties": {
+        "execution_kind": {"enum": ["non_model", "interceptable_model", "manual_external_capture"]},
+        "required_gate": {"enum": ["G0B", "G1A", "G1B", "G2", "G3"]},
+        "expected_artifact_types": {
+          "type": "array", "uniqueItems": true,
+          "items": {
+            "enum": [
+              "acquisition.decision", "transcript.path_decision", "media.audio", "transcript.raw",
+              "transcript.normalized", "transcript.alignment", "ocr.gate_decision", "ocr.result",
+              "claim.collection", "claim.entity_index", "claim.atomic_collection", "evidence.collection",
+              "evidence.entity_index", "evidence.merged_collection", "verdict.collection",
+              "verdict.entity_index", "verdict.rebuilt_collection", "report.machine", "report.rebuilt",
+              "source_depth.decision", "source_depth.prompt", "source_depth.result",
+              "source_depth.import_validation", "screening.sync_record"
+            ]
+          }
+        },
+        "objective": {"type": "string", "minLength": 1, "maxLength": 500},
+        "agent_profile_version": {"type": "string", "pattern": "^[a-z][a-z0-9_]*_agent_v[0-9]+\\.[0-9]+\\.[0-9]+$"},
+        "agent_runtime_version": {"type": "string", "minLength": 1, "maxLength": 120},
+        "prompt_version": {"type": "string", "pattern": "^[a-z][a-z0-9_]*_prompt_v[0-9]+\\.[0-9]+\\.[0-9]+$"},
+        "contract_files": {"$ref": "#/$defs/contractFiles"}
+      }
+    },
+    "contractFile": {
+      "type": "object", "additionalProperties": false,
+      "required": ["relative_path", "version", "content_hash"],
+      "properties": {
+        "relative_path": {"$ref": "#/$defs/relativePath"},
+        "version": {"type": "string", "minLength": 1, "maxLength": 160},
+        "content_hash": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "contractFiles": {
+      "type": "object", "additionalProperties": false,
+      "required": ["workflow", "dag", "prompt", "agent_profile"],
+      "properties": {
+        "workflow": {"$ref": "#/$defs/contractFile"},
+        "dag": {"$ref": "#/$defs/contractFile"},
+        "prompt": {"$ref": "#/$defs/contractFile"},
+        "agent_profile": {"$ref": "#/$defs/contractFile"}
+      }
+    },
+    "bootstrapRef": {
+      "oneOf": [
+        {
+          "type": "object", "additionalProperties": false,
+          "required": ["ref_type", "object_id", "description"],
+          "properties": {
+            "ref_type": {"enum": ["git_commit", "git_tree"]},
+            "object_id": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+            "description": {"type": "string", "minLength": 1, "maxLength": 240}
+          }
+        },
+        {
+          "type": "object", "additionalProperties": false,
+          "required": ["ref_type", "relative_path", "content_hash_algorithm", "content_hash", "purpose"],
+          "properties": {
+            "ref_type": {"enum": ["document", "working_tree_manifest", "registry", "dag_config"]},
+            "relative_path": {"$ref": "#/$defs/relativePath"},
+            "content_hash_algorithm": {"const": "sha256"},
+            "content_hash": {"$ref": "#/$defs/sha256"},
+            "purpose": {"type": "string", "minLength": 1, "maxLength": 240}
+          }
+        }
+      ]
+    },
+    "codeRef": {
+      "type": "object", "additionalProperties": false,
+      "required": ["git_commit", "working_tree_dirty", "working_tree_manifest_path", "working_tree_manifest_hash"],
+      "properties": {
+        "git_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "working_tree_dirty": {"type": "boolean"},
+        "working_tree_manifest_path": {"oneOf": [{"$ref": "#/$defs/relativePath"}, {"type": "null"}]},
+        "working_tree_manifest_hash": {"oneOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]}
+      }
+    },
+    "environmentRef": {
+      "type": "object", "additionalProperties": false,
+      "required": ["runtime_name", "runtime_version", "os_family", "architecture", "dependency_manifest_path", "dependency_manifest_hash"],
+      "properties": {
+        "runtime_name": {"type": "string", "minLength": 1, "maxLength": 80},
+        "runtime_version": {"type": "string", "minLength": 1, "maxLength": 80},
+        "os_family": {"enum": ["windows", "linux", "macos", "other"]},
+        "architecture": {"type": "string", "minLength": 1, "maxLength": 80},
+        "dependency_manifest_path": {"oneOf": [{"$ref": "#/$defs/relativePath"}, {"type": "null"}]},
+        "dependency_manifest_hash": {"oneOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]}
+      }
+    },
+    "humanGatePolicy": {
+      "type": "object", "additionalProperties": false,
+      "required": ["approval_required", "gate_node_ids", "decision_artifact_required", "implicit_approval_allowed"],
+      "properties": {
+        "approval_required": {"type": "boolean"},
+        "gate_node_ids": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/nodeId"}},
+        "decision_artifact_required": {"type": "boolean"},
+        "implicit_approval_allowed": {"const": false}
+      }
+    },
+    "sessionControl": {
+      "type": "object", "additionalProperties": false,
+      "required": ["parent_checkpoint_id", "bootstrap_refs", "code_ref", "environment_ref", "human_gate_policy", "session_created_at"],
+      "properties": {
+        "parent_checkpoint_id": {"oneOf": [{"type": "string", "pattern": "^checkpoint_[0-9a-hjkmnp-tv-z]{26}$"}, {"type": "null"}]},
+        "bootstrap_refs": {"type": "array", "items": {"$ref": "#/$defs/bootstrapRef"}},
+        "code_ref": {"$ref": "#/$defs/codeRef"},
+        "environment_ref": {"$ref": "#/$defs/environmentRef"},
+        "human_gate_policy": {"$ref": "#/$defs/humanGatePolicy"},
+        "session_created_at": {"$ref": "#/$defs/utcTimestamp"}
+      }
+    },
+    "publication": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "result_artifact_id", "result_record_id", "result_ready_receipt_id", "materialization_receipt_id",
+        "publication_receipt_path", "registration_manifest_path", "registry_path", "dag_source_path", "dag_snapshot_path",
+        "checkpoint_id", "checkpoint_path", "handoff_artifact_id", "handoff_record_id", "handoff_path",
+        "handoff_markdown_path", "recovery_workflow_path", "recovery_prompt_path",
+        "result_recorded_at", "checkpoint_created_at", "handoff_created_at", "handoff_recorded_at"
+      ],
+      "properties": {
+        "result_artifact_id": {"$ref": "#/$defs/artifactId"}, "result_record_id": {"$ref": "#/$defs/recordId"},
+        "result_ready_receipt_id": {"type": "string", "pattern": "^receipt_[0-9a-hjkmnp-tv-z]{26}$"},
+        "materialization_receipt_id": {"type": "string", "pattern": "^receipt_[0-9a-hjkmnp-tv-z]{26}$"},
+        "publication_receipt_path": {"$ref": "#/$defs/relativePath"}, "registration_manifest_path": {"$ref": "#/$defs/relativePath"},
+        "registry_path": {"$ref": "#/$defs/relativePath"}, "dag_source_path": {"$ref": "#/$defs/relativePath"},
+        "dag_snapshot_path": {"$ref": "#/$defs/relativePath"},
+        "checkpoint_id": {"type": "string", "pattern": "^checkpoint_[0-9a-hjkmnp-tv-z]{26}$"},
+        "checkpoint_path": {"$ref": "#/$defs/relativePath"}, "handoff_artifact_id": {"$ref": "#/$defs/artifactId"},
+        "handoff_record_id": {"$ref": "#/$defs/recordId"}, "handoff_path": {"$ref": "#/$defs/relativePath"},
+        "handoff_markdown_path": {"$ref": "#/$defs/relativePath"},
+        "recovery_workflow_path": {"$ref": "#/$defs/stage2WorkflowEntry"},
+        "recovery_prompt_path": {"$ref": "#/$defs/stage2WorkflowEntry"},
+        "result_recorded_at": {"$ref": "#/$defs/utcTimestamp"}, "checkpoint_created_at": {"$ref": "#/$defs/utcTimestamp"},
+        "handoff_created_at": {"$ref": "#/$defs/utcTimestamp"}, "handoff_recorded_at": {"$ref": "#/$defs/utcTimestamp"}
+      }
+    },
+    "telemetry": {
+      "type": "object", "additionalProperties": false,
+      "required": ["config_path", "config_hash", "ledger_path", "summary_path", "required"],
+      "properties": {
+        "config_path": {"$ref": "#/$defs/relativePath"}, "config_hash": {"$ref": "#/$defs/sha256"},
+        "ledger_path": {"$ref": "#/$defs/relativePath"}, "summary_path": {"$ref": "#/$defs/relativePath"},
+        "required": {"const": true}
+      }
+    },
+    "manualInput": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "source_depth_request_id", "prompt_artifact_id", "target_claim_ids", "prompt_created_at", "inbox_directory", "source_input_path",
+        "result_output_path", "result_ready_receipt_path", "materialization_receipt_path",
+        "allowed_extensions", "max_size_bytes"
+      ],
+      "properties": {
+        "source_depth_request_id": {"type": "string", "pattern": "^source_depth_request_[0-9a-hjkmnp-tv-z]{26}$"},
+        "prompt_artifact_id": {"$ref": "#/$defs/artifactId"}, "prompt_created_at": {"$ref": "#/$defs/utcTimestamp"},
+        "target_claim_ids": {
+          "type": "array", "minItems": 1, "uniqueItems": true,
+          "items": {"type": "string", "pattern": "^claim_[0-9a-hjkmnp-tv-z]{26}$"}
+        },
+        "inbox_directory": {"$ref": "#/$defs/relativePath"}, "source_input_path": {"$ref": "#/$defs/relativePath"},
+        "result_output_path": {"$ref": "#/$defs/relativePath"},
+        "result_ready_receipt_path": {"$ref": "#/$defs/relativePath"},
+        "materialization_receipt_path": {"$ref": "#/$defs/relativePath"},
+        "allowed_extensions": {
+          "type": "array", "minItems": 1, "maxItems": 3, "uniqueItems": true,
+          "items": {"enum": [".json", ".md", ".txt"]}
+        },
+        "max_size_bytes": {"const": 20971520}
+      }
+    }
+  }
+}

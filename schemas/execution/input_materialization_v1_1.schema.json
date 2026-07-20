@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:video-truthfulness:schema:input-materialization:v1.1",
+  "title": "Video Truthfulness Prefix-Bound Input Materialization Receipt v1.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["input_materialization_version", "previous_receipt", "source_binding", "materialized_input", "copy_evidence", "receipt_hash"],
+  "properties": {
+    "input_materialization_version": {"const": "input_materialization_v1.1.0"},
+    "previous_receipt": {"$ref": "#/$defs/previousReceipt"},
+    "source_binding": {"$ref": "#/$defs/sourceBinding"},
+    "materialized_input": {"$ref": "#/$defs/materializedInput"},
+    "copy_evidence": {"$ref": "#/$defs/copyEvidence"},
+    "receipt_hash": {"$ref": "#/$defs/sha256"}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "artifactId": {"type": "string", "pattern": "^artifact_[0-9a-hjkmnp-tv-z]{26}$"},
+    "recordId": {"type": "string", "pattern": "^record_[0-9a-hjkmnp-tv-z]{26}$"},
+    "runId": {"type": "string", "pattern": "^run_[0-9a-hjkmnp-tv-z]{26}$"},
+    "relativePath": {"type": "string", "minLength": 1, "maxLength": 512, "pattern": "^(?![~/])(?![A-Za-z]:)(?!.*(?:^|/)(?:\\.{1,2}|latest)(?:/|$))(?!.*[\\\\*?$%])[^\\\\]+$"},
+    "utcTimestamp": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?Z$"},
+    "previousReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["relative_path", "receipt_version", "file_hash_algorithm", "file_hash", "semantic_hash_algorithm", "semantic_hash"],
+      "properties": {
+        "relative_path": {"$ref": "#/$defs/relativePath"},
+        "receipt_version": {"const": "input_materialization_v1.0.0"},
+        "file_hash_algorithm": {"const": "sha256"},
+        "file_hash": {"$ref": "#/$defs/sha256"},
+        "semantic_hash_algorithm": {"const": "sha256"},
+        "semantic_hash": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "registryPrefixBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["registry_scope", "relative_path", "prefix_hash_algorithm", "prefix_hash", "prefix_size_bytes", "prefix_record_count", "prefix_head_record_id", "prefix_head_record_hash"],
+      "properties": {
+        "registry_scope": {"const": "run"},
+        "relative_path": {"$ref": "#/$defs/relativePath"},
+        "prefix_hash_algorithm": {"const": "sha256"},
+        "prefix_hash": {"$ref": "#/$defs/sha256"},
+        "prefix_size_bytes": {"type": "integer", "minimum": 1},
+        "prefix_record_count": {"type": "integer", "minimum": 1},
+        "prefix_head_record_id": {"$ref": "#/$defs/recordId"},
+        "prefix_head_record_hash": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "sourceBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["run_id", "artifact_id", "record_id", "record_revision", "record_hash", "content_hash_algorithm", "content_hash", "size_bytes", "validation_status", "lifecycle_state", "validation_artifact", "registry"],
+      "properties": {
+        "run_id": {"$ref": "#/$defs/runId"},
+        "artifact_id": {"$ref": "#/$defs/artifactId"},
+        "record_id": {"$ref": "#/$defs/recordId"},
+        "record_revision": {"const": 1},
+        "record_hash": {"$ref": "#/$defs/sha256"},
+        "content_hash_algorithm": {"const": "sha256"},
+        "content_hash": {"$ref": "#/$defs/sha256"},
+        "size_bytes": {"type": "integer", "minimum": 1},
+        "validation_status": {"const": "passed"},
+        "lifecycle_state": {"enum": ["validated", "frozen"]},
+        "validation_artifact": {"$ref": "#/$defs/validationArtifact"},
+        "registry": {"$ref": "#/$defs/registryPrefixBinding"}
+      }
+    },
+    "validationArtifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifact_id", "record_id", "record_revision", "record_hash", "content_hash_algorithm", "content_hash", "validation_status", "lifecycle_state"],
+      "properties": {
+        "artifact_id": {"$ref": "#/$defs/artifactId"},
+        "record_id": {"$ref": "#/$defs/recordId"},
+        "record_revision": {"const": 1},
+        "record_hash": {"$ref": "#/$defs/sha256"},
+        "content_hash_algorithm": {"const": "sha256"},
+        "content_hash": {"$ref": "#/$defs/sha256"},
+        "validation_status": {"const": "passed"},
+        "lifecycle_state": {"enum": ["validated", "frozen"]}
+      }
+    },
+    "materializedInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["authority_level", "storage_root_ref", "relative_path", "content_hash_algorithm", "content_hash", "size_bytes", "target_stat"],
+      "properties": {
+        "authority_level": {"const": "cache"},
+        "storage_root_ref": {"type": "string", "pattern": "^[a-z][a-z0-9_]{2,79}$"},
+        "relative_path": {"$ref": "#/$defs/relativePath"},
+        "content_hash_algorithm": {"const": "sha256"},
+        "content_hash": {"$ref": "#/$defs/sha256"},
+        "size_bytes": {"type": "integer", "minimum": 1},
+        "target_stat": {"$ref": "#/$defs/targetStat"}
+      }
+    },
+    "fileStat": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["size_bytes", "mtime_utc", "creation_time_utc"],
+      "properties": {"size_bytes": {"type": "integer", "minimum": 1}, "mtime_utc": {"$ref": "#/$defs/utcTimestamp"}, "creation_time_utc": {"$ref": "#/$defs/utcTimestamp"}}
+    },
+    "targetStat": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["size_bytes", "unix_mode", "uid", "gid", "regular_file", "symlink"],
+      "properties": {"size_bytes": {"type": "integer", "minimum": 1}, "unix_mode": {"type": "string", "pattern": "^[0-7]{4}$"}, "uid": {"type": "integer", "minimum": 0}, "gid": {"type": "integer", "minimum": 0}, "regular_file": {"const": true}, "symlink": {"const": false}}
+    },
+    "copyEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["operation", "copy_tool", "no_clobber", "destination_existed_before", "source_stat_before", "source_stat_after", "completed_at"],
+      "properties": {"operation": {"const": "copy"}, "copy_tool": {"type": "string", "minLength": 1, "maxLength": 120}, "no_clobber": {"const": true}, "destination_existed_before": {"const": false}, "source_stat_before": {"$ref": "#/$defs/fileStat"}, "source_stat_after": {"$ref": "#/$defs/fileStat"}, "completed_at": {"$ref": "#/$defs/utcTimestamp"}}
+    }
+  }
+}

@@ -6,6 +6,10 @@
 # files that have been reviewed as public showcase material. A new file remains
 # private until it receives an explicit `!` rule below.
 #
+# Publication target for this update: advance `main` from the reviewed baseline
+# b4b8ce5. Branch selection is a Git operation and cannot be enforced here;
+# revalidate the remote main tip before any commit or push.
+#
 # Important: .gitignore does not remove files that are already tracked. Validate
 # this policy with:
 #
@@ -55,6 +59,7 @@
 !/configs/workflows/
 /configs/workflows/*
 !/configs/workflows/youtube_truthfulness_dag_v1.yaml
+!/configs/workflows/youtube_truthfulness_dag_v1_1.yaml
 
 
 # =============================================================================
@@ -69,6 +74,7 @@
 !/docs/interfaces.md
 !/docs/version_and_id_system.md
 !/docs/artifact_registry_and_dag.md
+!/docs/handoff_events_checkpoints.md
 !/docs/versions/
 /docs/versions/*
 !/docs/versions/v01/
@@ -102,11 +108,10 @@
 !/report/V01/Annotation-example.md
 !/report/V01/v0.1成果汇报.md
 
-# Architecture drafts, internal prompts, old-plan snapshots, workflows and
-# acceptance reports remain private. Only the sanitized reference is public.
+# Architecture drafts, the local execution center, internal prompts,
+# legacy snapshots, workflows and acceptance reports remain private.
 !/Optmize/
 /Optmize/*
-!/Optmize/优化方案参考.md
 
 
 # =============================================================================
@@ -155,6 +160,43 @@
 !/examples/artifact_registry/synthetic_run/valid_artifact_record.json
 !/examples/artifact_registry/synthetic_run/invalid_absolute_path_record.json
 
+!/examples/execution_contract/
+/examples/execution_contract/*
+!/examples/execution_contract/synthetic_run/
+/examples/execution_contract/synthetic_run/*
+!/examples/execution_contract/synthetic_run/README.md
+!/examples/execution_contract/synthetic_run/working_tree_manifest.json
+!/examples/execution_contract/synthetic_run/session_manifest.json
+!/examples/execution_contract/synthetic_run/events.jsonl
+!/examples/execution_contract/synthetic_run/artifact_registry.jsonl
+!/examples/execution_contract/synthetic_run/youtube_truthfulness_dag_v1_1.yaml
+!/examples/execution_contract/synthetic_run/current_state.json
+!/examples/execution_contract/synthetic_run/handoff.json
+!/examples/execution_contract/synthetic_run/HANDOFF.md
+!/examples/execution_contract/synthetic_run/checkpoints/
+/examples/execution_contract/synthetic_run/checkpoints/*
+!/examples/execution_contract/synthetic_run/checkpoints/checkpoint_01j00000000000000000000000.json
+!/examples/execution_contract/synthetic_run/artifacts/
+/examples/execution_contract/synthetic_run/artifacts/*
+!/examples/execution_contract/synthetic_run/artifacts/input.json
+!/examples/execution_contract/synthetic_run/artifacts/output.json
+!/examples/execution_contract/synthetic_run/invalid/
+/examples/execution_contract/synthetic_run/invalid/*
+!/examples/execution_contract/synthetic_run/invalid/absolute_path_manifest.json
+!/examples/execution_contract/synthetic_run/invalid/path_escape_manifest.json
+!/examples/execution_contract/synthetic_run/invalid/broad_scope_manifest.json
+!/examples/execution_contract/synthetic_run/invalid/broken_event_chain.jsonl
+!/examples/execution_contract/synthetic_run/invalid/duplicate_event_id.jsonl
+!/examples/execution_contract/synthetic_run/invalid/post_terminal_event.jsonl
+!/examples/execution_contract/synthetic_run/invalid/sensitive_payload_event.json
+!/examples/execution_contract/synthetic_run/invalid/wrong_exp_id_registry_record.json
+!/examples/execution_contract/synthetic_run/invalid/out_of_scope_write_events.jsonl
+!/examples/execution_contract/synthetic_run/invalid/checkpoint_wrong_filename.json
+!/examples/execution_contract/synthetic_run/invalid/checkpoint_hash_mismatch.json
+!/examples/execution_contract/synthetic_run/invalid/state_hash_mismatch.json
+!/examples/execution_contract/synthetic_run/invalid/handoff_hash_mismatch.json
+!/examples/execution_contract/synthetic_run/invalid/HANDOFF_drift.md
+
 
 # =============================================================================
 # E. Reviewed public schemas and schema exporters
@@ -169,11 +211,23 @@
 !/schemas/artifact_registry/
 /schemas/artifact_registry/*
 !/schemas/artifact_registry/artifact_record_v1.schema.json
+!/schemas/artifact_registry/artifact_record_v1_1.schema.json
 !/schemas/artifact_registry/entity_index_v1.schema.json
 
 !/schemas/dag/
 /schemas/dag/*
 !/schemas/dag/youtube_truthfulness_dag_v1.schema.json
+!/schemas/dag/youtube_truthfulness_dag_v1_1.schema.json
+
+!/schemas/execution/
+/schemas/execution/*
+!/schemas/execution/session_manifest_v1.schema.json
+!/schemas/execution/execution_event_v1.schema.json
+!/schemas/execution/execution_event_v1_0_1.schema.json
+!/schemas/execution/input_materialization_v1.schema.json
+!/schemas/execution/execution_checkpoint_v1.schema.json
+!/schemas/execution/handoff_v2.schema.json
+!/schemas/execution/current_state_v1.schema.json
 
 !/schemas/versions/
 /schemas/versions/*
@@ -250,6 +304,20 @@
 !/src/video_truthfulness/core/artifacts/dag.py
 !/src/video_truthfulness/core/artifacts/invalidation.py
 
+!/src/video_truthfulness/core/execution/
+/src/video_truthfulness/core/execution/*
+!/src/video_truthfulness/core/execution/__init__.py
+!/src/video_truthfulness/core/execution/__main__.py
+!/src/video_truthfulness/core/execution/models.py
+!/src/video_truthfulness/core/execution/hashing.py
+!/src/video_truthfulness/core/execution/io.py
+!/src/video_truthfulness/core/execution/events.py
+!/src/video_truthfulness/core/execution/state.py
+!/src/video_truthfulness/core/execution/checkpoints.py
+!/src/video_truthfulness/core/execution/handoff.py
+!/src/video_truthfulness/core/execution/recovery.py
+!/src/video_truthfulness/core/execution/materialization.py
+
 !/src/video_truthfulness/versions/
 /src/video_truthfulness/versions/*
 !/src/video_truthfulness/versions/__init__.py
@@ -304,6 +372,19 @@
 !/tests/shared/artifacts/test_dag_schema.py
 !/tests/shared/artifacts/test_dag_state.py
 !/tests/shared/artifacts/test_invalidation.py
+!/tests/shared/artifacts/test_registry_v11_compat.py
+
+!/tests/shared/execution/
+/tests/shared/execution/*
+!/tests/shared/execution/conftest.py
+!/tests/shared/execution/test_execution_examples.py
+!/tests/shared/execution/test_events.py
+!/tests/shared/execution/test_scope_security.py
+!/tests/shared/execution/test_state.py
+!/tests/shared/execution/test_checkpoints.py
+!/tests/shared/execution/test_handoff.py
+!/tests/shared/execution/test_recovery.py
+!/tests/shared/execution/test_materialization.py
 
 
 # =============================================================================
@@ -371,3 +452,198 @@
 *.webm
 *.sqlite
 *.sqlite3
+*.duckdb
+*.duckdb.wal
+*.parquet
+
+
+# =============================================================================
+# J. G0B exact reviewed publication exceptions
+# =============================================================================
+# This block narrowly overrides section I for the exact reviewed G0B files
+# listed below; the list is authoritative, not a duplicated hard-coded count.
+# Every newly traversable directory is immediately closed again before exact
+# file exceptions are declared.
+
+!/configs/agents/
+/configs/agents/*
+!/configs/agents/stage5_v02_agent_topology_v1.toml
+!/configs/agents/source_depth_agent_v1_2.toml
+
+!/configs/prompts/
+/configs/prompts/*
+!/configs/prompts/v02/
+/configs/prompts/v02/*
+!/configs/prompts/v02/transcript_claim_helper_v1.md
+!/configs/prompts/v02/evidence_lead_helper_v1.md
+!/configs/prompts/v02/contract_auditor_v1.md
+!/configs/prompts/v02/s02_source_depth_prompt_v1_2.md
+
+!/configs/observability/
+/configs/observability/*
+!/configs/observability/model_telemetry_v1.toml
+
+!/configs/workflows/youtube_truthfulness_dag_v1_2.yaml
+!/configs/workflows/youtube_truthfulness_dag_v1_3.yaml
+
+!/schemas/versions/v02/
+/schemas/versions/v02/*
+!/schemas/versions/v02/v02_business_artifact_v1.schema.json
+
+!/schemas/dag/youtube_truthfulness_dag_v1_2.schema.json
+!/schemas/dag/youtube_truthfulness_dag_v1_3.schema.json
+
+!/schemas/execution/stage5_execution_plan_v1.schema.json
+!/schemas/execution/stage5_execution_plan_v1_1.schema.json
+!/schemas/execution/stage5_observation_v1.schema.json
+!/schemas/execution/input_materialization_v1_1.schema.json
+!/schemas/execution/session_manifest_v1_1.schema.json
+!/schemas/execution/execution_checkpoint_v1_1.schema.json
+!/schemas/execution/current_state_v1_1.schema.json
+!/schemas/execution/handoff_v2_1.schema.json
+!/schemas/execution/manual_external_input_receipt_v1.schema.json
+!/schemas/execution/model_call_event_v1.schema.json
+!/schemas/execution/model_usage_summary_v1.schema.json
+
+!/src/video_truthfulness/versions/v02/business_models.py
+!/src/video_truthfulness/versions/v02/stage5_collector.py
+!/src/video_truthfulness/core/execution/model_telemetry.py
+
+!/tests/versions/v02/
+/tests/versions/v02/*
+!/tests/versions/v02/test_business_models.py
+!/tests/versions/v02/test_stage5_collector.py
+!/tests/versions/v02/test_stage5_model_telemetry.py
+!/tests/shared/execution/test_model_telemetry.py
+
+!/examples/versions/v02/
+/examples/versions/v02/*
+!/examples/versions/v02/stage5_synthetic/
+/examples/versions/v02/stage5_synthetic/*
+!/examples/versions/v02/stage5_synthetic/README.md
+!/examples/versions/v02/stage5_synthetic/model_telemetry/
+/examples/versions/v02/stage5_synthetic/model_telemetry/*
+!/examples/versions/v02/stage5_synthetic/model_telemetry/README.md
+
+!/docs/model_telemetry.md
+
+# =============================================================================
+# K. GDB1 exact reviewed publication exceptions
+# =============================================================================
+# The database/label successor remains synthetic-only.  Runtime exports,
+# DuckDB databases, Parquet projections and private storage mappings stay
+# ignored by section H and the extensions above. Machine-specific OCR freezes,
+# their successor generator, and dependent S01 runner/finalizer tests also stay
+# local so the public tree contains no personal environment contract.
+
+!/configs/agents/stage5_v02_agent_topology_v1_1.toml
+!/configs/prompts/youtube_claim_extraction_v1_1.txt
+!/configs/prompts/youtube_claim_atomic_split_v1_1.txt
+!/configs/prompts/youtube_claim_atomic_split_repair_v1.txt
+
+!/configs/storage/
+/configs/storage/*
+!/configs/storage/claim_warehouse_v1.toml
+!/configs/storage/claim_warehouse_requirements.freeze.txt
+
+!/configs/versions/v02/
+/configs/versions/v02/*
+!/configs/versions/v02/claim_taxonomy_v1.toml
+
+!/configs/workflows/youtube_truthfulness_dag_v1_4.yaml
+
+!/schemas/artifact_registry/artifact_record_v1_2.schema.json
+!/schemas/dag/youtube_truthfulness_dag_v1_4.schema.json
+
+!/schemas/warehouse/
+/schemas/warehouse/*
+!/schemas/warehouse/claim_warehouse_v1.sql
+!/schemas/warehouse/claim_warehouse_export_manifest_v1.schema.json
+!/schemas/warehouse/claim_warehouse_load_plan_v1.schema.json
+!/schemas/warehouse/claim_warehouse_load_batch_v1.schema.json
+!/schemas/warehouse/claim_warehouse_load_receipt_v1.schema.json
+!/schemas/warehouse/claim_warehouse_projection_attempt_v1.schema.json
+
+!/schemas/versions/v02/v02_business_artifact_v1_2.schema.json
+!/schemas/versions/v02/v02_claim_taxonomy_v1.schema.json
+
+!/schemas/execution/stage5_s01_execution_plan_v1_3.schema.json
+!/schemas/execution/session_manifest_v1_3.schema.json
+!/schemas/execution/current_state_v1_3.schema.json
+!/schemas/execution/execution_checkpoint_v1_3.schema.json
+!/schemas/execution/handoff_v2_3.schema.json
+!/schemas/execution/stage5_s01_fresh_recovery_request_v1_1.schema.json
+!/schemas/execution/stage5_s01_fresh_recovery_result_v1_1.schema.json
+
+!/src/video_truthfulness/versions/v02/warehouse_models.py
+!/src/video_truthfulness/versions/v02/warehouse_export.py
+!/src/video_truthfulness/versions/v02/warehouse_loader.py
+!/src/video_truthfulness/versions/v02/warehouse_projection.py
+
+!/scripts/validate_claim_warehouse.py
+
+!/tests/versions/v02/test_warehouse_models.py
+!/tests/versions/v02/test_warehouse_export.py
+!/tests/versions/v02/test_warehouse_loader.py
+!/tests/versions/v02/test_claim_taxonomy.py
+!/tests/shared/artifacts/test_registry_v12_external_storage.py
+
+!/examples/versions/v02/claim_warehouse/
+/examples/versions/v02/claim_warehouse/*
+!/examples/versions/v02/claim_warehouse/README.md
+!/examples/versions/v02/claim_warehouse/export_manifest.json
+!/examples/versions/v02/claim_warehouse/rows.jsonl
+!/examples/versions/v02/claim_warehouse/load_receipt.json
+
+!/docs/claim_warehouse.md
+
+!/report/V02/
+/report/V02/*
+!/report/V02/Annotation-schema.md
+
+
+
+# =============================================================================
+# L. main publication: sensitive directory-only envelopes
+# =============================================================================
+#
+# Sensitive contents stay ignored. These rules expose only stable directory
+# boundaries to Git's matcher and never re-include a file from those trees.
+# Git cannot store a truly empty directory, so the public README documents the
+# directory topology; no placeholder is added to Center/, which must retain one
+# local file only: Center/执行中枢.md.
+#
+# Do not add `!/**`, subtree-wide exceptions, dynamic run IDs, user-specific
+# directory names or local Agent/cache directories here.
+
+/AGENTS.md
+
+!/Center/
+/Center/*
+
+!/cookie/
+/cookie/*
+
+!/data/
+/data/*
+
+!/experiments/
+/experiments/*
+
+!/runtime/
+/runtime/*
+
+!/sources/
+/sources/*
+
+!/runs/V01/
+/runs/V01/*
+!/runs/V02/
+/runs/V02/*
+
+!/Optmize/workflows/
+/Optmize/workflows/*
+!/Optmize/old-plan/
+/Optmize/old-plan/*
+!/Optmize/lagcy/
+/Optmize/lagcy/*

@@ -1,0 +1,450 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:video-truthfulness:schema:v02-business-artifact:v1",
+  "title": "Video Truthfulness V02 Business Artifact v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "artifact_schema_version", "artifact_id", "artifact_type", "run_id", "stage_id",
+    "dag_node_id", "upstream_artifact_ids", "created_at", "payload", "artifact_hash"
+  ],
+  "properties": {
+    "artifact_schema_version": {"const": "v02_business_artifact_v1.0.0"},
+    "artifact_id": {"$ref": "#/$defs/artifactId"},
+    "artifact_type": {
+      "enum": [
+        "acquisition.decision", "transcript.path_decision", "media.audio", "transcript.raw",
+        "transcript.normalized", "transcript.alignment", "ocr.gate_decision", "ocr.result",
+        "claim.collection", "claim.entity_index", "claim.atomic_collection", "evidence.collection",
+        "evidence.entity_index", "evidence.merged_collection", "verdict.collection",
+        "verdict.entity_index", "verdict.rebuilt_collection", "report.machine", "report.rebuilt",
+        "source_depth.decision", "source_depth.prompt", "source_depth.result",
+        "source_depth.import_validation", "screening.sync_record"
+      ]
+    },
+    "run_id": {"$ref": "#/$defs/runId"},
+    "stage_id": {"enum": ["S01", "S02"]},
+    "dag_node_id": {"$ref": "#/$defs/nodeId"},
+    "upstream_artifact_ids": {
+      "type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/artifactId"}
+    },
+    "created_at": {"$ref": "#/$defs/utcTimestamp"},
+    "payload": {"type": "object"},
+    "artifact_hash": {"$ref": "#/$defs/sha256"}
+  },
+  "oneOf": [
+    {"properties": {"artifact_type": {"const": "acquisition.decision"}, "payload": {"$ref": "#/$defs/acquisitionDecision"}}},
+    {"properties": {"artifact_type": {"const": "transcript.path_decision"}, "payload": {"$ref": "#/$defs/transcriptPathDecision"}}},
+    {"properties": {"artifact_type": {"const": "media.audio"}, "payload": {"$ref": "#/$defs/mediaAudio"}}},
+    {"properties": {"artifact_type": {"const": "transcript.raw"}, "payload": {"$ref": "#/$defs/transcriptRaw"}}},
+    {"properties": {"artifact_type": {"const": "transcript.normalized"}, "payload": {"$ref": "#/$defs/transcriptNormalized"}}},
+    {"properties": {"artifact_type": {"const": "transcript.alignment"}, "payload": {"$ref": "#/$defs/transcriptAlignment"}}},
+    {"properties": {"artifact_type": {"const": "ocr.gate_decision"}, "payload": {"$ref": "#/$defs/ocrGateDecision"}}},
+    {"properties": {"artifact_type": {"const": "ocr.result"}, "payload": {"$ref": "#/$defs/ocrResult"}}},
+    {"properties": {"artifact_type": {"const": "claim.collection"}, "payload": {"$ref": "#/$defs/claimCollection"}}},
+    {"properties": {"artifact_type": {"const": "claim.atomic_collection"}, "payload": {"$ref": "#/$defs/atomicClaimCollection"}}},
+    {"properties": {"artifact_type": {"const": "claim.entity_index"}, "payload": {"$ref": "#/$defs/claimEntityIndex"}}},
+    {"properties": {"artifact_type": {"const": "evidence.entity_index"}, "payload": {"$ref": "#/$defs/evidenceEntityIndex"}}},
+    {"properties": {"artifact_type": {"const": "verdict.entity_index"}, "payload": {"$ref": "#/$defs/verdictEntityIndex"}}},
+    {"properties": {"artifact_type": {"const": "evidence.collection"}, "payload": {"$ref": "#/$defs/evidenceCollection"}}},
+    {"properties": {"artifact_type": {"const": "verdict.collection"}, "payload": {"$ref": "#/$defs/verdictCollection"}}},
+    {"properties": {"artifact_type": {"const": "report.machine"}, "payload": {"$ref": "#/$defs/machineReport"}}},
+    {"properties": {"artifact_type": {"const": "source_depth.decision"}, "payload": {"$ref": "#/$defs/sourceDepthDecision"}}},
+    {"properties": {"artifact_type": {"const": "source_depth.prompt"}, "payload": {"$ref": "#/$defs/sourceDepthPrompt"}}},
+    {"properties": {"artifact_type": {"const": "source_depth.result"}, "payload": {"$ref": "#/$defs/sourceDepthResult"}}},
+    {"properties": {"artifact_type": {"const": "source_depth.import_validation"}, "payload": {"$ref": "#/$defs/sourceDepthImportValidation"}}},
+    {"properties": {"artifact_type": {"const": "evidence.merged_collection"}, "payload": {"$ref": "#/$defs/evidenceMergedCollection"}}},
+    {"properties": {"artifact_type": {"const": "verdict.rebuilt_collection"}, "payload": {"$ref": "#/$defs/verdictRebuiltCollection"}}},
+    {"properties": {"artifact_type": {"const": "report.rebuilt"}, "payload": {"$ref": "#/$defs/rebuiltReport"}}},
+    {"properties": {"artifact_type": {"const": "screening.sync_record"}, "payload": {"$ref": "#/$defs/screeningSync"}}}
+  ],
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "artifactId": {"type": "string", "pattern": "^artifact_[0-9a-hjkmnp-tv-z]{26}$"},
+    "runId": {"type": "string", "pattern": "^run_[0-9a-hjkmnp-tv-z]{26}$"},
+    "nodeId": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"},
+    "utcTimestamp": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?Z$"},
+    "recordId": {"type": "string", "pattern": "^record_[0-9a-hjkmnp-tv-z]{26}$"},
+    "claimId": {"type": "string", "pattern": "^claim_[0-9a-hjkmnp-tv-z]{26}$"},
+    "evidenceId": {"type": "string", "pattern": "^evidence_[0-9a-hjkmnp-tv-z]{26}$"},
+    "verdictId": {"type": "string", "pattern": "^verdict_[0-9a-hjkmnp-tv-z]{26}$"},
+    "relativePath": {
+      "type": "string", "minLength": 1, "maxLength": 512,
+      "pattern": "^(?![~/])(?![A-Za-z]:)(?!.*(?:^|/)(?:\\.{1,2}|latest)(?:/|$))(?!.*[\\\\*?$%])[^\\\\]+$"
+    },
+    "artifactBinding": {
+      "type": "object", "additionalProperties": false,
+      "required": ["artifact_id", "record_id", "content_hash"],
+      "properties": {
+        "artifact_id": {"$ref": "#/$defs/artifactId"}, "record_id": {"$ref": "#/$defs/recordId"},
+        "content_hash": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "fileBinding": {
+      "type": "object", "additionalProperties": false,
+      "required": ["relative_path", "content_hash_algorithm", "content_hash", "size_bytes"],
+      "properties": {
+        "relative_path": {"$ref": "#/$defs/relativePath"}, "content_hash_algorithm": {"const": "sha256"},
+        "content_hash": {"$ref": "#/$defs/sha256"}, "size_bytes": {"type": "integer", "minimum": 0}
+      }
+    },
+    "timeLocator": {
+      "type": "object", "additionalProperties": false, "required": ["start_ms", "end_ms"],
+      "properties": {"start_ms": {"type": "integer", "minimum": 0}, "end_ms": {"type": "integer", "minimum": 1}}
+    },
+    "wordTimestamp": {
+      "type": "object", "additionalProperties": false, "required": ["word", "start_ms", "end_ms", "probability"],
+      "properties": {
+        "word": {"type": "string", "minLength": 1, "maxLength": 240}, "start_ms": {"type": "integer", "minimum": 0},
+        "end_ms": {"type": "integer", "minimum": 1},
+        "probability": {"oneOf": [{"type": "number", "minimum": 0, "maximum": 1}, {"type": "null"}]}
+      }
+    },
+    "transcriptSegment": {
+      "type": "object", "additionalProperties": false,
+      "required": ["segment_id", "locator", "text", "words", "uncertainty"],
+      "properties": {
+        "segment_id": {"type": "string", "pattern": "^segment_[0-9a-hjkmnp-tv-z]{26}$"},
+        "locator": {"$ref": "#/$defs/timeLocator"}, "text": {"type": "string", "minLength": 1, "maxLength": 20000},
+        "words": {"type": "array", "items": {"$ref": "#/$defs/wordTimestamp"}},
+        "uncertainty": {"enum": ["low", "medium", "high", "unavailable"]}
+      }
+    },
+    "normalizedSegment": {
+      "type": "object", "additionalProperties": false,
+      "required": ["segment_id", "raw_segment_id", "raw_text", "normalized_text", "term_mappings", "unresolved_ambiguities"],
+      "properties": {
+        "segment_id": {"type": "string", "pattern": "^segment_[0-9a-hjkmnp-tv-z]{26}$"},
+        "raw_segment_id": {"type": "string", "pattern": "^segment_[0-9a-hjkmnp-tv-z]{26}$"},
+        "raw_text": {"type": "string", "minLength": 1, "maxLength": 20000},
+        "normalized_text": {"type": "string", "minLength": 1, "maxLength": 20000},
+        "term_mappings": {"type": "array", "items": {"type": "string"}},
+        "unresolved_ambiguities": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "alignmentEntry": {
+      "type": "object", "additionalProperties": false,
+      "required": ["raw_segment_id", "normalized_segment_id", "locator", "ocr_entry_ids"],
+      "properties": {
+        "raw_segment_id": {"type": "string", "pattern": "^segment_[0-9a-hjkmnp-tv-z]{26}$"},
+        "normalized_segment_id": {"type": "string", "pattern": "^segment_[0-9a-hjkmnp-tv-z]{26}$"},
+        "locator": {"$ref": "#/$defs/timeLocator"}, "ocr_entry_ids": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "frameBudget": {
+      "type": "object", "additionalProperties": false,
+      "required": ["run_max_frames", "trigger_max_frames", "adjacent_min_interval_ms"],
+      "properties": {
+        "run_max_frames": {"type": "integer", "minimum": 0, "maximum": 24},
+        "trigger_max_frames": {"type": "integer", "minimum": 0, "maximum": 3},
+        "adjacent_min_interval_ms": {"type": "integer", "minimum": 2000}
+      }
+    },
+    "ocrEntry": {
+      "type": "object", "additionalProperties": false,
+      "required": ["ocr_entry_id", "frame_relative_path", "frame_content_hash", "timestamp_ms", "raw_text", "confidence", "trigger_reason"],
+      "properties": {
+        "ocr_entry_id": {"type": "string", "pattern": "^ocr_entry_[0-9a-hjkmnp-tv-z]{26}$"},
+        "frame_relative_path": {"$ref": "#/$defs/relativePath"}, "frame_content_hash": {"$ref": "#/$defs/sha256"},
+        "timestamp_ms": {"type": "integer", "minimum": 0}, "raw_text": {"type": "string", "minLength": 1, "maxLength": 20000},
+        "confidence": {"oneOf": [{"type": "number", "minimum": 0, "maximum": 1}, {"type": "null"}]},
+        "trigger_reason": {"type": "string", "minLength": 1, "maxLength": 500}
+      }
+    },
+    "claimItem": {
+      "type": "object", "additionalProperties": false,
+      "required": ["claim_id", "display_no", "raw_context", "normalized_claim", "locator", "namespace"],
+      "properties": {
+        "claim_id": {"$ref": "#/$defs/claimId"}, "display_no": {"type": "integer", "minimum": 1},
+        "raw_context": {"type": "string", "minLength": 1, "maxLength": 20000},
+        "normalized_claim": {"type": "string", "minLength": 1, "maxLength": 5000},
+        "locator": {"$ref": "#/$defs/timeLocator"}, "namespace": {"const": "machine_candidate"}
+      }
+    },
+    "atomicClaimItem": {
+      "type": "object", "additionalProperties": false,
+      "required": ["claim_id", "parent_claim_id", "split_relation", "atomic_text", "checkability", "source_depth_candidate", "locator"],
+      "properties": {
+        "claim_id": {"$ref": "#/$defs/claimId"}, "parent_claim_id": {"$ref": "#/$defs/claimId"},
+        "split_relation": {"const": "atomic_child"}, "atomic_text": {"type": "string", "minLength": 1, "maxLength": 5000},
+        "checkability": {"enum": ["checkable", "context_only", "not_checkable"]},
+        "source_depth_candidate": {"type": "boolean"}, "locator": {"$ref": "#/$defs/timeLocator"}
+      }
+    },
+    "indexEntry": {
+      "type": "object", "additionalProperties": false,
+      "required": ["entity_id", "semantic_hash", "parent_entity_id", "upstream_entity_ids", "locator"],
+      "properties": {
+        "entity_id": {"type": "string", "minLength": 1, "maxLength": 80}, "semantic_hash": {"$ref": "#/$defs/sha256"},
+        "parent_entity_id": {"oneOf": [{"type": "string", "maxLength": 80}, {"type": "null"}]},
+        "upstream_entity_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+        "locator": {"oneOf": [{"$ref": "#/$defs/timeLocator"}, {"type": "null"}]}
+      }
+    },
+    "evidenceItem": {
+      "type": "object", "additionalProperties": false,
+      "required": ["evidence_id", "claim_ids", "source_type", "publisher", "published_date", "retrieved_at", "canonical_url", "stable_locator", "excerpt", "relation", "quality"],
+      "properties": {
+        "evidence_id": {"$ref": "#/$defs/evidenceId"},
+        "claim_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/claimId"}},
+        "source_type": {"enum": ["official", "primary_report", "paper", "database", "high_quality_secondary"]},
+        "publisher": {"type": "string", "minLength": 1, "maxLength": 300},
+        "published_date": {"oneOf": [{"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"}, {"type": "null"}]},
+        "retrieved_at": {"$ref": "#/$defs/utcTimestamp"},
+        "canonical_url": {"oneOf": [{"type": "string", "pattern": "^https?://[^\\s]+$", "maxLength": 2048}, {"type": "null"}]},
+        "stable_locator": {"oneOf": [{"type": "string", "maxLength": 500}, {"type": "null"}]},
+        "excerpt": {"type": "string", "minLength": 1, "maxLength": 20000},
+        "relation": {"enum": ["supports", "refutes", "context", "conflicts", "unresolved"]},
+        "quality": {"enum": ["high", "medium", "low", "clue_only"]}
+      }
+    },
+    "verdictItem": {
+      "type": "object", "additionalProperties": false,
+      "required": ["verdict_id", "claim_id", "evidence_ids", "candidate_verdict", "reason", "uncertainty", "review_status"],
+      "properties": {
+        "verdict_id": {"$ref": "#/$defs/verdictId"}, "claim_id": {"$ref": "#/$defs/claimId"},
+        "evidence_ids": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/evidenceId"}},
+        "candidate_verdict": {"enum": ["supported", "refuted", "mixed", "insufficient", "unverifiable"]},
+        "reason": {"type": "string", "minLength": 1, "maxLength": 10000},
+        "uncertainty": {"enum": ["low", "medium", "high"]}, "review_status": {"const": "machine_pending"}
+      }
+    },
+    "reportClaimRef": {
+      "type": "object", "additionalProperties": false, "required": ["claim_id", "verdict_id"],
+      "properties": {"claim_id": {"$ref": "#/$defs/claimId"}, "verdict_id": {"$ref": "#/$defs/verdictId"}}
+    },
+    "sourceDepthTarget": {
+      "type": "object", "additionalProperties": false, "required": ["claim_id", "gap", "preferred_source_types"],
+      "properties": {
+        "claim_id": {"$ref": "#/$defs/claimId"}, "gap": {"type": "string", "minLength": 1, "maxLength": 2000},
+        "preferred_source_types": {"type": "array", "minItems": 1, "items": {"enum": ["official", "primary_report", "paper", "database"]}}
+      }
+    },
+    "visibleModel": {
+      "type": "object", "additionalProperties": false, "required": ["value", "status", "source"],
+      "properties": {
+        "value": {"oneOf": [{"type": "string", "maxLength": 160}, {"type": "null"}]},
+        "status": {"enum": ["reported", "unavailable"]}, "source": {"enum": ["ui_label", "not_exposed"]}
+      }
+    },
+    "importSource": {
+      "type": "object", "additionalProperties": false,
+      "required": ["claim_id", "classification", "canonical_url", "excerpt_verified", "lead_status", "rejection_reason"],
+      "properties": {
+        "claim_id": {"$ref": "#/$defs/claimId"},
+        "classification": {"enum": ["supports", "refutes", "context", "conflict", "unresolved", "rejected"]},
+        "canonical_url": {"oneOf": [{"type": "string", "pattern": "^https?://[^\\s]+$", "maxLength": 2048}, {"type": "null"}]},
+        "excerpt_verified": {"type": "boolean"},
+        "lead_status": {"enum": ["evidence", "clue_only", "no_evidence", "source_blocked", "pending"]},
+        "rejection_reason": {"oneOf": [{"type": "string", "maxLength": 500}, {"type": "null"}]}
+      }
+    },
+    "acquisitionDecision": {
+      "type": "object", "additionalProperties": false,
+      "required": ["source_id", "selected_existing_node_id", "selected_media", "redownload_forbidden", "authorization_source"],
+      "properties": {
+        "source_id": {"type": "string", "pattern": "^youtube_[A-Za-z0-9_-]{11}$"},
+        "selected_existing_node_id": {"const": "public_no_cookie_download"}, "selected_media": {"$ref": "#/$defs/artifactBinding"},
+        "redownload_forbidden": {"const": true}, "authorization_source": {"const": "G0A_D03_reuse_registered_validated_media"}
+      }
+    },
+    "transcriptPathDecision": {
+      "type": "object", "additionalProperties": false,
+      "required": ["selected_path", "subtitle_status", "parent_media_validation", "media_artifact_id"],
+      "properties": {
+        "selected_path": {"const": "audio_asr"}, "subtitle_status": {"enum": ["not_registered", "not_authorized"]},
+        "parent_media_validation": {"$ref": "#/$defs/artifactBinding"}, "media_artifact_id": {"$ref": "#/$defs/artifactId"}
+      }
+    },
+    "mediaAudio": {
+      "type": "object", "additionalProperties": false,
+      "required": ["codec", "container_format", "channels", "sample_rate_hz", "duration_ms", "parent_media_content_hash", "ffmpeg_content_hash", "extraction_parameters_hash", "output_content_hash"],
+      "properties": {
+        "codec": {"const": "pcm_s16le"}, "container_format": {"const": "wav"}, "channels": {"const": 1},
+        "sample_rate_hz": {"const": 16000}, "duration_ms": {"type": "integer", "minimum": 1},
+        "parent_media_content_hash": {"$ref": "#/$defs/sha256"}, "ffmpeg_content_hash": {"$ref": "#/$defs/sha256"},
+        "extraction_parameters_hash": {"$ref": "#/$defs/sha256"}, "output_content_hash": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "transcriptRaw": {
+      "type": "object", "additionalProperties": false,
+      "required": ["parent_audio_artifact_id", "asr_engine", "asr_engine_version", "asr_model", "asr_model_revision", "asr_parameters_hash", "language", "segments"],
+      "properties": {
+        "parent_audio_artifact_id": {"$ref": "#/$defs/artifactId"}, "asr_engine": {"const": "faster-whisper"},
+        "asr_engine_version": {"type": "string", "minLength": 1, "maxLength": 80}, "asr_model": {"const": "large-v3"},
+        "asr_model_revision": {"type": "string", "minLength": 1, "maxLength": 200}, "asr_parameters_hash": {"$ref": "#/$defs/sha256"},
+        "language": {"const": "zh"}, "segments": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/transcriptSegment"}}
+      }
+    },
+    "transcriptNormalized": {
+      "type": "object", "additionalProperties": false, "required": ["raw_transcript_artifact_id", "preserves_raw", "segments"],
+      "properties": {
+        "raw_transcript_artifact_id": {"$ref": "#/$defs/artifactId"}, "preserves_raw": {"const": true},
+        "segments": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/normalizedSegment"}}
+      }
+    },
+    "transcriptAlignment": {
+      "type": "object", "additionalProperties": false,
+      "required": ["raw_transcript_artifact_id", "normalized_transcript_artifact_id", "ocr_gate_decision_artifact_id", "ocr_result_artifact_id", "complete", "alignments"],
+      "properties": {
+        "raw_transcript_artifact_id": {"$ref": "#/$defs/artifactId"}, "normalized_transcript_artifact_id": {"$ref": "#/$defs/artifactId"},
+        "ocr_gate_decision_artifact_id": {"$ref": "#/$defs/artifactId"},
+        "ocr_result_artifact_id": {"oneOf": [{"$ref": "#/$defs/artifactId"}, {"type": "null"}]}, "complete": {"const": true},
+        "alignments": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/alignmentEntry"}}
+      }
+    },
+    "ocrGateDecision": {
+      "type": "object", "additionalProperties": false,
+      "required": ["gate_state", "trigger_basis", "input_bindings", "frame_budget", "adapter_profile_version"],
+      "properties": {
+        "gate_state": {"enum": ["NOT_APPLICABLE", "REQUIRED_BLOCKED", "EXECUTED"]},
+        "trigger_basis": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+        "input_bindings": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/artifactBinding"}},
+        "frame_budget": {"$ref": "#/$defs/frameBudget"},
+        "adapter_profile_version": {"oneOf": [{"type": "string", "maxLength": 120}, {"type": "null"}]}
+      }
+    },
+    "ocrResult": {
+      "type": "object", "additionalProperties": false,
+      "required": ["gate_decision_artifact_id", "engine_name", "engine_revision", "profile_version", "entries"],
+      "properties": {
+        "gate_decision_artifact_id": {"$ref": "#/$defs/artifactId"}, "engine_name": {"type": "string", "minLength": 1, "maxLength": 120},
+        "engine_revision": {"type": "string", "minLength": 1, "maxLength": 160},
+        "profile_version": {"type": "string", "minLength": 1, "maxLength": 120},
+        "entries": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/ocrEntry"}}
+      }
+    },
+    "claimCollection": {
+      "type": "object", "additionalProperties": false, "required": ["transcript_artifact_id", "claims"],
+      "properties": {"transcript_artifact_id": {"$ref": "#/$defs/artifactId"}, "claims": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/claimItem"}}}
+    },
+    "atomicClaimCollection": {
+      "type": "object", "additionalProperties": false, "required": ["parent_claim_collection_artifact_id", "claims"],
+      "properties": {"parent_claim_collection_artifact_id": {"$ref": "#/$defs/artifactId"}, "claims": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/atomicClaimItem"}}}
+    },
+    "claimEntityIndex": {
+      "type": "object", "additionalProperties": false, "required": ["container", "index_revision", "supersedes_artifact_id", "entries"],
+      "properties": {
+        "container": {"$ref": "#/$defs/artifactBinding"}, "index_revision": {"enum": ["initial", "atomic_superseding"]},
+        "supersedes_artifact_id": {"oneOf": [{"$ref": "#/$defs/artifactId"}, {"type": "null"}]},
+        "entries": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/indexEntry"}}
+      }
+    },
+    "evidenceEntityIndex": {
+      "type": "object", "additionalProperties": false, "required": ["container", "claim_collection_artifact_id", "entries"],
+      "properties": {
+        "container": {"$ref": "#/$defs/artifactBinding"}, "claim_collection_artifact_id": {"$ref": "#/$defs/artifactId"},
+        "entries": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/indexEntry"}}
+      }
+    },
+    "verdictEntityIndex": {
+      "type": "object", "additionalProperties": false,
+      "required": ["container", "claim_collection_artifact_id", "evidence_collection_artifact_id", "entries"],
+      "properties": {
+        "container": {"$ref": "#/$defs/artifactBinding"}, "claim_collection_artifact_id": {"$ref": "#/$defs/artifactId"},
+        "evidence_collection_artifact_id": {"$ref": "#/$defs/artifactId"},
+        "entries": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/indexEntry"}}
+      }
+    },
+    "evidenceCollection": {
+      "type": "object", "additionalProperties": false, "required": ["claim_collection_artifact_id", "evidence"],
+      "properties": {"claim_collection_artifact_id": {"$ref": "#/$defs/artifactId"}, "evidence": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/evidenceItem"}}}
+    },
+    "verdictCollection": {
+      "type": "object", "additionalProperties": false,
+      "required": ["claim_collection_artifact_id", "evidence_collection_artifact_id", "verdicts"],
+      "properties": {
+        "claim_collection_artifact_id": {"$ref": "#/$defs/artifactId"}, "evidence_collection_artifact_id": {"$ref": "#/$defs/artifactId"},
+        "verdicts": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/verdictItem"}}
+      }
+    },
+    "machineReport": {
+      "type": "object", "additionalProperties": false,
+      "required": ["input_bindings", "summary", "claim_refs", "deterministic_template_version"],
+      "properties": {
+        "input_bindings": {"type": "array", "minItems": 2, "items": {"$ref": "#/$defs/artifactBinding"}},
+        "summary": {"type": "string", "minLength": 1, "maxLength": 20000},
+        "claim_refs": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/reportClaimRef"}},
+        "deterministic_template_version": {"type": "string", "minLength": 1, "maxLength": 120}
+      }
+    },
+    "sourceDepthDecision": {
+      "type": "object", "additionalProperties": false, "required": ["route", "targets"],
+      "properties": {"route": {"enum": ["no_depth", "depth"]}, "targets": {"type": "array", "items": {"$ref": "#/$defs/sourceDepthTarget"}}}
+    },
+    "sourceDepthPrompt": {
+      "type": "object", "additionalProperties": false,
+      "required": ["source_depth_request_id", "target_claims", "bounded_context", "current_evidence_ids", "return_contract_version", "require_canonical_urls"],
+      "properties": {
+        "source_depth_request_id": {"type": "string", "pattern": "^source_depth_request_[0-9a-hjkmnp-tv-z]{26}$"},
+        "target_claims": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/sourceDepthTarget"}},
+        "bounded_context": {"type": "array", "items": {"type": "string"}},
+        "current_evidence_ids": {"type": "array", "items": {"$ref": "#/$defs/evidenceId"}},
+        "return_contract_version": {"const": "source_depth_manual_return_v1.0.0"}, "require_canonical_urls": {"const": true}
+      }
+    },
+    "sourceDepthResult": {
+      "type": "object", "additionalProperties": false,
+      "required": ["capture_mode", "source_depth_request_id", "prompt_artifact_id", "source_file", "visible_model", "received_at", "raw_content_hash", "raw_content"],
+      "properties": {
+        "capture_mode": {"const": "manual_gemini_web"},
+        "source_depth_request_id": {"type": "string", "pattern": "^source_depth_request_[0-9a-hjkmnp-tv-z]{26}$"},
+        "prompt_artifact_id": {"$ref": "#/$defs/artifactId"}, "source_file": {"$ref": "#/$defs/fileBinding"},
+        "visible_model": {"$ref": "#/$defs/visibleModel"}, "received_at": {"$ref": "#/$defs/utcTimestamp"},
+        "raw_content_hash": {"$ref": "#/$defs/sha256"},
+        "raw_content": {"oneOf": [{"type": "string"}, {"type": "object"}, {"type": "array"}]}
+      }
+    },
+    "sourceDepthImportValidation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["source_depth_result_artifact_id", "mapped_claim_ids", "deduplicated_document_count", "sources", "conflicts", "rejected_count"],
+      "properties": {
+        "source_depth_result_artifact_id": {"$ref": "#/$defs/artifactId"},
+        "mapped_claim_ids": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/claimId"}},
+        "deduplicated_document_count": {"type": "integer", "minimum": 0},
+        "sources": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/importSource"}},
+        "conflicts": {"type": "array", "items": {"type": "string"}}, "rejected_count": {"type": "integer", "minimum": 0}
+      }
+    },
+    "evidenceMergedCollection": {
+      "type": "object", "additionalProperties": false,
+      "required": ["base_evidence", "import_validation_artifact_id", "preserved_evidence_ids", "added_evidence", "diff_summary"],
+      "properties": {
+        "base_evidence": {"$ref": "#/$defs/artifactBinding"}, "import_validation_artifact_id": {"$ref": "#/$defs/artifactId"},
+        "preserved_evidence_ids": {"type": "array", "items": {"$ref": "#/$defs/evidenceId"}},
+        "added_evidence": {"type": "array", "items": {"$ref": "#/$defs/evidenceItem"}},
+        "diff_summary": {"type": "string", "minLength": 1, "maxLength": 5000}
+      }
+    },
+    "verdictRebuiltCollection": {
+      "type": "object", "additionalProperties": false,
+      "required": ["base_verdict", "merged_evidence_artifact_id", "verdicts", "before_after_summary"],
+      "properties": {
+        "base_verdict": {"$ref": "#/$defs/artifactBinding"}, "merged_evidence_artifact_id": {"$ref": "#/$defs/artifactId"},
+        "verdicts": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/verdictItem"}},
+        "before_after_summary": {"type": "string", "minLength": 1, "maxLength": 5000}
+      }
+    },
+    "rebuiltReport": {
+      "type": "object", "additionalProperties": false,
+      "required": ["input_bindings", "summary", "claim_refs", "deterministic_template_version", "before_after_summary"],
+      "properties": {
+        "input_bindings": {"type": "array", "minItems": 2, "items": {"$ref": "#/$defs/artifactBinding"}},
+        "summary": {"type": "string", "minLength": 1, "maxLength": 20000},
+        "claim_refs": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/reportClaimRef"}},
+        "deterministic_template_version": {"type": "string", "minLength": 1, "maxLength": 120},
+        "before_after_summary": {"type": "string", "minLength": 1, "maxLength": 5000}
+      }
+    },
+    "screeningSync": {
+      "type": "object", "additionalProperties": false,
+      "required": ["selected_report", "selected_report_kind", "claim_ids", "source_depth_terminal", "next_stage", "execution_authorized"],
+      "properties": {
+        "selected_report": {"$ref": "#/$defs/artifactBinding"}, "selected_report_kind": {"enum": ["machine", "rebuilt"]},
+        "claim_ids": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/claimId"}},
+        "source_depth_terminal": {"enum": ["NO_DEPTH", "IMPORTED"]}, "next_stage": {"const": "S03"},
+        "execution_authorized": {"const": false}
+      }
+    }
+  }
+}

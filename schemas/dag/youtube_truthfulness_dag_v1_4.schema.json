@@ -1,0 +1,289 @@
+{
+  "$defs": {
+    "DAGNode": {
+      "additionalProperties": false,
+      "properties": {
+        "conditional_outputs": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Conditional Outputs",
+          "type": "array"
+        },
+        "declared_outputs": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Declared Outputs",
+          "type": "array"
+        },
+        "entry_condition": {
+          "minLength": 1,
+          "title": "Entry Condition",
+          "type": "string"
+        },
+        "failure_terminal": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Failure Terminal"
+        },
+        "fallback_nodes": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Fallback Nodes",
+          "type": "array"
+        },
+        "invalidation_rules": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Invalidation Rules",
+          "type": "array"
+        },
+        "manual_gate": {
+          "title": "Manual Gate",
+          "type": "boolean"
+        },
+        "name": {
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "next_nodes": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Next Nodes",
+          "type": "array"
+        },
+        "node_id": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Node Id",
+          "type": "string"
+        },
+        "node_type": {
+          "enum": [
+            "transform",
+            "validation",
+            "decision",
+            "gate",
+            "aggregate",
+            "human_action",
+            "external_action",
+            "terminal"
+          ],
+          "title": "Node Type",
+          "type": "string"
+        },
+        "optional_inputs": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Optional Inputs",
+          "type": "array"
+        },
+        "required_inputs": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Required Inputs",
+          "type": "array"
+        },
+        "required_outputs": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Required Outputs"
+        },
+        "retry_policy": {
+          "$ref": "#/$defs/RetryPolicy"
+        },
+        "stage_id": {
+          "pattern": "^S0[1-9]$",
+          "title": "Stage Id",
+          "type": "string"
+        },
+        "success_condition": {
+          "minLength": 1,
+          "title": "Success Condition",
+          "type": "string"
+        },
+        "workflow_ref": {
+          "title": "Workflow Ref",
+          "type": "string"
+        }
+      },
+      "required": [
+        "node_id",
+        "stage_id",
+        "name",
+        "node_type",
+        "workflow_ref",
+        "entry_condition",
+        "success_condition",
+        "manual_gate",
+        "retry_policy"
+      ],
+      "title": "DAGNode",
+      "type": "object"
+    },
+    "RetryPolicy": {
+      "additionalProperties": false,
+      "properties": {
+        "cost_budget_usd": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Cost Budget Usd"
+        },
+        "max_attempts": {
+          "maximum": 10,
+          "minimum": 1,
+          "title": "Max Attempts",
+          "type": "integer"
+        },
+        "time_budget_seconds": {
+          "anyOf": [
+            {
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Time Budget Seconds"
+        }
+      },
+      "required": [
+        "max_attempts"
+      ],
+      "title": "RetryPolicy",
+      "type": "object"
+    }
+  },
+  "$id": "urn:video-truthfulness:schema:youtube-truthfulness-dag:v1.4",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "dag_id": {
+      "const": "youtube_truthfulness_dag",
+      "title": "Dag Id",
+      "type": "string"
+    },
+    "dag_version": {
+      "const": "youtube_truthfulness_dag_v1.4.0"
+    },
+    "entry_nodes": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Entry Nodes",
+      "type": "array"
+    },
+    "nodes": {
+      "items": {
+        "$ref": "#/$defs/DAGNode"
+      },
+      "title": "Nodes",
+      "type": "array"
+    },
+    "project_version": {
+      "const": "v0.2",
+      "title": "Project Version",
+      "type": "string"
+    },
+    "release_id": {
+      "const": "truthfulness_v0.2_youtube_video",
+      "title": "Release Id",
+      "type": "string"
+    },
+    "source_platform": {
+      "const": "youtube",
+      "title": "Source Platform",
+      "type": "string"
+    },
+    "terminal_nodes": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Terminal Nodes",
+      "type": "array"
+    },
+    "workflow_version": {
+      "const": "youtube_truthfulness_workflow_v1.3.0"
+    },
+    "workflow_versions": {
+      "anyOf": [
+        {
+          "additionalProperties": {
+            "enum": [
+              "youtube_truthfulness_workflow_v1.0.0",
+              "youtube_truthfulness_workflow_v1.1.0",
+              "youtube_truthfulness_workflow_v1.2.0",
+              "youtube_truthfulness_workflow_v1.3.0"
+            ],
+            "type": "string"
+          },
+          "propertyNames": {
+            "enum": [
+              "S01",
+              "S02",
+              "S03",
+              "S04",
+              "S05",
+              "S06",
+              "S07",
+              "S08",
+              "S09"
+            ]
+          },
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Workflow Versions"
+    }
+  },
+  "required": [
+    "dag_id",
+    "dag_version",
+    "project_version",
+    "release_id",
+    "source_platform",
+    "workflow_version",
+    "entry_nodes",
+    "terminal_nodes",
+    "nodes"
+  ],
+  "title": "YouTube Truthfulness DAG v1.4",
+  "type": "object"
+}

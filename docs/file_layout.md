@@ -2,7 +2,7 @@
 
 本项目采用“白名单式公开”原则：只有已经确认不含个人信息、访问凭据、真实运行材料和未清洗来源的数据，才进入公开快照。目录是否存在不等于允许提交；最终以本文件、`.gitignore` 和提交前审查共同决定。
 
-版本、canonical ID 和 legacy 路径映射以 [version_and_id_system.md](version_and_id_system.md) 为权威；本文件只说明物理布局和公开边界。
+版本、canonical ID 和 legacy 路径映射以 [version_and_id_system.md](version_and_id_system.md) 为权威；HANDOFF、Session 事件和 checkpoint 的行为契约以 [handoff_events_checkpoints.md](handoff_events_checkpoints.md) 为权威；本文件只说明物理布局和公开边界。
 
 ## 一、三类公开边界
 
@@ -44,7 +44,6 @@
 
 - `report/V01/v0.1成果汇报.md`
 - `report/V01/Annotation-example.md`
-- `Optmize/优化方案参考.md`
 - `runs/README.md`
 - `models/README.md`
 - `.env.example`
@@ -101,10 +100,101 @@ runs/V02/run_<ulid>/
 - V01 的 27 个历史目录不改名，通过 `legacy_run_id_map.jsonl` 只读映射；阶段一前的 V02 试点通过 `run_path_map.jsonl` 解析；
 - 每个运行目录必须自包含，便于本地复核；
 - `run.json` 记录配置摘要、代码版本、开始和结束时间；
-- `logs/events.jsonl` 只记录结构化事件，不记录 cookies、token、完整请求头或私人绝对路径；
+- `logs/events.jsonl` 是现有 run 业务日志位置，只记录结构化日志，不记录 cookies、token、完整请求头或私人绝对路径；它不是阶段四 Session 执行事件流的权威路径；
 - 整个 `runs/<storage_version>/<physical_directory>/` 属于不可公开内容，不通过“只挑几个看起来安全的文件”规避清洗流程。
 
-## 四、Agent/RAG 运行时目录
+## 四、执行契约控制目录
+
+阶段四冻结两类 task root；阶段五在不改变其作用域的前提下增加逐节点注册、DAG snapshot、observation 与模型遥测。S01/S02 保持 run 自包含；S03-S09 使用跨 run 控制目录：
+
+```text
+# S01/S02：run scoped
+runs/V02/<physical_directory>/control/tasks/<task_id>/
+
+# S03-S09：cross-run scoped
+runtime/V02/execution/tasks/<task_id>/
+```
+
+两类 task root 的内部结构一致：
+
+```text
+<task_root>/
+  registration_manifests/
+    <node_id>_<record_id>.json
+  dag_snapshots/
+    <checkpoint_id>.json
+  sessions/
+    <session_id>/
+      session_manifest.json
+      events.jsonl
+      observations.jsonl
+      model_calls.jsonl
+      model_usage_summary.json
+      external_inputs/
+        <input_receipt_id>_result_ready.json
+        <input_receipt_id>_materialization.json
+      current_state.json
+      handoff.json
+      HANDOFF.md
+  checkpoints/
+    <checkpoint_id>.json
+```
+
+规则：
+
+- `session_manifest.json`、`events.jsonl`、checkpoint、`handoff.json`、registration manifest、DAG snapshot 和关闭后的模型 ledger/summary 是机器契约；`current_state.json` 与 `HANDOFF.md` 是可重建投影；
+- DAG snapshot 的文件名绑定冻结的 `checkpoint_id`；其内容与 checkpoint 同时绑定创建该 checkpoint 时的精确 Registry head。文件名不冒充 Registry head，也不使用 `latest`；
+- `observations.jsonl` 记录节点、文件、失败与恢复观测，只引用同 Session 模型 event/summary，不复制模型事实；
+- `model_calls.jsonl` 是单 writer hash-chain；`model_usage_summary.json` 只能由已关闭 ledger 确定性重建。宿主或 Gemini 未暴露的模型/Token 写 `unavailable/null`，本地 ASR/OCR Token 写 `not_applicable/null`；
+- `external_inputs/` 只保存 Codex create-new 的最小 receipt。用户 Gemini 文件仍位于该 prompt 的 run-local inbox，永远只读，不移动或回写；
+- 业务 Artifact 继续保存在 Workflow 规定的位置，控制文件只引用相对路径、ID 和哈希，不复制媒体、数据集或长日志；
+- 不创建 `latest` 文件、软链接或隐式“最近 Session”规则；恢复入口必须固定具体 ID、路径和哈希；
+- 真实 task root、事件、checkpoint 和 HANDOFF 均不可公开；Git 只放 Schema、共享代码、文档、测试和公开合成样例；
+- 阶段四只验证 `examples/execution_contract/synthetic_run/` 与临时隔离目录；阶段五 G0B 也只在 pytest `tmp_path` 验证 successor/runner/telemetry，不向真实 V02 run 写入控制文件。真实 input-binding 与 S01/S02 分别等待 G1A/G1B。
+
+详细权威优先级、发布顺序和九文件隔离恢复边界见 [handoff_events_checkpoints.md](handoff_events_checkpoints.md)。
+
+阶段五实现期的仓库外控制计划使用以下私有根；它不是 run 业务 Artifact 根：
+
+```text
+runtime/V02/stage5/<task_id>/
+  execution_plan.json
+  working_tree_manifest.json
+  model_manifest.json
+  preflight.json
+  execution_freeze.json
+  publication_receipts/
+  artifact_registry.sqlite3
+```
+
+该路径只在后续 Gate 创建真实 task 后使用。G0B 测试不得创建真实 `<task_id>` 或扫描此目录。
+
+## 五、GDB1 Claim warehouse 外部存储
+
+Claim warehouse 不位于仓库或 `/mnt/d`。Git 只保存逻辑根
+`ubuntu_v02_claim_warehouse` 与环境变量名
+`VIDEO_TRUTHFULNESS_WAREHOUSE_V02_ROOT`；真实 Ubuntu ext4 绝对映射只存在于
+本地私有环境。Registry v1.2 与 export/receipt 只保存该逻辑根和安全 POSIX
+相对路径。
+
+```text
+<private Ubuntu ext4 root>/
+  exports/
+  parquet/
+  duckdb/
+  receipts/
+  staging/
+  locks/
+```
+
+S01 successor 只发布不可变 `manifest.json + rows.jsonl` export package，
+不打开 DuckDB。独立且另行授权的 Loader Session 才可 no-clobber 发布
+Parquet 并在单写 DuckDB transaction 中更新投影。`*.duckdb`、
+`*.duckdb.wal`、`*.parquet`、真实 export、receipt 和私有映射始终不公开。
+
+GDB1 的 examples 只含人工构造的合成行；它们不代表真实 S01 已启动。
+
+## 六、Agent/RAG 运行时目录
 
 建议的本地布局：
 
@@ -123,7 +213,7 @@ eval-results/
 - `model_cache/` 只用于本地复用，不公开；
 - `eval-results/` 是运行结果，不公开；固定的合成评测输入和预期结果应放在 `evals/`。
 
-## 五、媒体命名与处理
+## 七、媒体命名与处理
 
 建议文件名：
 
@@ -138,7 +228,7 @@ eval-results/
 - 若转码，记录工具版本、参数和校验摘要；
 - 媒体提取失败时保留失败状态，不创建空文件冒充成功产物。
 
-## 六、截图命名与复核
+## 八、截图命名与复核
 
 视频截图：
 
@@ -159,7 +249,7 @@ runs/<storage_version>/<physical_directory>/screenshots/sources/<claim_id>_<sour
 - 截图中可能出现账号名、头像、浏览器信息或个人路径，公开前必须单独清洗；
 - 截图只证明“页面当时显示了什么”，不能替代来源真实性判断。
 
-## 七、下载尝试与浏览器降级
+## 九、下载尝试与浏览器降级
 
 自动下载只执行一次顺序尝试，并写入：
 
@@ -175,7 +265,7 @@ runs/<storage_version>/<physical_directory>/source/browser_fallback.json
 
 其中可以记录页面标题、规范 URL、可见元数据和降级原因，但不得记录会话密钥、完整 cookies、认证请求头或账号凭据。
 
-## 八、Cookies 与凭据
+## 十、Cookies 与凭据
 
 Cookies 仅用于用户已获授权访问的来源，并遵循：
 
@@ -185,7 +275,7 @@ Cookies 仅用于用户已获授权访问的来源，并遵循：
 - 错误消息、截图和报告必须隐藏 cookies 文件路径及账号标识；
 - 需要长期保留的凭据交给系统密钥管理，不写入 `.env.example`。
 
-## 九、模型和大文件
+## 十一、模型和大文件
 
 以下内容不可提交：
 
@@ -198,7 +288,7 @@ Cookies 仅用于用户已获授权访问的来源，并遵循：
 
 仓库中只能保留下载说明、校验方法、许可证提示和不含真实权重的配置示例。
 
-## 十、提交前检查
+## 十二、提交前检查
 
 每次生成公开快照前至少确认：
 

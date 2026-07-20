@@ -1,0 +1,20 @@
+{
+  "working_tree_manifest_version": "working_tree_manifest_v1.0.0",
+  "paths": [
+    {
+      "path": "examples/execution_contract/synthetic_run/artifacts/input.json",
+      "size_bytes": 40,
+      "sha256": "def81af2ea85a2bb3ce0c0e49607aeccceb25734ad5b64cf978b6697d0a56c75"
+    },
+    {
+      "path": "examples/execution_contract/synthetic_run/artifacts/output.json",
+      "size_bytes": 41,
+      "sha256": "94c42a41e538829a75fa1cab004620b00f7cb36a7c315dba4bb2f93c6856853a"
+    },
+    {
+      "path": "examples/execution_contract/synthetic_run/youtube_truthfulness_dag_v1_1.yaml",
+      "size_bytes": 37161,
+      "sha256": "e14161e9824f479d806ec7de935b4683af9a3c7147ac2e9f13336254d3c7b740"
+    }
+  ]
+}

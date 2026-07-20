@@ -1,0 +1,154 @@
+{
+  "$defs": {
+    "sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    }
+  },
+  "$id": "urn:video-truthfulness:schema:stage5-s01-fresh-recovery-result:v1.1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Recovery proof with explicit zero export/Parquet/DuckDB content reads.",
+  "properties": {
+    "audit_read_paths": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Audit Read Paths",
+      "type": "array"
+    },
+    "checkpoint_id": {
+      "pattern": "^checkpoint_[0-9a-hjkmnp-tv-z]{26}$",
+      "title": "Checkpoint Id",
+      "type": "string"
+    },
+    "duckdb_read_count": {
+      "const": 0,
+      "title": "Duckdb Read Count",
+      "type": "integer"
+    },
+    "dynamic_business_payload_read_count": {
+      "const": 0,
+      "title": "Dynamic Business Payload Read Count",
+      "type": "integer"
+    },
+    "export_identity_verification": {
+      "const": "checkpoint_registry_handoff_only",
+      "title": "Export Identity Verification",
+      "type": "string"
+    },
+    "file_sha256": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "title": "File Sha256",
+      "type": "object"
+    },
+    "parquet_read_count": {
+      "const": 0,
+      "title": "Parquet Read Count",
+      "type": "integer"
+    },
+    "process_boundary": {
+      "const": "fresh_python_process",
+      "title": "Process Boundary",
+      "type": "string"
+    },
+    "read_count": {
+      "const": 5,
+      "title": "Read Count",
+      "type": "integer"
+    },
+    "read_open_count": {
+      "const": 5,
+      "title": "Read Open Count",
+      "type": "integer"
+    },
+    "read_paths": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Read Paths",
+      "type": "array"
+    },
+    "repository_write_attempt_count": {
+      "const": 0,
+      "title": "Repository Write Attempt Count",
+      "type": "integer"
+    },
+    "repository_write_count": {
+      "const": 0,
+      "title": "Repository Write Count",
+      "type": "integer"
+    },
+    "request_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Request Hash",
+      "type": "string"
+    },
+    "result_hash": {
+      "$ref": "#/$defs/sha256"
+    },
+    "result_version": {
+      "const": "stage5_s01_fresh_recovery_result_v1.1.0",
+      "title": "Result Version",
+      "type": "string"
+    },
+    "run_id": {
+      "pattern": "^run_[0-9a-hjkmnp-tv-z]{26}$",
+      "title": "Run Id",
+      "type": "string"
+    },
+    "status": {
+      "const": "VALID",
+      "title": "Status",
+      "type": "string"
+    },
+    "warehouse_export_artifact_id": {
+      "pattern": "^artifact_[0-9a-hjkmnp-tv-z]{26}$",
+      "title": "Warehouse Export Artifact Id",
+      "type": "string"
+    },
+    "warehouse_export_content_read_count": {
+      "const": 0,
+      "title": "Warehouse Export Content Read Count",
+      "type": "integer"
+    },
+    "warehouse_export_logical_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Warehouse Export Logical Hash",
+      "type": "string"
+    },
+    "warehouse_projection_status": {
+      "const": "pending",
+      "title": "Warehouse Projection Status",
+      "type": "string"
+    }
+  },
+  "required": [
+    "result_version",
+    "request_hash",
+    "status",
+    "process_boundary",
+    "run_id",
+    "checkpoint_id",
+    "read_paths",
+    "read_count",
+    "read_open_count",
+    "audit_read_paths",
+    "repository_write_count",
+    "repository_write_attempt_count",
+    "dynamic_business_payload_read_count",
+    "file_sha256",
+    "result_hash",
+    "warehouse_export_artifact_id",
+    "warehouse_export_logical_hash",
+    "warehouse_projection_status",
+    "warehouse_export_content_read_count",
+    "parquet_read_count",
+    "duckdb_read_count",
+    "export_identity_verification"
+  ],
+  "title": "Stage 5 S01 fresh recovery result v1.1",
+  "type": "object"
+}

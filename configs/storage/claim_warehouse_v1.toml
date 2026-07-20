@@ -1,0 +1,50 @@
+config_version = "claim_warehouse_storage_v1.0.0"
+storage_root_ref = "ubuntu_v02_claim_warehouse"
+storage_root_environment_variable = "VIDEO_TRUTHFULNESS_WAREHOUSE_V02_ROOT"
+database_schema_version = "truthfulness_db_v02.1.0"
+warehouse_export_schema_version = "claim_warehouse_export_v1.0.0"
+warehouse_projection_version = "claim_warehouse_projection_v1.0.0"
+label_taxonomy_version = "truthfulness_taxonomy_v02.1.0"
+max_exports_per_load_batch = 100
+inline_claim_text_max_bytes = 262144
+
+[directories]
+exports = "exports"
+parquet = "parquet"
+duckdb = "duckdb"
+receipts = "receipts"
+staging = "staging"
+quarantine = "quarantine"
+local_snapshots = "local_snapshots"
+locks = "locks"
+
+[duckdb]
+relative_path = "duckdb/truthfulness_v02.duckdb"
+single_writer_lock = "locks/warehouse-loader.lock"
+required_version = "1.5.1"
+
+[parquet]
+required_pyarrow_version = "21.0.0"
+format_version = "2.6"
+data_page_version = "1.0"
+compression = "zstd"
+compression_level = 3
+row_group_size = 8192
+use_dictionary = false
+write_statistics = false
+write_page_index = false
+write_page_checksum = false
+
+[publication]
+create_new = true
+no_clobber = true
+manifest_filename = "manifest.json"
+rows_filename = "rows.jsonl"
+canonical_encoding = "utf-8"
+canonical_line_ending = "lf"
+
+[privacy]
+allow_absolute_paths_in_registry = false
+allow_symlink_components = false
+allow_mount_escape = false
+allow_real_rows_in_git = false

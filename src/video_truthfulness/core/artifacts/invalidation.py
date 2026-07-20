@@ -6,7 +6,7 @@ from collections import defaultdict, deque
 from dataclasses import dataclass
 from typing import Iterable
 
-from video_truthfulness.core.artifacts.models import ArtifactRecord, UpstreamEntityRef
+from video_truthfulness.core.artifacts.models import ArtifactRecordView, UpstreamEntityRef
 
 
 @dataclass(frozen=True)
@@ -22,14 +22,14 @@ def entity_ref_key(ref: UpstreamEntityRef) -> str:
 
 
 def propagate_stale(
-    records: Iterable[ArtifactRecord],
+    records: Iterable[ArtifactRecordView],
     *,
     changed_artifact_ids: Iterable[str] = (),
     changed_entity_refs: Iterable[str] = (),
 ) -> list[InvalidationResult]:
     """Return downstream stale candidates without mutating Registry history."""
 
-    latest: dict[str, ArtifactRecord] = {}
+    latest: dict[str, ArtifactRecordView] = {}
     for record in records:
         latest[record.artifact_id] = record
     downstream: dict[str, set[str]] = defaultdict(set)
@@ -67,7 +67,7 @@ def propagate_stale(
     return [results[key] for key in sorted(results)]
 
 
-def fingerprint_is_stale(record: ArtifactRecord, current_input_fingerprint: str | None) -> bool:
+def fingerprint_is_stale(record: ArtifactRecordView, current_input_fingerprint: str | None) -> bool:
     if record.input_fingerprint is None:
         return False
     return record.input_fingerprint != current_input_fingerprint

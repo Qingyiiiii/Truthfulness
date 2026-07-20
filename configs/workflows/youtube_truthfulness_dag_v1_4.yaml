@@ -1,0 +1,2063 @@
+{
+  "dag_id": "youtube_truthfulness_dag",
+  "dag_version": "youtube_truthfulness_dag_v1.4.0",
+  "entry_nodes": [
+    "source_identity"
+  ],
+  "nodes": [
+    {
+      "conditional_outputs": [],
+      "declared_outputs": [
+        "run.identity"
+      ],
+      "entry_condition": "explicit run identity exists",
+      "failure_terminal": null,
+      "fallback_nodes": [],
+      "invalidation_rules": [
+        "run identity content hash changed"
+      ],
+      "manual_gate": false,
+      "name": "来源与运行身份登记",
+      "next_nodes": [
+        "acquisition_decision"
+      ],
+      "node_id": "source_identity",
+      "node_type": "validation",
+      "optional_inputs": [],
+      "required_inputs": [],
+      "required_outputs": [
+        "run.identity"
+      ],
+      "retry_policy": {
+        "cost_budget_usd": 0,
+        "max_attempts": 1,
+        "time_budget_seconds": 60
+      },
+      "stage_id": "S01",
+      "success_condition": "run identity passes canonical schema",
+      "workflow_ref": "S01@youtube_truthfulness_workflow_v1.3.0"
+    },
+    {
+      "conditional_outputs": [],
+      "declared_outputs": [
+        "acquisition.decision"
+      ],
+      "entry_condition": "canonical run identity is validated",
+      "failure_terminal": null,
+      "fallback_nodes": [
+        "manual_media_input"
+      ],
+      "invalidation_rules": [
+        "source identity or authorization decision changed"
+      ],
+      "manual_gate": false,
+      "name": "媒体获取路径决策",
+      "next_nodes": [
+        "public_no_cookie_download",
+        "authorized_cookie_fallback",
+        "manual_media_input"
+      ],
+      "node_id": "acquisition_decision",
+      "node_type": "decision",
+      "optional_inputs": [],
+      "required_inputs": [
+        "run.identity"
+      ],
+      "required_outputs": [
+        "acquisition.decision"
+      ],
+      "retry_policy": {
+        "cost_budget_usd": 0,
+        "max_attempts": 1,
+        "time_budget_seconds": 60
+      },
+      "stage_id": "S01",
+      "success_condition": "exactly one authorized acquisition path is selected",
+      "workflow_ref": "S01@youtube_truthfulness_workflow_v1.3.0"
+    },
+    {
+      "conditional_outputs": [],
+      "declared_outputs": [
+        "media.video"
+      ],
+      "entry_condition": "decision selects public no-cookie download",
+      "failure_terminal": null,
+      "fallback_nodes": [
+        "authorized_cookie_fallback",
+        "manual_media_input"
+      ],
+      "invalidation_rules": [
+        "source external ID or downloader parameters changed"
+      ],
+      "manual_gate": false,
+      "name": "公开无 Cookie 下载",
+      "next_nodes": [
+        "media_validation"
+      ],
+      "node_id": "public_no_cookie_download",
+      "node_type": "external_action",
+      "optional_inputs": [],
+      "required_inputs": [
+        "acquisition.decision"
+      ],
+      "required_outputs": [
+        "media.video"
+      ],
+      "retry_policy": {
+        "cost_budget_usd": 0,
+        "max_attempts": 2,
+        "time_budget_seconds": 1800
+      },
+      "stage_id": "S01",
+      "success_condition": "one complete media file is created",
+      "workflow_ref": "S01@youtube_truthfulness_workflow_v1.3.0"
+    },
+    {
+      "conditional_outputs": [],
+      "declared_outputs": [
+        "media.video"
+      ],
+      "entry_condition": "public download failed and explicit authorization exists",
+      "failure_terminal": null,
+      "fallback_nodes": [
+        "manual_media_input"
+      ],
+      "invalidation_rules": [
+        "authorization scope or source identity changed"
+      ],
+      "manual_gate": true,
+      "name": "授权 Cookie fallback",
+      "next_nodes": [
+        "media_validation"
+      ],
+      "node_id": "authorized_cookie_fallback",
+      "node_type": "human_action",
+      "optional_inputs": [],
+      "required_inputs": [
+        "acquisition.decision"
+      ],
+      "required_outputs": [
+        "media.video"
+      ],
+      "retry_policy": {
+        "cost_budget_usd": 0,
+        "max_attempts": 1,
+        "time_budget_seconds": 1800
+      },
+      "stage_id": "S01",
+      "success_condition": "media exists and credentials were not persisted",
+      "workflow_ref": "S01@youtube_truthfulness_workflow_v1.3.0"
+    },
+    {
+      "conditional_outputs": [],
+      "declared_outputs": [
+        "media.video"
+      ],
+      "entry_condition": "source legality and identity mapping are confirmed",
+      "failure_terminal": null,
+      "fallback_nodes": [],
+      "invalidation_rules": [
+        "source identity or supplied media hash changed"
+      ],
+      "manual_gate": true,
+      "name": "人工提供媒体",
+      "next_nodes": [
+        "media_validation"
+      ],
+      "node_id": "manual_media_input",
+      "node_type": "human_action",
+      "optional_inputs": [
+        "acquisition.decision"
+      ],
+      "required_inputs": [
+        "run.identity"
+      ],
+      "required_outputs": [
+        "media.video"
+      ],
+      "retry_policy": {
+        "cost_budget_usd": 0,
+        "max_attempts": 1,
+        "time_budget_seconds": 3600
+      },
+      "stage_id": "S01",
+      "success_condition": "provided media matches canonical source identity",
+      "workflow_ref": "S01@youtube_truthfulness_workflow_v1.3.0"
+    },
+    {
+      "conditional_outputs": [],
+      "declared_outputs": [
+        "media.validation"
+      ],
+      "entry_condition": "complete non-temporary media exists",
+      "failure_terminal": null,
+      "fallback_nodes": [],
+      "invalidation_rules": [
+        "media content hash changed"
+      ],
+      "manual_gate": false,
+      "name": "媒体完整性验证",
+      "next_nodes": [
+        "subtitle_or_audio_decision"
+      ],
+      "node_id": "media_validation",
+      "node_type": "validation",
+      "optional_inputs": [],
+      "required_inputs": [
+        "media.video"
+      ],
+      "required_outputs": [
+        "media.validation"
+      ],
+      "retry_policy": {
+        "cost_budget_usd": 0,
+        "max_attempts": 1,
+        "time_budget_seconds": 900
+      },
+      "stage_id": "S01",
+      "success_condition": "hash, container, duration and decode probe pass",
+      "workflow_ref": "S01@youtube_truthfulness_workflow_v1.3.0"
+    },
+    {
+      "conditional_outputs": [],
+      "declared_outputs": [
+        "transcript.path_decision"
+      ],
+      "entry_condition": "media validation passed",
+      "failure_terminal": null,
+      "fallback_nodes": [
+        "audio_extract"
+      ],
+      "invalidation_rules": [
+        "subtitle availability or media validation changed"
+      ],
+      "manual_gate": false,
+      "name": "字幕或音频路径决策",
+      "next_nodes": [
+        "subtitle_import",
+        "audio_extract"
+      ],
+      "node_id": "subtitle_or_audio_decision",
+      "node_type": "decision",
+      "optional_inputs": [
+        "media.subtitle"
+      ],
+      "required_inputs": [
+        "media.validation"
+      ],
+      "required_outputs": [
+        "transcript.path_decision"
+      ],
+      "retry_policy": {
+        "cost_budget_usd": 0,
+        "max_attempts": 1,
+        "time_budget_seconds": 60
+      },
+      "stage_id": "S01",
+      "success_condition": "subtitle import or audio extraction path is selected",
+      "workflow_ref": "S01@youtube_truthfulness_workflow_v1.3.0"
+    },
+    {
+      "conditional_outputs": [],
+      "declared_outputs": [
+        "transcript.raw"
+      ],
+      "entry_condition": "authorized subtitle path is selected",
+      "failure_terminal": null,
+      "fallback_nodes": [
+        "audio_extract"
+      ],
+      "invalidation_rules": [
+        "subtitle content or parser version changed"
+      ],
+      "manual_gate": false,
+      "name": "字幕导入",
+      "next_nodes": [
+        "transcript_normalize_and_align"
+      ],
+      "node_id": "subtitle_import",
+      "node_type": "transform",
+      "optional_inputs": [],
+      "required_inputs": [
+        "transcript.path_decision",
+        "media.subtitle"
+      ],
+      "required_outputs": [
+        "transcript.raw"
+      ],
+      "retry_policy": {
+        "cost_budget_usd": 0,
+        "max_attempts": 1,
+        "time_budget_seconds": 600
+      },
+      "stage_id": "S01",
+      "success_condition": "subtitle parses into timestamped segments",
+      "workflow_ref": "S01@youtube_truthfulness_workflow_v1.3.0"
+    },
+    {
+      "conditional_outputs": [],
+      "declared_outputs": [
+        "media.audio"
+      ],
+      "entry_condition": "audio/ASR path is selected",
+      "failure_terminal": null,
+      "fallback_nodes": [],
+      "invalidation_rules": [
+        "media hash or extraction tool version changed"
+      ],
+      "manual_gate": false,
+      "name": "音频提取",
+      "next_nodes": [
+        "asr_transcription"
+      ],
+      "node_id": "audio_extract",
+      "node_type": "transform",
+      "optional_inputs": [],
+      "required_inputs": [
+        "transcript.path_decision",
+        "media.video"
+      ],
+      "required_outputs": [
+        "media.audio"
+      ],
+      "retry_policy": {
+        "cost_budget_usd": 0,
+        "max_attempts": 2,
+        "time_budget_seconds": 1200
+      },
+      "stage_id": "S01",
+      "success_condition": "audio stream is extracted and validated",
+      "workflow_ref": "S01@youtube_truthfulness_workflow_v1.3.0"
+    },
+    {
+      "conditional_outputs": [],
+      "declared_outputs": [
+        "transcript.raw"
+      ],
+      "entry_condition": "validated audio exists",
+      "failure_terminal": null,
+      "fallback_nodes": [],
+      "invalidation_rules": [
+        "audio hash, ASR model or parameters changed"
+      ],
+      "manual_gate": false,
+      "name": "ASR 转录",
+      "next_nodes": [
+        "optional_ocr",
+        "transcript_normalize_and_align"
+      ],
+      "node_id": "asr_transcription",
+      "node_type": "transform",
+      "optional_inputs": [],
+      "required_inputs": [
+        "media.audio"
+      ],
+      "required_outputs": [
+        "transcript.raw"
+      ],
+      "retry_policy": {
+        "cost_budget_usd": 5,
+        "max_attempts": 2,
+        "time_budget_seconds": 7200
+      },
+      "stage_id": "S01",
+      "success_condition": "timestamped ASR transcript is created",
+      "workflow_ref": "S01@youtube_truthfulness_workflow_v1.3.0"
+    },
+    {
+      "conditional_outputs": [
+        "ocr.result"
+      ],
+      "declared_outputs": [
+        "ocr.gate_decision",
+        "ocr.result"
+      ],
+      "entry_condition": "media and raw transcript visual-gap scan is materialized; final claim extraction has not started",
+      "failure_terminal": null,
+      "fallback_nodes": [],
+      "invalidation_rules": [
+        "media, raw transcript, visual-gap trigger profile, OCR component manifest, or frame budget changed"
+      ],
+      "manual_gate": false,
+      "name": "OCR 门与条件执行",
+      "next_nodes": [
+        "transcript_normalize_and_align"
+      ],
+      "node_id": "optional_ocr",
+      "node_type": "transform",
+      "optional_inputs": [
+        "frame.sample_set"
+      ],
+      "required_inputs": [
+        "media.validation",
+        "transcript.raw"
+      ],
+      "required_outputs": [
+        "ocr.gate_decision"
+      ],
+      "retry_policy": {
+        "cost_budget_usd": 3,
+        "max_attempts": 1,
+        "time_budget_seconds": 3600
+      },
+      "stage_id": "S01",
+      "success_condition": "one OCR gate decision exists and EXECUTED additionally has one frozen local OCR result",
+      "workflow_ref": "S01@youtube_truthfulness_workflow_v1.3.0"
+    },
+    {
+      "conditional_outputs": [],
+      "declared_outputs": [
+        "transcript.normalized",
+        "transcript.alignment"
+      ],
+      "entry_condition": "raw transcript and authoritative OCR gate decision exist",
+      "failure_terminal": null,
+      "fallback_nodes": [],
+      "invalidation_rules": [
+        "transcript, OCR gate decision, OCR result or normalization version changed"
+      ],
+      "manual_gate": false,
+      "name": "转录归一化与对齐",
+      "next_nodes": [
+        "claim_extract"
+      ],
+      "node_id": "transcript_normalize_and_align",
+      "node_type": "transform",
+      "optional_inputs": [
+        "ocr.result"
+      ],
+      "required_inputs": [
+        "transcript.raw",
+        "ocr.gate_decision"
+      ],
+      "required_outputs": [
+        "transcript.normalized",
+        "transcript.alignment"
+      ],
+      "retry_policy": {
+        "cost_budget_usd": 1,
+        "max_attempts": 1,
+        "time_budget_seconds": 1800
+      },
+      "stage_id": "S01",
+      "success_condition": "normalized segments retain traceable source locators and any executed OCR result is aligned",
+      "workflow_ref": "S01@youtube_truthfulness_workflow_v1.3.0"
+    },
+    {
+      "conditional_outputs": [],
+      "declared_outputs": [
+        "claim.collection",
+        "claim.entity_index"
+      ],
+      "entry_condition": "normalized transcript exists",
+      "failure_terminal": null,
+      "fallback_nodes": [],
+      "invalidation_rules": [
+        "transcript entity, prompt or claim schema changed"
+      ],
+      "manual_gate": false,
+      "name": "Claim 抽取",
+      "next_nodes": [
+        "claim_atomic_split"
+      ],
+      "node_id": "claim_extract",
+      "node_type": "transform",
+      "optional_inputs": [
+        "ocr.result"
+      ],
+      "required_inputs": [
+        "transcript.normalized"
+      ],
+      "required_outputs": [
+        "claim.collection",
+        "claim.entity_index"
+      ],
+      "retry_policy": {
+        "cost_budget_usd": 5,
+        "max_attempts": 2,
+        "time_budget_seconds": 1800
+      },
+      "stage_id": "S01",
+      "success_condition": "claims retain transcript/entity provenance",
+      "workflow_ref": "S01@youtube_truthfulness_workflow_v1.3.0"
+    },
+    {
+      "conditional_outputs": [],
+      "declared_outputs": [
+        "claim.atomic_collection",
+        "claim.entity_index"
+      ],
+      "entry_condition": "claim collection exists",
+      "failure_terminal": null,
+      "fallback_nodes": [],
+      "invalidation_rules": [
+        "claim content or split rules changed"
+      ],
+      "manual_gate": false,
+      "name": "Claim 原子化",
+      "next_nodes": [
+        "evidence_retrieve"
+      ],
+      "node_id": "claim_atomic_split",
+      "node_type": "transform",
+      "optional_inputs": [],
+      "required_inputs": [
+        "claim.collection"
+      ],
+      "required_outputs": [
+        "claim.atomic_collection",
+        "claim.entity_index"
+      ],
+      "retry_policy": {
+        "cost_budget_usd": 5,
+        "max_attempts": 2,
+        "time_budget_seconds": 1800
+      },
+      "stage_id": "S01",
+      "success_condition": "compound claims are split with parent relations",
+      "workflow_ref": "S01@youtube_truthfulness_workflow_v1.3.0"
+    },
+    {
+      "conditional_outputs": [],
+      "declared_outputs": [
+        "evidence.collection",
+        "evidence.entity_index"
+      ],
+      "entry_condition": "atomic claims exist",
+      "failure_terminal": null,
+      "fallback_nodes": [],
+      "invalidation_rules": [
+        "claim entity, search tool or evidence snapshot changed"
+      ],
+      "manual_gate": false,
+      "name": "初步证据检索",
+      "next_nodes": [
+        "machine_verdict"
+      ],
+      "node_id": "evidence_retrieve",
+      "node_type": "transform",
+      "optional_inputs": [],
+      "required_inputs": [
+        "claim.atomic_collection"
+      ],
+      "required_outputs": [
+        "evidence.collection",
+        "evidence.entity_index"
+      ],
+      "retry_policy": {
+        "cost_budget_usd": 10,
+        "max_attempts": 2,
+        "time_budget_seconds": 3600
+      },
+      "stage_id": "S01",
+      "success_condition": "evidence is source-anchored and claim-linked",
+      "workflow_ref": "S01@youtube_truthfulness_workflow_v1.3.0"
+    },
+    {
+      "conditional_outputs": [],
+      "declared_outputs": [
+        "verdict.collection",
+        "verdict.entity_index"
+      ],
+      "entry_condition": "claim/evidence links validate",
+      "failure_terminal": null,
+      "fallback_nodes": [],
+      "invalidation_rules": [
+        "claim, evidence, prompt or verdict schema changed"
+      ],
+      "manual_gate": false,
+      "name": "机器判断",
+      "next_nodes": [
+        "machine_report"
+      ],
+      "node_id": "machine_verdict",
+      "node_type": "transform",
+      "optional_inputs": [],
+      "required_inputs": [
+        "claim.atomic_collection",
+        "evidence.collection"
+      ],
+      "required_outputs": [
+        "verdict.collection",
+        "verdict.entity_index"
+      ],
+      "retry_policy": {
+        "cost_budget_usd": 10,
+        "max_attempts": 2,
+        "time_budget_seconds": 1800
+      },
+      "stage_id": "S01",
+      "success_condition": "every verdict cites registered evidence",
+      "workflow_ref": "S01@youtube_truthfulness_workflow_v1.3.0"
+    },
+    {
+      "conditional_outputs": [],
+      "declared_outputs": [
+        "report.machine"
+      ],
+      "entry_condition": "machine verdicts validate",
+      "failure_terminal": null,
+      "fallback_nodes": [],
+      "invalidation_rules": [
+        "verdict or report template changed"
+      ],
+      "manual_gate": false,
+      "name": "机器报告",
+      "next_nodes": [
+        "source_depth_decision"
+      ],
+      "node_id": "machine_report",
+      "node_type": "transform",
+      "optional_inputs": [
+        "claim.collection",
+        "evidence.collection"
+      ],
+      "required_inputs": [
+        "verdict.collection"
+      ],
+      "required_outputs": [
+        "report.machine"
+      ],
+      "retry_policy": {
+        "cost_budget_usd": 2,
+        "max_attempts": 1,
+        "time_budget_seconds": 900
+      },
+      "stage_id": "S01",
+      "success_condition": "report is rebuilt from registered structured inputs",
+      "workflow_ref": "S01@youtube_truthfulness_workflow_v1.3.0"
+    },
+    {
+      "conditional_outputs": [],
+      "declared_outputs": [
+        "source_depth.decision"
+      ],
+      "entry_condition": "machine report exists",
+      "failure_terminal": null,
+      "fallback_nodes": [],
+      "invalidation_rules": [
+        "verdict uncertainty or routing rules changed"
+      ],
+      "manual_gate": false,
+      "name": "深度溯源决策",
+      "next_nodes": [
+        "warehouse_export"
+      ],
+      "node_id": "source_depth_decision",
+      "node_type": "decision",
+      "optional_inputs": [
+        "verdict.collection"
+      ],
+      "required_inputs": [
+        "report.machine"
+      ],
+      "required_outputs": [
+        "source_depth.decision"
+      ],
+      "retry_policy": {
+        "cost_budget_usd": 0,
+        "max_attempts": 1,
+        "time_budget_seconds": 300
+      },
+      "stage_id": "S01",
+      "success_condition": "source-depth need is explicitly recorded",
+      "workflow_ref": "S01@youtube_truthfulness_workflow_v1.3.0"
+    },
+    {
+      "conditional_outputs": [],
+      "declared_outputs": [
+        "warehouse.export_batch"
+      ],
+      "entry_condition": "the current Session's required S01 business objects are validated and registered",
+      "failure_terminal": null,
+      "fallback_nodes": [],
+      "invalidation_rules": [
+        "input Artifact record identity, export schema, taxonomy, or exporter version changed"
+      ],
+      "manual_gate": false,
+      "name": "Claim warehouse 不可变导出",
+      "next_nodes": [
+        "source_depth_prompt",
+        "screening_sync"
+      ],
+      "node_id": "warehouse_export",
+      "node_type": "transform",
+      "optional_inputs": [],
+      "required_inputs": [
+        "claim.collection",
+        "claim.atomic_collection",
+        "claim.entity_index",
+        "evidence.collection",
+        "evidence.entity_index",
+        "verdict.collection",
+        "verdict.entity_index",
+        "report.machine",
+        "source_depth.decision"
+      ],
+      "required_outputs": [
+        "warehouse.export_batch"
+      ],
+      "retry_policy": {
+        "cost_budget_usd": 0,
+        "max_attempts": 1,
+        "time_budget_seconds": 1800
+      },
+      "stage_id": "S01",
+      "success_condition": "one deterministic immutable manifest.json plus rows.jsonl export package is validated and registered",
+      "workflow_ref": "S01@youtube_truthfulness_workflow_v1.3.0"
+    },
+    {
+      "conditional_outputs": [],
+      "declared_outputs": [
+        "source_depth.prompt"
+      ],
+      "entry_condition": "decision requires external depth",
+      "failure_terminal": null,
+      "fallback_nodes": [],
+      "invalidation_rules": [
+        "decision, claims, evidence or prompt template changed"
+      ],
+      "manual_gate": false,
+      "name": "外部深度核查 Prompt",
+      "next_nodes": [
+        "external_depth_action"
+      ],
+      "node_id": "source_depth_prompt",
+      "node_type": "transform",
+      "optional_inputs": [
+        "claim.atomic_collection",
+        "evidence.collection"
+      ],
+      "required_inputs": [
+        "source_depth.decision"
+      ],
+      "required_outputs": [
+        "source_depth.prompt"
+      ],
+      "retry_policy": {
+        "cost_budget_usd": 1,
+        "max_attempts": 1,
+        "time_budget_seconds": 600
+      },
+      "stage_id": "S02",
+      "success_condition": "bounded prompt package is created",
+      "workflow_ref": "S02@youtube_truthfulness_workflow_v1.3.0"
+    },
+    {
+      "conditional_outputs": [],
+      "declared_outputs": [
+        "source_depth.result"
+      ],
+      "entry_condition": "explicit external action authorization exists",
+      "failure_terminal": null,
+      "fallback_nodes": [],
+      "invalidation_rules": [
+        "external result or request package changed"
+      ],
+      "manual_gate": true,
+      "name": "外部深度核查动作",
+      "next_nodes": [
+        "source_depth_import_validation"
+      ],
+      "node_id": "external_depth_action",
+      "node_type": "external_action",
+      "optional_inputs": [],
+      "required_inputs": [
+        "source_depth.prompt"
+      ],
+      "required_outputs": [
+        "source_depth.result"
+      ],
+      "retry_policy": {
+        "cost_budget_usd": 20,
+        "max_attempts": 1,
+        "time_budget_seconds": 86400
+      },
+      "stage_id": "S02",
+      "success_condition": "external result is saved locally",
+      "workflow_ref": "S02@youtube_truthfulness_workflow_v1.3.0"
+    },
+    {
+      "conditional_outputs": [],
+      "declared_outputs": [
+        "source_depth.import_validation"
+      ],
+      "entry_condition": "external result exists on disk",
+      "failure_terminal": null,
+      "fallback_nodes": [],
+      "invalidation_rules": [
+        "external result bytes or import schema changed"
+      ],
+      "manual_gate": false,
+      "name": "深度结果导入校验",
+      "next_nodes": [
+        "evidence_merge"
+      ],
+      "node_id": "source_depth_import_validation",
+      "node_type": "validation",
+      "optional_inputs": [],
+      "required_inputs": [
+        "source_depth.result"
+      ],
+      "required_outputs": [
+        "source_depth.import_validation"
+      ],
+      "retry_policy": {
+        "cost_budget_usd": 0,
+        "max_attempts": 1,
+        "time_budget_seconds": 900
+      },
+      "stage_id": "S02",
+      "success_condition": "result schema and provenance validate",
+      "workflow_ref": "S02@youtube_truthfulness_workflow_v1.3.0"
+    },
+    {
+      "conditional_outputs": [],
+      "declared_outputs": [
+        "evidence.merged_collection"
+      ],
+      "entry_condition": "validated depth evidence exists",
+      "failure_terminal": null,
+      "fallback_nodes": [],
+      "invalidation_rules": [
+        "base or imported evidence changed"
+      ],
+      "manual_gate": false,
+      "name": "证据合并",
+      "next_nodes": [
+        "verdict_rebuild"
+      ],
+      "node_id": "evidence_merge",
+      "node_type": "transform",
+      "optional_inputs": [],
+      "required_inputs": [
+        "evidence.collection",
+        "source_depth.import_validation"
+      ],
+      "required_outputs": [
+        "evidence.merged_collection"
+      ],
+      "retry_policy": {
+        "cost_budget_usd": 2,
+        "max_attempts": 1,
+        "time_budget_seconds": 1200
+      },
+      "stage_id": "S02",
+      "success_condition": "new evidence preserves old and new provenance",
+      "workflow_ref": "S02@youtube_truthfulness_workflow_v1.3.0"
+    },
+    {
+      "conditional_outputs": [],
+      "declared_outputs": [
+        "verdict.rebuilt_collection"
+      ],
+      "entry_condition": "merged evidence validates",
+      "failure_terminal": null,
+      "fallback_nodes": [],
+      "invalidation_rules": [
+        "claims, merged evidence or verdict prompt changed"
+      ],
+      "manual_gate": false,
+      "name": "Verdict 重建",
+      "next_nodes": [
+        "report_rebuild"
+      ],
+      "node_id": "verdict_rebuild",
+      "node_type": "transform",
+      "optional_inputs": [],
+      "required_inputs": [
+        "claim.atomic_collection",
+        "evidence.merged_collection"
+      ],
+      "required_outputs": [
+        "verdict.rebuilt_collection"
+      ],
+      "retry_policy": {
+        "cost_budget_usd": 8,
+        "max_attempts": 1,
+        "time_budget_seconds": 1800
+      },
+      "stage_id": "S02",
+      "success_condition": "rebuilt verdict cites merged evidence",
+      "workflow_ref": "S02@youtube_truthfulness_workflow_v1.3.0"
+    },
+    {
+      "conditional_outputs": [],
+      "declared_outputs": [
+        "report.rebuilt"
+      ],
+      "entry_condition": "rebuilt verdicts validate",
+      "failure_terminal": null,
+      "fallback_nodes": [],
+      "invalidation_rules": [
+        "rebuilt verdict or template changed"
+      ],
+      "manual_gate": false,
+      "name": "报告重建",
+      "next_nodes": [
+        "screening_sync"
+      ],
+      "node_id": "report_rebuild",
+      "node_type": "transform",
+      "optional_inputs": [],
+      "required_inputs": [
+        "verdict.rebuilt_collection"
+      ],
+      "required_outputs": [
+        "report.rebuilt"
+      ],
+      "retry_policy": {
+        "cost_budget_usd": 2,
+        "max_attempts": 1,
+        "time_budget_seconds": 900
+      },
+      "stage_id": "S02",
+      "success_condition": "report reflects latest verdict revision",
+      "workflow_ref": "S02@youtube_truthfulness_workflow_v1.3.0"
+    },
+    {
+      "conditional_outputs": [],
+      "declared_outputs": [
+        "screening.sync_record"
+      ],
+      "entry_condition": "source-depth route has reached a terminal result",
+      "failure_terminal": null,
+      "fallback_nodes": [],
+      "invalidation_rules": [
+        "selected report or routing decision changed"
+      ],
+      "manual_gate": false,
+      "name": "机器层同步",
+      "next_nodes": [
+        "screening_pool_update"
+      ],
+      "node_id": "screening_sync",
+      "node_type": "transform",
+      "optional_inputs": [
+        "report.machine",
+        "report.rebuilt"
+      ],
+      "required_inputs": [
+        "source_depth.decision"
+      ],
+      "required_outputs": [
+        "screening.sync_record"
+      ],
+      "retry_policy": {
+        "cost_budget_usd": 0,
+        "max_attempts": 1,
+        "time_budget_seconds": 600
+      },
+      "stage_id": "S02",
+      "success_condition": "one machine-layer result is selected for screening",
+      "workflow_ref": "S02@youtube_truthfulness_workflow_v1.3.0"
+    },
+    {
+      "conditional_outputs": [],
+      "declared_outputs": [
+        "screening.pool"
+      ],
+      "entry_condition": "validated run screening record exists",
+      "failure_terminal": null,
+      "fallback_nodes": [],
+      "invalidation_rules": [
+        "screening sync record or pool rule changed"
+      ],
+      "manual_gate": false,
+      "name": "初筛池更新",
+      "next_nodes": [
+        "threshold_decision"
+      ],
+      "node_id": "screening_pool_update",
+      "node_type": "aggregate",
+      "optional_inputs": [],
+      "required_inputs": [
+        "screening.sync_record"
+      ],
+      "required_outputs": [
+        "screening.pool"
+      ],
+      "retry_policy": {
+        "cost_budget_usd": 0,
+        "max_attempts": 1,
+        "time_budget_seconds": 900
+      },
+      "stage_id": "S03",
+      "success_condition": "pool update is append-only and deduplicated",
+      "workflow_ref": "S03@youtube_truthfulness_workflow_v1.1.0"
+    },
+    {
+      "conditional_outputs": [],
+      "declared_outputs": [
+        "screening.threshold_decision"
+      ],
+      "entry_condition": "screening pool validates",
+      "failure_terminal": null,
+      "fallback_nodes": [],
+      "invalidation_rules": [
+        "pool contents or threshold policy changed"
+      ],
+      "manual_gate": false,
+      "name": "人工标注阈值判断",
+      "next_nodes": [
+        "wait_for_more_runs",
+        "annotation_packet_build"
+      ],
+      "node_id": "threshold_decision",
+      "node_type": "decision",
+      "optional_inputs": [],
+      "required_inputs": [
+        "screening.pool"
+      ],
+      "required_outputs": [
+        "screening.threshold_decision"
+      ],
+      "retry_policy": {
+        "cost_budget_usd": 0,
+        "max_attempts": 1,
+        "time_budget_seconds": 300
+      },
+      "stage_id": "S03",
+      "success_condition": "sufficient/insufficient is explicitly recorded",
+      "workflow_ref": "S03@youtube_truthfulness_workflow_v1.1.0"
+    },
+    {
+      "conditional_outputs": [],
+      "declared_outputs": [
+        "screening.wait_state"
+      ],
+      "entry_condition": "threshold decision is insufficient",
+      "failure_terminal": null,
+      "fallback_nodes": [],
+      "invalidation_rules": [
+        "threshold decision or pool size changed"
+      ],
+      "manual_gate": false,
+      "name": "等待更多运行",
+      "next_nodes": [],
+      "node_id": "wait_for_more_runs",
+      "node_type": "terminal",
+      "optional_inputs": [],
+      "required_inputs": [
+        "screening.threshold_decision"
+      ],
+      "required_outputs": [
+        "screening.wait_state"
+      ],
+      "retry_policy": {
+        "cost_budget_usd": 0,
+        "max_attempts": 1,
+        "time_budget_seconds": 60
+      },
+      "stage_id": "S03",
+      "success_condition": "workflow stops without polling",
+      "workflow_ref": "S03@youtube_truthfulness_workflow_v1.1.0"
+    },
+    {
+      "conditional_outputs": [],
+      "declared_outputs": [
+        "annotation.packet"
+      ],
+      "entry_condition": "threshold decision is sufficient",
+      "failure_terminal": null,
+      "fallback_nodes": [],
+      "invalidation_rules": [
+        "pool, threshold or packet schema changed"
+      ],
+      "manual_gate": false,
+      "name": "标注包构建",
+      "next_nodes": [
+        "annotation_queue"
+      ],
+      "node_id": "annotation_packet_build",
+      "node_type": "transform",
+      "optional_inputs": [],
+      "required_inputs": [
+        "screening.threshold_decision",
+        "screening.pool"
+      ],
+      "required_outputs": [
+        "annotation.packet"
+      ],
+      "retry_policy": {
+        "cost_budget_usd": 1,
+        "max_attempts": 1,
+        "time_budget_seconds": 1800
+      },
+      "stage_id": "S03",
+      "success_condition": "packet contains only machine-screened candidates",
+      "workflow_ref": "S03@youtube_truthfulness_workflow_v1.1.0"
+    },
+    {
+      "conditional_outputs": [],
+      "declared_outputs": [
+        "annotation.queue"
+      ],
+      "entry_condition": "annotation packet validates",
+      "failure_terminal": null,
+      "fallback_nodes": [],
+      "invalidation_rules": [
+        "annotation packet or queue policy changed"
+      ],
+      "manual_gate": false,
+      "name": "人工标注队列",
+      "next_nodes": [
+        "human_annotation_gate"
+      ],
+      "node_id": "annotation_queue",
+      "node_type": "aggregate",
+      "optional_inputs": [],
+      "required_inputs": [
+        "annotation.packet"
+      ],
+      "required_outputs": [
+        "annotation.queue"
+      ],
+      "retry_policy": {
+        "cost_budget_usd": 0,
+        "max_attempts": 1,
+        "time_budget_seconds": 600
+      },
+      "stage_id": "S04",
+      "success_condition": "queue preserves packet provenance",
+      "workflow_ref": "S04@youtube_truthfulness_workflow_v1.1.0"
+    },
+    {
+      "conditional_outputs": [],
+      "declared_outputs": [
+        "annotation.import"
+      ],
+      "entry_condition": "annotator assignment is approved",
+      "failure_terminal": null,
+      "fallback_nodes": [],
+      "invalidation_rules": [
+        "human annotation import changed"
+      ],
+      "manual_gate": true,
+      "name": "人工标注门",
+      "next_nodes": [
+        "annotation_import_validation"
+      ],
+      "node_id": "human_annotation_gate",
+      "node_type": "human_action",
+      "optional_inputs": [],
+      "required_inputs": [
+        "annotation.queue"
+      ],
+      "required_outputs": [
+        "annotation.import"
+      ],
+      "retry_policy": {
+        "cost_budget_usd": 500,
+        "max_attempts": 1,
+        "time_budget_seconds": 604800
+      },
+      "stage_id": "S04",
+      "success_condition": "human decisions are saved with annotator provenance",
+      "workflow_ref": "S04@youtube_truthfulness_workflow_v1.1.0"
+    },
+    {
+      "conditional_outputs": [],
+      "declared_outputs": [
+        "annotation.validation"
+      ],
+      "entry_condition": "human annotation import exists",
+      "failure_terminal": null,
+      "fallback_nodes": [],
+      "invalidation_rules": [
+        "annotation bytes or import schema changed"
+      ],
+      "manual_gate": false,
+      "name": "人工标注导入校验",
+      "next_nodes": [
+        "gold_decision"
+      ],
+      "node_id": "annotation_import_validation",
+      "node_type": "validation",
+      "optional_inputs": [],
+      "required_inputs": [
+        "annotation.import"
+      ],
+      "required_outputs": [
+        "annotation.validation"
+      ],
+      "retry_policy": {
+        "cost_budget_usd": 0,
+        "max_attempts": 1,
+        "time_budget_seconds": 1800
+      },
+      "stage_id": "S04",
+      "success_condition": "schema, conflicts and provenance validate",
+      "workflow_ref": "S04@youtube_truthfulness_workflow_v1.1.0"
+    },
+    {
+      "conditional_outputs": [],
+      "declared_outputs": [
+        "gold.decision"
+      ],
+      "entry_condition": "annotation validation passed",
+      "failure_terminal": null,
+      "fallback_nodes": [],
+      "invalidation_rules": [
+        "annotation or reviewer decision changed"
+      ],
+      "manual_gate": true,
+      "name": "Gold 晋级决定",
+      "next_nodes": [
+        "gold_batch_freeze"
+      ],
+      "node_id": "gold_decision",
+      "node_type": "gate",
+      "optional_inputs": [],
+      "required_inputs": [
+        "annotation.validation"
+      ],
+      "required_outputs": [
+        "gold.decision"
+      ],
+      "retry_policy": {
+        "cost_budget_usd": 500,
+        "max_attempts": 1,
+        "time_budget_seconds": 604800
+      },
+      "stage_id": "S04",
+      "success_condition": "reviewer records approve/reject/conflict decision",
+      "workflow_ref": "S04@youtube_truthfulness_workflow_v1.1.0"
+    },
+    {
+      "conditional_outputs": [],
+      "declared_outputs": [
+        "gold.batch"
+      ],
+      "entry_condition": "approved Gold decisions exist",
+      "failure_terminal": null,
+      "fallback_nodes": [],
+      "invalidation_rules": [
+        "Gold decision correction creates a new batch"
+      ],
+      "manual_gate": false,
+      "name": "Gold 批次冻结",
+      "next_nodes": [
+        "dataset_build"
+      ],
+      "node_id": "gold_batch_freeze",
+      "node_type": "validation",
+      "optional_inputs": [],
+      "required_inputs": [
+        "gold.decision"
+      ],
+      "required_outputs": [
+        "gold.batch"
+      ],
+      "retry_policy": {
+        "cost_budget_usd": 0,
+        "max_attempts": 1,
+        "time_budget_seconds": 1800
+      },
+      "stage_id": "S04",
+      "success_condition": "immutable Gold batch is frozen",
+      "workflow_ref": "S04@youtube_truthfulness_workflow_v1.1.0"
+    },
+    {
+      "conditional_outputs": [],
+      "declared_outputs": [
+        "dataset.build"
+      ],
+      "entry_condition": "frozen Gold batch exists",
+      "failure_terminal": null,
+      "fallback_nodes": [],
+      "invalidation_rules": [
+        "Gold batch or build code changed"
+      ],
+      "manual_gate": false,
+      "name": "数据集构建",
+      "next_nodes": [
+        "dataset_quality_gate"
+      ],
+      "node_id": "dataset_build",
+      "node_type": "transform",
+      "optional_inputs": [],
+      "required_inputs": [
+        "gold.batch"
+      ],
+      "required_outputs": [
+        "dataset.build"
+      ],
+      "retry_policy": {
+        "cost_budget_usd": 1,
+        "max_attempts": 1,
+        "time_budget_seconds": 3600
+      },
+      "stage_id": "S05",
+      "success_condition": "dataset build binds exact Gold IDs",
+      "workflow_ref": "S05@youtube_truthfulness_workflow_v1.1.0"
+    },
+    {
+      "conditional_outputs": [],
+      "declared_outputs": [
+        "dataset.quality_report"
+      ],
+      "entry_condition": "dataset build exists",
+      "failure_terminal": null,
+      "fallback_nodes": [],
+      "invalidation_rules": [
+        "dataset build or quality policy changed"
+      ],
+      "manual_gate": false,
+      "name": "数据集质量门",
+      "next_nodes": [
+        "dataset_split"
+      ],
+      "node_id": "dataset_quality_gate",
+      "node_type": "validation",
+      "optional_inputs": [],
+      "required_inputs": [
+        "dataset.build"
+      ],
+      "required_outputs": [
+        "dataset.quality_report"
+      ],
+      "retry_policy": {
+        "cost_budget_usd": 1,
+        "max_attempts": 1,
+        "time_budget_seconds": 3600
+      },
+      "stage_id": "S05",
+      "success_condition": "quality, leakage and schema checks pass",
+      "workflow_ref": "S05@youtube_truthfulness_workflow_v1.1.0"
+    },
+    {
+      "conditional_outputs": [],
+      "declared_outputs": [
+        "dataset.split"
+      ],
+      "entry_condition": "dataset quality checks pass",
+      "failure_terminal": null,
+      "fallback_nodes": [],
+      "invalidation_rules": [
+        "dataset build, seed or split policy changed"
+      ],
+      "manual_gate": false,
+      "name": "数据集切分",
+      "next_nodes": [
+        "dataset_freeze_gate"
+      ],
+      "node_id": "dataset_split",
+      "node_type": "transform",
+      "optional_inputs": [],
+      "required_inputs": [
+        "dataset.build",
+        "dataset.quality_report"
+      ],
+      "required_outputs": [
+        "dataset.split"
+      ],
+      "retry_policy": {
+        "cost_budget_usd": 0,
+        "max_attempts": 1,
+        "time_budget_seconds": 1800
+      },
+      "stage_id": "S05",
+      "success_condition": "deterministic leakage-safe splits exist",
+      "workflow_ref": "S05@youtube_truthfulness_workflow_v1.1.0"
+    },
+    {
+      "conditional_outputs": [],
+      "declared_outputs": [
+        "dataset.freeze_decision"
+      ],
+      "entry_condition": "build, quality and split artifacts validate",
+      "failure_terminal": null,
+      "fallback_nodes": [],
+      "invalidation_rules": [
+        "build, quality, split or approval changed"
+      ],
+      "manual_gate": true,
+      "name": "数据集冻结门",
+      "next_nodes": [
+        "dataset_release"
+      ],
+      "node_id": "dataset_freeze_gate",
+      "node_type": "gate",
+      "optional_inputs": [],
+      "required_inputs": [
+        "dataset.build",
+        "dataset.quality_report",
+        "dataset.split"
+      ],
+      "required_outputs": [
+        "dataset.freeze_decision"
+      ],
+      "retry_policy": {
+        "cost_budget_usd": 0,
+        "max_attempts": 1,
+        "time_budget_seconds": 604800
+      },
+      "stage_id": "S05",
+      "success_condition": "human explicitly approves release freeze",
+      "workflow_ref": "S05@youtube_truthfulness_workflow_v1.1.0"
+    },
+    {
+      "conditional_outputs": [],
+      "declared_outputs": [
+        "dataset.release"
+      ],
+      "entry_condition": "dataset freeze is approved",
+      "failure_terminal": null,
+      "fallback_nodes": [],
+      "invalidation_rules": [
+        "new Gold correction requires a new build/release"
+      ],
+      "manual_gate": false,
+      "name": "数据集发布",
+      "next_nodes": [
+        "training_config_freeze"
+      ],
+      "node_id": "dataset_release",
+      "node_type": "validation",
+      "optional_inputs": [
+        "dataset.build",
+        "dataset.split"
+      ],
+      "required_inputs": [
+        "dataset.freeze_decision"
+      ],
+      "required_outputs": [
+        "dataset.release"
+      ],
+      "retry_policy": {
+        "cost_budget_usd": 0,
+        "max_attempts": 1,
+        "time_budget_seconds": 1800
+      },
+      "stage_id": "S05",
+      "success_condition": "immutable dataset version is emitted",
+      "workflow_ref": "S05@youtube_truthfulness_workflow_v1.1.0"
+    },
+    {
+      "conditional_outputs": [],
+      "declared_outputs": [
+        "experiment.config"
+      ],
+      "entry_condition": "frozen dataset release exists",
+      "failure_terminal": null,
+      "fallback_nodes": [],
+      "invalidation_rules": [
+        "dataset release or config changed"
+      ],
+      "manual_gate": false,
+      "name": "训练配置冻结",
+      "next_nodes": [
+        "environment_preflight"
+      ],
+      "node_id": "training_config_freeze",
+      "node_type": "validation",
+      "optional_inputs": [],
+      "required_inputs": [
+        "dataset.release"
+      ],
+      "required_outputs": [
+        "experiment.config"
+      ],
+      "retry_policy": {
+        "cost_budget_usd": 0,
+        "max_attempts": 1,
+        "time_budget_seconds": 900
+      },
+      "stage_id": "S06",
+      "success_condition": "training config binds dataset and environment",
+      "workflow_ref": "S06@youtube_truthfulness_workflow_v1.1.0"
+    },
+    {
+      "conditional_outputs": [],
+      "declared_outputs": [
+        "experiment.environment_report"
+      ],
+      "entry_condition": "frozen config exists",
+      "failure_terminal": null,
+      "fallback_nodes": [],
+      "invalidation_rules": [
+        "environment or dependency versions changed"
+      ],
+      "manual_gate": false,
+      "name": "环境预检",
+      "next_nodes": [
+        "smoke_train"
+      ],
+      "node_id": "environment_preflight",
+      "node_type": "validation",
+      "optional_inputs": [],
+      "required_inputs": [
+        "experiment.config"
+      ],
+      "required_outputs": [
+        "experiment.environment_report"
+      ],
+      "retry_policy": {
+        "cost_budget_usd": 0,
+        "max_attempts": 1,
+        "time_budget_seconds": 1800
+      },
+      "stage_id": "S06",
+      "success_condition": "compute, dependencies and storage checks pass",
+      "workflow_ref": "S06@youtube_truthfulness_workflow_v1.1.0"
+    },
+    {
+      "conditional_outputs": [],
+      "declared_outputs": [
+        "experiment.smoke_log"
+      ],
+      "entry_condition": "environment preflight passed",
+      "failure_terminal": "training_stop",
+      "fallback_nodes": [],
+      "invalidation_rules": [
+        "config, dataset or environment changed"
+      ],
+      "manual_gate": false,
+      "name": "训练 Smoke",
+      "next_nodes": [
+        "smoke_gate"
+      ],
+      "node_id": "smoke_train",
+      "node_type": "transform",
+      "optional_inputs": [],
+      "required_inputs": [
+        "experiment.config",
+        "experiment.environment_report"
+      ],
+      "required_outputs": [
+        "experiment.smoke_log"
+      ],
+      "retry_policy": {
+        "cost_budget_usd": 20,
+        "max_attempts": 2,
+        "time_budget_seconds": 7200
+      },
+      "stage_id": "S06",
+      "success_condition": "bounded smoke run completes and artifacts validate",
+      "workflow_ref": "S06@youtube_truthfulness_workflow_v1.1.0"
+    },
+    {
+      "conditional_outputs": [],
+      "declared_outputs": [
+        "experiment.smoke_decision"
+      ],
+      "entry_condition": "smoke results exist",
+      "failure_terminal": "training_stop",
+      "fallback_nodes": [],
+      "invalidation_rules": [
+        "smoke result or approval changed"
+      ],
+      "manual_gate": true,
+      "name": "Smoke 人工门",
+      "next_nodes": [
+        "bounded_training"
+      ],
+      "node_id": "smoke_gate",
+      "node_type": "gate",
+      "optional_inputs": [],
+      "required_inputs": [
+        "experiment.smoke_log"
+      ],
+      "required_outputs": [
+        "experiment.smoke_decision"
+      ],
+      "retry_policy": {
+        "cost_budget_usd": 0,
+        "max_attempts": 1,
+        "time_budget_seconds": 604800
+      },
+      "stage_id": "S06",
+      "success_condition": "human approves bounded formal training",
+      "workflow_ref": "S06@youtube_truthfulness_workflow_v1.1.0"
+    },
+    {
+      "conditional_outputs": [],
+      "declared_outputs": [
+        "model.checkpoint",
+        "experiment.log"
+      ],
+      "entry_condition": "smoke gate approves exact config",
+      "failure_terminal": "training_stop",
+      "fallback_nodes": [
+        "training_stop"
+      ],
+      "invalidation_rules": [
+        "dataset, config, code or environment changed"
+      ],
+      "manual_gate": false,
+      "name": "有界正式训练",
+      "next_nodes": [
+        "checkpoint_validation"
+      ],
+      "node_id": "bounded_training",
+      "node_type": "transform",
+      "optional_inputs": [],
+      "required_inputs": [
+        "dataset.release",
+        "experiment.config",
+        "experiment.smoke_decision"
+      ],
+      "required_outputs": [
+        "model.checkpoint",
+        "experiment.log"
+      ],
+      "retry_policy": {
+        "cost_budget_usd": 500,
+        "max_attempts": 2,
+        "time_budget_seconds": 172800
+      },
+      "stage_id": "S07",
+      "success_condition": "training finishes inside approved budget",
+      "workflow_ref": "S07@youtube_truthfulness_workflow_v1.1.0"
+    },
+    {
+      "conditional_outputs": [],
+      "declared_outputs": [
+        "model.checkpoint_validation"
+      ],
+      "entry_condition": "training checkpoint exists",
+      "failure_terminal": "training_stop",
+      "fallback_nodes": [
+        "bounded_repair_decision"
+      ],
+      "invalidation_rules": [
+        "checkpoint bytes or validation policy changed"
+      ],
+      "manual_gate": false,
+      "name": "Checkpoint 校验",
+      "next_nodes": [
+        "bounded_repair_decision",
+        "evaluation_start"
+      ],
+      "node_id": "checkpoint_validation",
+      "node_type": "validation",
+      "optional_inputs": [],
+      "required_inputs": [
+        "model.checkpoint",
+        "experiment.log"
+      ],
+      "required_outputs": [
+        "model.checkpoint_validation"
+      ],
+      "retry_policy": {
+        "cost_budget_usd": 1,
+        "max_attempts": 1,
+        "time_budget_seconds": 3600
+      },
+      "stage_id": "S07",
+      "success_condition": "checkpoint integrity and run binding pass",
+      "workflow_ref": "S07@youtube_truthfulness_workflow_v1.1.0"
+    },
+    {
+      "conditional_outputs": [],
+      "declared_outputs": [
+        "experiment.repair_decision"
+      ],
+      "entry_condition": "checkpoint validation failed",
+      "failure_terminal": "training_stop",
+      "fallback_nodes": [
+        "bounded_training"
+      ],
+      "invalidation_rules": [
+        "validation result or repair budget changed"
+      ],
+      "manual_gate": false,
+      "name": "有界修复决定",
+      "next_nodes": [
+        "training_stop"
+      ],
+      "node_id": "bounded_repair_decision",
+      "node_type": "decision",
+      "optional_inputs": [
+        "experiment.log"
+      ],
+      "required_inputs": [
+        "model.checkpoint_validation"
+      ],
+      "required_outputs": [
+        "experiment.repair_decision"
+      ],
+      "retry_policy": {
+        "cost_budget_usd": 0,
+        "max_attempts": 2,
+        "time_budget_seconds": 3600
+      },
+      "stage_id": "S07",
+      "success_condition": "retry or stop is recorded with remaining budget",
+      "workflow_ref": "S07@youtube_truthfulness_workflow_v1.1.0"
+    },
+    {
+      "conditional_outputs": [],
+      "declared_outputs": [
+        "experiment.stop_record"
+      ],
+      "entry_condition": "repair decision selects stop or budget is exhausted",
+      "failure_terminal": null,
+      "fallback_nodes": [],
+      "invalidation_rules": [
+        "repair decision changed"
+      ],
+      "manual_gate": false,
+      "name": "训练停止终态",
+      "next_nodes": [],
+      "node_id": "training_stop",
+      "node_type": "terminal",
+      "optional_inputs": [
+        "experiment.log"
+      ],
+      "required_inputs": [
+        "experiment.repair_decision"
+      ],
+      "required_outputs": [
+        "experiment.stop_record"
+      ],
+      "retry_policy": {
+        "cost_budget_usd": 0,
+        "max_attempts": 1,
+        "time_budget_seconds": 60
+      },
+      "stage_id": "S07",
+      "success_condition": "failure history is preserved and no retry is scheduled",
+      "workflow_ref": "S07@youtube_truthfulness_workflow_v1.1.0"
+    },
+    {
+      "conditional_outputs": [],
+      "declared_outputs": [
+        "evaluation.start_record"
+      ],
+      "entry_condition": "checkpoint validation passed",
+      "failure_terminal": null,
+      "fallback_nodes": [],
+      "invalidation_rules": [
+        "checkpoint, dataset or evaluation config changed"
+      ],
+      "manual_gate": false,
+      "name": "评测启动记录",
+      "next_nodes": [
+        "metrics_compute"
+      ],
+      "node_id": "evaluation_start",
+      "node_type": "validation",
+      "optional_inputs": [
+        "model.checkpoint"
+      ],
+      "required_inputs": [
+        "model.checkpoint_validation"
+      ],
+      "required_outputs": [
+        "evaluation.start_record"
+      ],
+      "retry_policy": {
+        "cost_budget_usd": 0,
+        "max_attempts": 1,
+        "time_budget_seconds": 600
+      },
+      "stage_id": "S07",
+      "success_condition": "evaluation binds exact checkpoint and dataset",
+      "workflow_ref": "S07@youtube_truthfulness_workflow_v1.1.0"
+    },
+    {
+      "conditional_outputs": [],
+      "declared_outputs": [
+        "evaluation.metrics"
+      ],
+      "entry_condition": "evaluation binding validates",
+      "failure_terminal": null,
+      "fallback_nodes": [],
+      "invalidation_rules": [
+        "checkpoint, dataset, metric code or seed changed"
+      ],
+      "manual_gate": false,
+      "name": "评测指标计算",
+      "next_nodes": [
+        "error_analysis"
+      ],
+      "node_id": "metrics_compute",
+      "node_type": "transform",
+      "optional_inputs": [
+        "dataset.release"
+      ],
+      "required_inputs": [
+        "evaluation.start_record",
+        "model.checkpoint"
+      ],
+      "required_outputs": [
+        "evaluation.metrics"
+      ],
+      "retry_policy": {
+        "cost_budget_usd": 50,
+        "max_attempts": 1,
+        "time_budget_seconds": 14400
+      },
+      "stage_id": "S08",
+      "success_condition": "metrics are reproducible from frozen inputs",
+      "workflow_ref": "S08@youtube_truthfulness_workflow_v1.1.0"
+    },
+    {
+      "conditional_outputs": [],
+      "declared_outputs": [
+        "evaluation.error_set"
+      ],
+      "entry_condition": "metrics validate",
+      "failure_terminal": null,
+      "fallback_nodes": [],
+      "invalidation_rules": [
+        "metrics or error taxonomy changed"
+      ],
+      "manual_gate": false,
+      "name": "误差分析",
+      "next_nodes": [
+        "capability_claim_gate"
+      ],
+      "node_id": "error_analysis",
+      "node_type": "transform",
+      "optional_inputs": [],
+      "required_inputs": [
+        "evaluation.metrics"
+      ],
+      "required_outputs": [
+        "evaluation.error_set"
+      ],
+      "retry_policy": {
+        "cost_budget_usd": 20,
+        "max_attempts": 1,
+        "time_budget_seconds": 7200
+      },
+      "stage_id": "S08",
+      "success_condition": "error groups retain evaluation provenance",
+      "workflow_ref": "S08@youtube_truthfulness_workflow_v1.1.0"
+    },
+    {
+      "conditional_outputs": [],
+      "declared_outputs": [
+        "evaluation.capability_decision"
+      ],
+      "entry_condition": "metrics and error analysis exist",
+      "failure_terminal": null,
+      "fallback_nodes": [],
+      "invalidation_rules": [
+        "metrics, errors or approval changed"
+      ],
+      "manual_gate": true,
+      "name": "能力声明门",
+      "next_nodes": [
+        "evaluation_report"
+      ],
+      "node_id": "capability_claim_gate",
+      "node_type": "gate",
+      "optional_inputs": [],
+      "required_inputs": [
+        "evaluation.metrics",
+        "evaluation.error_set"
+      ],
+      "required_outputs": [
+        "evaluation.capability_decision"
+      ],
+      "retry_policy": {
+        "cost_budget_usd": 0,
+        "max_attempts": 1,
+        "time_budget_seconds": 604800
+      },
+      "stage_id": "S08",
+      "success_condition": "human approves bounded capability wording",
+      "workflow_ref": "S08@youtube_truthfulness_workflow_v1.1.0"
+    },
+    {
+      "conditional_outputs": [],
+      "declared_outputs": [
+        "evaluation.report"
+      ],
+      "entry_condition": "capability wording is approved",
+      "failure_terminal": null,
+      "fallback_nodes": [],
+      "invalidation_rules": [
+        "capability decision or report template changed"
+      ],
+      "manual_gate": false,
+      "name": "评测报告",
+      "next_nodes": [
+        "experience_candidate"
+      ],
+      "node_id": "evaluation_report",
+      "node_type": "transform",
+      "optional_inputs": [
+        "evaluation.metrics",
+        "evaluation.error_set"
+      ],
+      "required_inputs": [
+        "evaluation.capability_decision"
+      ],
+      "required_outputs": [
+        "evaluation.report"
+      ],
+      "retry_policy": {
+        "cost_budget_usd": 2,
+        "max_attempts": 1,
+        "time_budget_seconds": 1800
+      },
+      "stage_id": "S08",
+      "success_condition": "report states metrics and limitations",
+      "workflow_ref": "S08@youtube_truthfulness_workflow_v1.1.0"
+    },
+    {
+      "conditional_outputs": [],
+      "declared_outputs": [
+        "experience.candidate"
+      ],
+      "entry_condition": "evaluation report exists",
+      "failure_terminal": null,
+      "fallback_nodes": [],
+      "invalidation_rules": [
+        "evaluation report or lesson extraction rules changed"
+      ],
+      "manual_gate": false,
+      "name": "经验候选提炼",
+      "next_nodes": [
+        "memory_promotion_gate"
+      ],
+      "node_id": "experience_candidate",
+      "node_type": "transform",
+      "optional_inputs": [
+        "evaluation.error_set"
+      ],
+      "required_inputs": [
+        "evaluation.report"
+      ],
+      "required_outputs": [
+        "experience.candidate"
+      ],
+      "retry_policy": {
+        "cost_budget_usd": 2,
+        "max_attempts": 1,
+        "time_budget_seconds": 1800
+      },
+      "stage_id": "S09",
+      "success_condition": "candidate lessons include evidence and scope",
+      "workflow_ref": "S09@youtube_truthfulness_workflow_v1.1.0"
+    },
+    {
+      "conditional_outputs": [],
+      "declared_outputs": [
+        "experience.promotion_decision"
+      ],
+      "entry_condition": "candidate lessons pass privacy scan",
+      "failure_terminal": null,
+      "fallback_nodes": [],
+      "invalidation_rules": [
+        "candidate evidence, privacy result or approval changed"
+      ],
+      "manual_gate": true,
+      "name": "Memory 提升门",
+      "next_nodes": [
+        "project_handoff"
+      ],
+      "node_id": "memory_promotion_gate",
+      "node_type": "gate",
+      "optional_inputs": [],
+      "required_inputs": [
+        "experience.candidate"
+      ],
+      "required_outputs": [
+        "experience.promotion_decision"
+      ],
+      "retry_policy": {
+        "cost_budget_usd": 0,
+        "max_attempts": 1,
+        "time_budget_seconds": 604800
+      },
+      "stage_id": "S09",
+      "success_condition": "human approves or rejects promotion",
+      "workflow_ref": "S09@youtube_truthfulness_workflow_v1.1.0"
+    },
+    {
+      "conditional_outputs": [],
+      "declared_outputs": [
+        "handoff.project"
+      ],
+      "entry_condition": "evaluation and memory decisions are final",
+      "failure_terminal": null,
+      "fallback_nodes": [],
+      "invalidation_rules": [
+        "evaluation, promotion decision or handoff schema changed"
+      ],
+      "manual_gate": false,
+      "name": "项目交接",
+      "next_nodes": [
+        "terminal"
+      ],
+      "node_id": "project_handoff",
+      "node_type": "transform",
+      "optional_inputs": [
+        "experience.candidate"
+      ],
+      "required_inputs": [
+        "evaluation.report",
+        "experience.promotion_decision"
+      ],
+      "required_outputs": [
+        "handoff.project"
+      ],
+      "retry_policy": {
+        "cost_budget_usd": 1,
+        "max_attempts": 1,
+        "time_budget_seconds": 1800
+      },
+      "stage_id": "S09",
+      "success_condition": "handoff references immutable inputs and outputs",
+      "workflow_ref": "S09@youtube_truthfulness_workflow_v1.1.0"
+    },
+    {
+      "conditional_outputs": [],
+      "declared_outputs": [
+        "workflow.terminal_record"
+      ],
+      "entry_condition": "project handoff validates",
+      "failure_terminal": null,
+      "fallback_nodes": [],
+      "invalidation_rules": [
+        "project handoff changed"
+      ],
+      "manual_gate": false,
+      "name": "项目终态",
+      "next_nodes": [],
+      "node_id": "terminal",
+      "node_type": "terminal",
+      "optional_inputs": [],
+      "required_inputs": [
+        "handoff.project"
+      ],
+      "required_outputs": [
+        "workflow.terminal_record"
+      ],
+      "retry_policy": {
+        "cost_budget_usd": 0,
+        "max_attempts": 1,
+        "time_budget_seconds": 60
+      },
+      "stage_id": "S09",
+      "success_condition": "workflow stops with auditable terminal record",
+      "workflow_ref": "S09@youtube_truthfulness_workflow_v1.1.0"
+    }
+  ],
+  "project_version": "v0.2",
+  "release_id": "truthfulness_v0.2_youtube_video",
+  "source_platform": "youtube",
+  "terminal_nodes": [
+    "wait_for_more_runs",
+    "training_stop",
+    "terminal"
+  ],
+  "workflow_version": "youtube_truthfulness_workflow_v1.3.0",
+  "workflow_versions": {
+    "S01": "youtube_truthfulness_workflow_v1.3.0",
+    "S02": "youtube_truthfulness_workflow_v1.3.0",
+    "S03": "youtube_truthfulness_workflow_v1.1.0",
+    "S04": "youtube_truthfulness_workflow_v1.1.0",
+    "S05": "youtube_truthfulness_workflow_v1.1.0",
+    "S06": "youtube_truthfulness_workflow_v1.1.0",
+    "S07": "youtube_truthfulness_workflow_v1.1.0",
+    "S08": "youtube_truthfulness_workflow_v1.1.0",
+    "S09": "youtube_truthfulness_workflow_v1.1.0"
+  }
+}

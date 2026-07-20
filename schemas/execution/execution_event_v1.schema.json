@@ -1,0 +1,522 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:video-truthfulness:schema:execution-event:v1",
+  "title": "Video Truthfulness Execution Event v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "event_schema_version",
+    "event_id",
+    "sequence_no",
+    "occurred_at",
+    "event_type",
+    "task_id",
+    "session_id",
+    "attempt_no",
+    "run_id",
+    "stage_id",
+    "dag_node_id",
+    "actor",
+    "artifact_refs",
+    "path_refs",
+    "checkpoint_id",
+    "payload",
+    "previous_event_id",
+    "previous_event_hash",
+    "event_hash"
+  ],
+  "properties": {
+    "event_schema_version": {"const": "execution_event_v1.0.0"},
+    "event_id": {"$ref": "#/$defs/eventId"},
+    "sequence_no": {"type": "integer", "minimum": 1},
+    "occurred_at": {"$ref": "#/$defs/utcTimestamp"},
+    "event_type": {
+      "enum": [
+        "session.started",
+        "task.created",
+        "task.started",
+        "artifact.read",
+        "artifact.written",
+        "artifact.validated",
+        "artifact.invalidated",
+        "tool.failed",
+        "task.retried",
+        "human.approval_requested",
+        "human.approval_received",
+        "checkpoint.created",
+        "handoff.created",
+        "task.completed",
+        "task.failed",
+        "task.waiting_for_human",
+        "task.blocked_by_input",
+        "task.skipped_by_gate"
+      ]
+    },
+    "task_id": {"$ref": "#/$defs/taskId"},
+    "session_id": {"$ref": "#/$defs/sessionId"},
+    "attempt_no": {"type": "integer", "minimum": 1},
+    "run_id": {
+      "oneOf": [
+        {"$ref": "#/$defs/runId"},
+        {"type": "null"}
+      ]
+    },
+    "stage_id": {"$ref": "#/$defs/stageId"},
+    "dag_node_id": {
+      "oneOf": [
+        {"$ref": "#/$defs/dagNodeId"},
+        {"type": "null"}
+      ]
+    },
+    "actor": {"$ref": "#/$defs/actor"},
+    "artifact_refs": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/artifactRef"},
+      "uniqueItems": true
+    },
+    "path_refs": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/pathRef"},
+      "uniqueItems": true
+    },
+    "checkpoint_id": {
+      "oneOf": [
+        {"$ref": "#/$defs/checkpointId"},
+        {"type": "null"}
+      ]
+    },
+    "payload": {"type": "object"},
+    "previous_event_id": {
+      "oneOf": [
+        {"$ref": "#/$defs/eventId"},
+        {"type": "null"}
+      ]
+    },
+    "previous_event_hash": {
+      "oneOf": [
+        {"$ref": "#/$defs/sha256"},
+        {"type": "null"}
+      ]
+    },
+    "event_hash": {"$ref": "#/$defs/sha256"}
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {"sequence_no": {"const": 1}},
+        "required": ["sequence_no"]
+      },
+      "then": {
+        "properties": {
+          "previous_event_id": {"type": "null"},
+          "previous_event_hash": {"type": "null"}
+        }
+      },
+      "else": {
+        "properties": {
+          "previous_event_id": {"$ref": "#/$defs/eventId"},
+          "previous_event_hash": {"$ref": "#/$defs/sha256"}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"event_type": {"const": "session.started"}}, "required": ["event_type"]},
+      "then": {"properties": {"payload": {"$ref": "#/$defs/sessionStartedPayload"}}}
+    },
+    {
+      "if": {"properties": {"event_type": {"const": "task.created"}}, "required": ["event_type"]},
+      "then": {"properties": {"payload": {"$ref": "#/$defs/taskCreatedPayload"}}}
+    },
+    {
+      "if": {"properties": {"event_type": {"const": "task.started"}}, "required": ["event_type"]},
+      "then": {"properties": {"payload": {"$ref": "#/$defs/taskStartedPayload"}}}
+    },
+    {
+      "if": {"properties": {"event_type": {"const": "artifact.read"}}, "required": ["event_type"]},
+      "then": {"properties": {"payload": {"$ref": "#/$defs/artifactReadPayload"}}}
+    },
+    {
+      "if": {"properties": {"event_type": {"const": "artifact.written"}}, "required": ["event_type"]},
+      "then": {"properties": {"payload": {"$ref": "#/$defs/artifactWrittenPayload"}}}
+    },
+    {
+      "if": {"properties": {"event_type": {"const": "artifact.validated"}}, "required": ["event_type"]},
+      "then": {"properties": {"payload": {"$ref": "#/$defs/artifactValidatedPayload"}}}
+    },
+    {
+      "if": {"properties": {"event_type": {"const": "artifact.invalidated"}}, "required": ["event_type"]},
+      "then": {"properties": {"payload": {"$ref": "#/$defs/artifactInvalidatedPayload"}}}
+    },
+    {
+      "if": {"properties": {"event_type": {"const": "tool.failed"}}, "required": ["event_type"]},
+      "then": {"properties": {"payload": {"$ref": "#/$defs/toolFailedPayload"}}}
+    },
+    {
+      "if": {"properties": {"event_type": {"const": "task.retried"}}, "required": ["event_type"]},
+      "then": {"properties": {"payload": {"$ref": "#/$defs/taskRetriedPayload"}}}
+    },
+    {
+      "if": {
+        "properties": {"event_type": {"const": "human.approval_requested"}},
+        "required": ["event_type"]
+      },
+      "then": {"properties": {"payload": {"$ref": "#/$defs/approvalRequestedPayload"}}}
+    },
+    {
+      "if": {
+        "properties": {"event_type": {"const": "human.approval_received"}},
+        "required": ["event_type"]
+      },
+      "then": {"properties": {"payload": {"$ref": "#/$defs/approvalReceivedPayload"}}}
+    },
+    {
+      "if": {"properties": {"event_type": {"const": "checkpoint.created"}}, "required": ["event_type"]},
+      "then": {"properties": {"payload": {"$ref": "#/$defs/checkpointCreatedPayload"}}}
+    },
+    {
+      "if": {"properties": {"event_type": {"const": "handoff.created"}}, "required": ["event_type"]},
+      "then": {"properties": {"payload": {"$ref": "#/$defs/handoffCreatedPayload"}}}
+    },
+    {
+      "if": {"properties": {"event_type": {"const": "task.completed"}}, "required": ["event_type"]},
+      "then": {"properties": {"payload": {"$ref": "#/$defs/taskCompletedPayload"}}}
+    },
+    {
+      "if": {"properties": {"event_type": {"const": "task.failed"}}, "required": ["event_type"]},
+      "then": {"properties": {"payload": {"$ref": "#/$defs/taskFailedPayload"}}}
+    },
+    {
+      "if": {
+        "properties": {"event_type": {"const": "task.waiting_for_human"}},
+        "required": ["event_type"]
+      },
+      "then": {"properties": {"payload": {"$ref": "#/$defs/taskWaitingPayload"}}}
+    },
+    {
+      "if": {
+        "properties": {"event_type": {"const": "task.blocked_by_input"}},
+        "required": ["event_type"]
+      },
+      "then": {"properties": {"payload": {"$ref": "#/$defs/taskBlockedPayload"}}}
+    },
+    {
+      "if": {
+        "properties": {"event_type": {"const": "task.skipped_by_gate"}},
+        "required": ["event_type"]
+      },
+      "then": {"properties": {"payload": {"$ref": "#/$defs/taskSkippedPayload"}}}
+    }
+  ],
+  "$defs": {
+    "taskId": {"type": "string", "pattern": "^task_[0-9a-hjkmnp-tv-z]{26}$"},
+    "sessionId": {"type": "string", "pattern": "^session_[0-9a-hjkmnp-tv-z]{26}$"},
+    "runId": {"type": "string", "pattern": "^run_[0-9a-hjkmnp-tv-z]{26}$"},
+    "artifactId": {"type": "string", "pattern": "^artifact_[0-9a-hjkmnp-tv-z]{26}$"},
+    "recordId": {"type": "string", "pattern": "^record_[0-9a-hjkmnp-tv-z]{26}$"},
+    "checkpointId": {"type": "string", "pattern": "^checkpoint_[0-9a-hjkmnp-tv-z]{26}$"},
+    "eventId": {"type": "string", "pattern": "^event_[0-9a-hjkmnp-tv-z]{26}$"},
+    "stageId": {"type": "string", "pattern": "^S0[1-9]$"},
+    "dagNodeId": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "utcTimestamp": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?Z$"
+    },
+    "relativePath": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "pattern": "^(?![A-Za-z]:)(?!/)(?!~)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*(?:^|/)latest(?:/|$))(?!.*[\\\\*?$])[^\\r\\n]+$"
+    },
+    "artifactType": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*(?:\\.[a-z][a-z0-9_]*)+$"
+    },
+    "actor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["actor_type", "actor_id", "agent_profile_version", "agent_runtime_version"],
+      "properties": {
+        "actor_type": {"enum": ["agent", "human", "workflow", "tool", "system"]},
+        "actor_id": {"type": "string", "minLength": 1, "maxLength": 160},
+        "agent_profile_version": {
+          "type": ["string", "null"],
+          "pattern": "^[a-z][a-z0-9_]*_agent_v[0-9]+\\.[0-9]+\\.[0-9]+$"
+        },
+        "agent_runtime_version": {"type": ["string", "null"], "minLength": 1, "maxLength": 120}
+      }
+    },
+    "artifactRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_id",
+        "artifact_type",
+        "record_id",
+        "relative_path",
+        "content_hash_algorithm",
+        "content_hash",
+        "input_fingerprint",
+        "validation_status",
+        "lifecycle_state"
+      ],
+      "properties": {
+        "artifact_id": {"$ref": "#/$defs/artifactId"},
+        "artifact_type": {"$ref": "#/$defs/artifactType"},
+        "record_id": {
+          "oneOf": [
+            {"$ref": "#/$defs/recordId"},
+            {"type": "null"}
+          ]
+        },
+        "relative_path": {"$ref": "#/$defs/relativePath"},
+        "content_hash_algorithm": {"const": "sha256"},
+        "content_hash": {"$ref": "#/$defs/sha256"},
+        "input_fingerprint": {
+          "oneOf": [
+            {"$ref": "#/$defs/sha256"},
+            {"type": "null"}
+          ]
+        },
+        "validation_status": {"enum": ["not_validated", "passed", "failed", "partial"]},
+        "lifecycle_state": {
+          "enum": ["created", "validated", "frozen", "stale", "superseded", "invalid", "archived", "purged"]
+        }
+      }
+    },
+    "pathRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["relative_path", "content_hash_algorithm", "content_hash", "purpose"],
+      "properties": {
+        "relative_path": {"$ref": "#/$defs/relativePath"},
+        "content_hash_algorithm": {"const": "sha256"},
+        "content_hash": {"$ref": "#/$defs/sha256"},
+        "purpose": {"type": "string", "minLength": 1, "maxLength": 200}
+      }
+    },
+    "sessionStartedPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["manifest_path", "manifest_hash"],
+      "properties": {
+        "manifest_path": {"$ref": "#/$defs/relativePath"},
+        "manifest_hash": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "taskCreatedPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["task_scope", "objective", "parent_checkpoint_id"],
+      "properties": {
+        "task_scope": {"enum": ["run", "cross_run"]},
+        "objective": {"type": "string", "minLength": 1, "maxLength": 500},
+        "parent_checkpoint_id": {
+          "oneOf": [
+            {"$ref": "#/$defs/checkpointId"},
+            {"type": "null"}
+          ]
+        }
+      }
+    },
+    "taskStartedPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["action_summary", "required_input_artifact_ids"],
+      "properties": {
+        "action_summary": {"type": "string", "minLength": 1, "maxLength": 500},
+        "required_input_artifact_ids": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/artifactId"},
+          "uniqueItems": true
+        }
+      }
+    },
+    "artifactReadPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["purpose", "hash_verified"],
+      "properties": {
+        "purpose": {"type": "string", "minLength": 1, "maxLength": 240},
+        "hash_verified": {"const": true}
+      }
+    },
+    "artifactWrittenPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["write_method", "size_bytes"],
+      "properties": {
+        "write_method": {"enum": ["atomic_replace", "append_only"]},
+        "size_bytes": {"type": "integer", "minimum": 0}
+      }
+    },
+    "artifactValidatedPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["validator_id", "validator_version", "result", "validation_artifact_id"],
+      "properties": {
+        "validator_id": {"type": "string", "pattern": "^[a-z][a-z0-9_.-]*$", "maxLength": 160},
+        "validator_version": {"type": "string", "minLength": 1, "maxLength": 120},
+        "result": {"enum": ["passed", "failed", "partial"]},
+        "validation_artifact_id": {
+          "oneOf": [
+            {"$ref": "#/$defs/artifactId"},
+            {"type": "null"}
+          ]
+        }
+      }
+    },
+    "artifactInvalidatedPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reason_code", "reason_summary", "replacement_artifact_id"],
+      "properties": {
+        "reason_code": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$", "maxLength": 120},
+        "reason_summary": {"type": "string", "minLength": 1, "maxLength": 500},
+        "replacement_artifact_id": {
+          "oneOf": [
+            {"$ref": "#/$defs/artifactId"},
+            {"type": "null"}
+          ]
+        }
+      }
+    },
+    "toolFailedPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tool_name", "error_class", "exit_code", "summary", "diagnostic_artifact_id", "retryable"],
+      "properties": {
+        "tool_name": {"type": "string", "minLength": 1, "maxLength": 120},
+        "error_class": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.-]*$", "maxLength": 160},
+        "exit_code": {"type": ["integer", "null"]},
+        "summary": {"type": "string", "minLength": 1, "maxLength": 500},
+        "diagnostic_artifact_id": {
+          "oneOf": [
+            {"$ref": "#/$defs/artifactId"},
+            {"type": "null"}
+          ]
+        },
+        "retryable": {"type": "boolean"}
+      }
+    },
+    "taskRetriedPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["new_session_id", "new_attempt_no", "parent_checkpoint_id", "change_summary"],
+      "properties": {
+        "new_session_id": {"$ref": "#/$defs/sessionId"},
+        "new_attempt_no": {"type": "integer", "minimum": 2},
+        "parent_checkpoint_id": {"$ref": "#/$defs/checkpointId"},
+        "change_summary": {"type": "string", "minLength": 1, "maxLength": 500}
+      }
+    },
+    "approvalRequestedPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["gate_node_id", "decision_type", "question_summary", "decision_artifact_id"],
+      "properties": {
+        "gate_node_id": {"$ref": "#/$defs/dagNodeId"},
+        "decision_type": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$", "maxLength": 120},
+        "question_summary": {"type": "string", "minLength": 1, "maxLength": 500},
+        "decision_artifact_id": {"$ref": "#/$defs/artifactId"}
+      }
+    },
+    "approvalReceivedPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["gate_node_id", "decision", "decision_artifact_id", "sanitized_summary"],
+      "properties": {
+        "gate_node_id": {"$ref": "#/$defs/dagNodeId"},
+        "decision": {"enum": ["approved", "rejected", "deferred"]},
+        "decision_artifact_id": {"$ref": "#/$defs/artifactId"},
+        "sanitized_summary": {"type": "string", "minLength": 1, "maxLength": 500}
+      }
+    },
+    "checkpointCreatedPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["checkpoint_id", "checkpoint_path", "checkpoint_hash", "checkpoint_kind"],
+      "properties": {
+        "checkpoint_id": {"$ref": "#/$defs/checkpointId"},
+        "checkpoint_path": {"$ref": "#/$defs/relativePath"},
+        "checkpoint_hash": {"$ref": "#/$defs/sha256"},
+        "checkpoint_kind": {
+          "enum": ["stage_boundary", "failure_boundary", "human_gate_boundary", "retry_boundary"]
+        }
+      }
+    },
+    "handoffCreatedPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["handoff_artifact_id", "record_id", "handoff_path", "handoff_hash", "record_hash"],
+      "properties": {
+        "handoff_artifact_id": {"$ref": "#/$defs/artifactId"},
+        "record_id": {"$ref": "#/$defs/recordId"},
+        "handoff_path": {"$ref": "#/$defs/relativePath"},
+        "handoff_hash": {"$ref": "#/$defs/sha256"},
+        "record_hash": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "taskCompletedPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["result_summary"],
+      "properties": {
+        "result_summary": {"type": "string", "minLength": 1, "maxLength": 500}
+      }
+    },
+    "taskFailedPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["error_class", "summary", "diagnostic_artifact_ids"],
+      "properties": {
+        "error_class": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.-]*$", "maxLength": 160},
+        "summary": {"type": "string", "minLength": 1, "maxLength": 500},
+        "diagnostic_artifact_ids": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/artifactId"},
+          "uniqueItems": true
+        }
+      }
+    },
+    "taskWaitingPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["decision_artifact_ids", "reason"],
+      "properties": {
+        "decision_artifact_ids": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/artifactId"},
+          "uniqueItems": true
+        },
+        "reason": {"type": "string", "minLength": 1, "maxLength": 500}
+      }
+    },
+    "taskBlockedPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["missing_input_refs", "reason"],
+      "properties": {
+        "missing_input_refs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"type": "string", "minLength": 1, "maxLength": 240},
+          "uniqueItems": true
+        },
+        "reason": {"type": "string", "minLength": 1, "maxLength": 500}
+      }
+    },
+    "taskSkippedPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["gate_node_id", "decision_artifact_id", "reason"],
+      "properties": {
+        "gate_node_id": {"$ref": "#/$defs/dagNodeId"},
+        "decision_artifact_id": {"$ref": "#/$defs/artifactId"},
+        "reason": {"type": "string", "minLength": 1, "maxLength": 500}
+      }
+    }
+  }
+}

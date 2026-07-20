@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime, timezone
 
 from video_truthfulness.core.artifacts.invalidation import entity_ref_key, fingerprint_is_stale, propagate_stale
-from video_truthfulness.core.artifacts.models import UpstreamEntityRef
+from video_truthfulness.core.artifacts.models import UpstreamEntityRef, to_artifact_record_view
 from video_truthfulness.core.artifacts.registry import create_artifact_record
 
 
@@ -18,7 +18,7 @@ def _record(
     entity_refs: list[UpstreamEntityRef] | None = None,
     fingerprint: str | None = None,
 ):
-    return create_artifact_record(
+    return to_artifact_record_view(create_artifact_record(
         artifact_id=f"artifact_{number:026d}",
         artifact_type=artifact_type,
         logical_name=f"synthetic-{artifact_type}",
@@ -36,7 +36,7 @@ def _record(
         size_bytes=number,
         content_hash=f"{number:064x}",
         producer_type="workflow",
-        schema_versions=["artifact_record_v1.0.0"],
+        schema_versions=["artifact_record_v1.1.0"],
         tool_versions={"synthetic": "1"},
         upstream_artifact_ids=upstream or [],
         upstream_entity_refs=entity_refs or [],
@@ -48,7 +48,7 @@ def _record(
         access_scope="public",
         retention_policy="test only",
         created_at=datetime(2026, 1, 1, tzinfo=timezone.utc),
-    )
+    ))
 
 
 def _chain():

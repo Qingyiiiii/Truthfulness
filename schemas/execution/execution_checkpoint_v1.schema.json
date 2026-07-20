@@ -1,0 +1,435 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:video-truthfulness:schema:execution-checkpoint:v1",
+  "title": "Video Truthfulness Execution Checkpoint v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "checkpoint_schema_version",
+    "checkpoint_id",
+    "parent_checkpoint_id",
+    "checkpoint_kind",
+    "project_version",
+    "storage_version",
+    "release_id",
+    "task_id",
+    "session_id",
+    "attempt_no",
+    "run_id",
+    "stage_id",
+    "created_at",
+    "bootstrap_refs",
+    "event_head",
+    "registry_heads",
+    "dag_ref",
+    "workflow_version",
+    "schema_versions",
+    "prompt_version",
+    "agent_profile_version",
+    "agent_runtime_version",
+    "code_ref",
+    "state_hash",
+    "input_artifacts",
+    "output_artifacts",
+    "actual_read_set",
+    "actual_write_set",
+    "invalidated_artifacts",
+    "validation_summary",
+    "terminal_state",
+    "checkpoint_hash"
+  ],
+  "properties": {
+    "checkpoint_schema_version": {"const": "execution_checkpoint_v1.0.0"},
+    "checkpoint_id": {"$ref": "#/$defs/checkpointId"},
+    "parent_checkpoint_id": {
+      "oneOf": [
+        {"$ref": "#/$defs/checkpointId"},
+        {"type": "null"}
+      ]
+    },
+    "checkpoint_kind": {
+      "enum": ["stage_boundary", "failure_boundary", "human_gate_boundary", "retry_boundary"]
+    },
+    "project_version": {"const": "v0.2"},
+    "storage_version": {"const": "V02"},
+    "release_id": {"const": "truthfulness_v0.2_youtube_video"},
+    "task_id": {"$ref": "#/$defs/taskId"},
+    "session_id": {"$ref": "#/$defs/sessionId"},
+    "attempt_no": {"type": "integer", "minimum": 1},
+    "run_id": {
+      "oneOf": [
+        {"$ref": "#/$defs/runId"},
+        {"type": "null"}
+      ]
+    },
+    "stage_id": {"$ref": "#/$defs/stageId"},
+    "created_at": {"$ref": "#/$defs/utcTimestamp"},
+    "bootstrap_refs": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/bootstrapRef"},
+      "uniqueItems": true
+    },
+    "event_head": {"$ref": "#/$defs/eventHead"},
+    "registry_heads": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/registryHead"},
+      "uniqueItems": true
+    },
+    "dag_ref": {"$ref": "#/$defs/dagRef"},
+    "workflow_version": {"const": "youtube_truthfulness_workflow_v1.1.0"},
+    "schema_versions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/schemaVersion"},
+      "uniqueItems": true,
+      "contains": {"const": "execution_checkpoint_v1.0.0"}
+    },
+    "prompt_version": {"$ref": "#/$defs/promptVersion"},
+    "agent_profile_version": {"$ref": "#/$defs/agentProfileVersion"},
+    "agent_runtime_version": {"type": "string", "minLength": 1, "maxLength": 120},
+    "code_ref": {"$ref": "#/$defs/codeRef"},
+    "state_hash": {"$ref": "#/$defs/sha256"},
+    "input_artifacts": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/artifactRef"},
+      "uniqueItems": true
+    },
+    "output_artifacts": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/artifactRef"},
+      "uniqueItems": true
+    },
+    "actual_read_set": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/observedAccess"},
+      "uniqueItems": true
+    },
+    "actual_write_set": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/observedAccess"},
+      "uniqueItems": true
+    },
+    "invalidated_artifacts": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/artifactRef"},
+      "uniqueItems": true
+    },
+    "validation_summary": {"$ref": "#/$defs/validationSummary"},
+    "terminal_state": {
+      "enum": ["COMPLETED", "FAILED", "WAITING_FOR_HUMAN", "BLOCKED_BY_INPUT", "SKIPPED_BY_GATE"]
+    },
+    "checkpoint_hash": {"$ref": "#/$defs/sha256"}
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {"parent_checkpoint_id": {"type": "null"}},
+        "required": ["parent_checkpoint_id"]
+      },
+      "then": {"properties": {"bootstrap_refs": {"minItems": 1}}}
+    },
+    {
+      "if": {
+        "properties": {"checkpoint_kind": {"const": "failure_boundary"}},
+        "required": ["checkpoint_kind"]
+      },
+      "then": {"properties": {"terminal_state": {"const": "FAILED"}}}
+    },
+    {
+      "if": {
+        "properties": {"checkpoint_kind": {"const": "human_gate_boundary"}},
+        "required": ["checkpoint_kind"]
+      },
+      "then": {"properties": {"terminal_state": {"const": "WAITING_FOR_HUMAN"}}}
+    }
+  ],
+  "$defs": {
+    "taskId": {"type": "string", "pattern": "^task_[0-9a-hjkmnp-tv-z]{26}$"},
+    "sessionId": {"type": "string", "pattern": "^session_[0-9a-hjkmnp-tv-z]{26}$"},
+    "runId": {"type": "string", "pattern": "^run_[0-9a-hjkmnp-tv-z]{26}$"},
+    "artifactId": {"type": "string", "pattern": "^artifact_[0-9a-hjkmnp-tv-z]{26}$"},
+    "recordId": {"type": "string", "pattern": "^record_[0-9a-hjkmnp-tv-z]{26}$"},
+    "checkpointId": {"type": "string", "pattern": "^checkpoint_[0-9a-hjkmnp-tv-z]{26}$"},
+    "eventId": {"type": "string", "pattern": "^event_[0-9a-hjkmnp-tv-z]{26}$"},
+    "stageId": {"type": "string", "pattern": "^S0[1-9]$"},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "gitObjectId": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "utcTimestamp": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?Z$"
+    },
+    "relativePath": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "pattern": "^(?![A-Za-z]:)(?!/)(?!~)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*(?:^|/)latest(?:/|$))(?!.*[\\\\*?$])[^\\r\\n]+$"
+    },
+    "schemaVersion": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*_v[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "promptVersion": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*_prompt_v[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "agentProfileVersion": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*_agent_v[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "artifactType": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*(?:\\.[a-z][a-z0-9_]*)+$"
+    },
+    "gitBootstrapRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ref_type", "object_id", "description"],
+      "properties": {
+        "ref_type": {"enum": ["git_commit", "git_tree"]},
+        "object_id": {"$ref": "#/$defs/gitObjectId"},
+        "description": {"type": "string", "minLength": 1, "maxLength": 240}
+      }
+    },
+    "fileBootstrapRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ref_type", "relative_path", "content_hash_algorithm", "content_hash", "purpose"],
+      "properties": {
+        "ref_type": {"enum": ["document", "working_tree_manifest", "registry", "dag_config"]},
+        "relative_path": {"$ref": "#/$defs/relativePath"},
+        "content_hash_algorithm": {"const": "sha256"},
+        "content_hash": {"$ref": "#/$defs/sha256"},
+        "purpose": {"type": "string", "minLength": 1, "maxLength": 240}
+      }
+    },
+    "bootstrapRef": {
+      "oneOf": [
+        {"$ref": "#/$defs/gitBootstrapRef"},
+        {"$ref": "#/$defs/fileBootstrapRef"}
+      ]
+    },
+    "eventHead": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["event_id", "sequence_no", "event_hash", "occurred_at"],
+      "properties": {
+        "event_id": {"$ref": "#/$defs/eventId"},
+        "sequence_no": {"type": "integer", "minimum": 1},
+        "event_hash": {"$ref": "#/$defs/sha256"},
+        "occurred_at": {"$ref": "#/$defs/utcTimestamp"}
+      }
+    },
+    "registryHead": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "registry_scope",
+        "relative_path",
+        "content_hash_algorithm",
+        "content_hash",
+        "record_count",
+        "artifact_count",
+        "head_record_id",
+        "head_record_hash"
+      ],
+      "properties": {
+        "registry_scope": {"enum": ["run", "cross_run"]},
+        "relative_path": {"$ref": "#/$defs/relativePath"},
+        "content_hash_algorithm": {"const": "sha256"},
+        "content_hash": {"$ref": "#/$defs/sha256"},
+        "record_count": {"type": "integer", "minimum": 0},
+        "artifact_count": {"type": "integer", "minimum": 0},
+        "head_record_id": {
+          "oneOf": [
+            {"$ref": "#/$defs/recordId"},
+            {"type": "null"}
+          ]
+        },
+        "head_record_hash": {
+          "oneOf": [
+            {"$ref": "#/$defs/sha256"},
+            {"type": "null"}
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"record_count": {"const": 0}}, "required": ["record_count"]},
+          "then": {
+            "properties": {
+              "artifact_count": {"const": 0},
+              "head_record_id": {"type": "null"},
+              "head_record_hash": {"type": "null"}
+            }
+          },
+          "else": {
+            "properties": {
+              "head_record_id": {"$ref": "#/$defs/recordId"},
+              "head_record_hash": {"$ref": "#/$defs/sha256"}
+            }
+          }
+        }
+      ]
+    },
+    "dagRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "dag_id",
+        "dag_version",
+        "workflow_version",
+        "relative_path",
+        "content_hash_algorithm",
+        "content_hash"
+      ],
+      "properties": {
+        "dag_id": {"const": "youtube_truthfulness_dag"},
+        "dag_version": {"const": "youtube_truthfulness_dag_v1.1.0"},
+        "workflow_version": {"const": "youtube_truthfulness_workflow_v1.1.0"},
+        "relative_path": {"$ref": "#/$defs/relativePath"},
+        "content_hash_algorithm": {"const": "sha256"},
+        "content_hash": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "codeRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "git_commit",
+        "working_tree_dirty",
+        "working_tree_manifest_path",
+        "working_tree_manifest_hash"
+      ],
+      "properties": {
+        "git_commit": {"$ref": "#/$defs/gitObjectId"},
+        "working_tree_dirty": {"type": "boolean"},
+        "working_tree_manifest_path": {
+          "oneOf": [
+            {"$ref": "#/$defs/relativePath"},
+            {"type": "null"}
+          ]
+        },
+        "working_tree_manifest_hash": {
+          "oneOf": [
+            {"$ref": "#/$defs/sha256"},
+            {"type": "null"}
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"working_tree_dirty": {"const": true}}, "required": ["working_tree_dirty"]},
+          "then": {
+            "properties": {
+              "working_tree_manifest_path": {"$ref": "#/$defs/relativePath"},
+              "working_tree_manifest_hash": {"$ref": "#/$defs/sha256"}
+            }
+          },
+          "else": {
+            "properties": {
+              "working_tree_manifest_path": {"type": "null"},
+              "working_tree_manifest_hash": {"type": "null"}
+            }
+          }
+        }
+      ]
+    },
+    "artifactRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_id",
+        "artifact_type",
+        "record_id",
+        "relative_path",
+        "content_hash_algorithm",
+        "content_hash",
+        "input_fingerprint",
+        "validation_status",
+        "lifecycle_state"
+      ],
+      "properties": {
+        "artifact_id": {"$ref": "#/$defs/artifactId"},
+        "artifact_type": {"$ref": "#/$defs/artifactType"},
+        "record_id": {"$ref": "#/$defs/recordId"},
+        "relative_path": {"$ref": "#/$defs/relativePath"},
+        "content_hash_algorithm": {"const": "sha256"},
+        "content_hash": {"$ref": "#/$defs/sha256"},
+        "input_fingerprint": {
+          "oneOf": [
+            {"$ref": "#/$defs/sha256"},
+            {"type": "null"}
+          ]
+        },
+        "validation_status": {"enum": ["not_validated", "passed", "failed", "partial"]},
+        "lifecycle_state": {
+          "enum": ["created", "validated", "frozen", "stale", "superseded", "invalid", "archived", "purged"]
+        }
+      }
+    },
+    "observedAccess": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_id",
+        "record_id",
+        "relative_path",
+        "content_hash_algorithm",
+        "content_hash",
+        "event_id"
+      ],
+      "properties": {
+        "artifact_id": {
+          "oneOf": [
+            {"$ref": "#/$defs/artifactId"},
+            {"type": "null"}
+          ]
+        },
+        "record_id": {
+          "oneOf": [
+            {"$ref": "#/$defs/recordId"},
+            {"type": "null"}
+          ]
+        },
+        "relative_path": {"$ref": "#/$defs/relativePath"},
+        "content_hash_algorithm": {"const": "sha256"},
+        "content_hash": {"$ref": "#/$defs/sha256"},
+        "event_id": {"$ref": "#/$defs/eventId"}
+      }
+    },
+    "validatorResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["validator_id", "validator_version", "result", "validation_artifact_id"],
+      "properties": {
+        "validator_id": {"type": "string", "pattern": "^[a-z][a-z0-9_.-]*$", "maxLength": 160},
+        "validator_version": {"type": "string", "minLength": 1, "maxLength": 120},
+        "result": {"enum": ["passed", "failed", "partial"]},
+        "validation_artifact_id": {
+          "oneOf": [
+            {"$ref": "#/$defs/artifactId"},
+            {"type": "null"}
+          ]
+        }
+      }
+    },
+    "validationSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["overall_status", "passed_count", "failed_count", "partial_count", "validators"],
+      "properties": {
+        "overall_status": {"enum": ["passed", "failed", "partial", "not_run"]},
+        "passed_count": {"type": "integer", "minimum": 0},
+        "failed_count": {"type": "integer", "minimum": 0},
+        "partial_count": {"type": "integer", "minimum": 0},
+        "validators": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/validatorResult"},
+          "uniqueItems": true
+        }
+      }
+    }
+  }
+}

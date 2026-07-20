@@ -13,6 +13,9 @@ from video_truthfulness.core.artifacts.models import ArtifactRecord, EntityIndex
 
 ROOT = Path(__file__).resolve().parents[3]
 EXAMPLE = ROOT / "examples" / "artifact_registry" / "synthetic_run"
+V1_FIXTURE_SHA256 = "5d4dd9a5fb4cb581ebde0ff3d7915e80d2a203407c9b61d2981b8c52bf6ff4ec"
+V1_SCHEMA_SHA256 = "f03a8aa85c2d67c48523c19302cc13d45380980db68c92577d234d60f7ee4592"
+V1_RECORD_HASH = "2f2184664dca0a277ec6a22d244b0e379e9f0ac04a137f533e212866b8aa2540"
 
 
 def _load(path: Path) -> dict[str, object]:
@@ -20,13 +23,18 @@ def _load(path: Path) -> dict[str, object]:
 
 
 def test_public_valid_record_matches_schema_model_and_file_bytes() -> None:
-    raw = _load(EXAMPLE / "valid_artifact_record.json")
-    schema = _load(ROOT / "schemas" / "artifact_registry" / "artifact_record_v1.schema.json")
+    fixture_path = EXAMPLE / "valid_artifact_record.json"
+    schema_path = ROOT / "schemas" / "artifact_registry" / "artifact_record_v1.schema.json"
+    raw = _load(fixture_path)
+    schema = _load(schema_path)
     Draft202012Validator(schema, format_checker=FormatChecker()).validate(raw)
     record = ArtifactRecord.model_validate(raw)
 
     run_path = EXAMPLE / "run.json"
     assert record.record_hash == record_hash(raw)
+    assert record.record_hash == V1_RECORD_HASH
+    assert sha256_file(fixture_path) == V1_FIXTURE_SHA256
+    assert sha256_file(schema_path) == V1_SCHEMA_SHA256
     assert record.size_bytes == run_path.stat().st_size
     assert record.content_hash == sha256_file(run_path)
 

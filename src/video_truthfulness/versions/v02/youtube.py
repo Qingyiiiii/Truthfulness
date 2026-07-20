@@ -11,11 +11,14 @@ def no_cookie_strategies() -> list[DownloadStrategy]:
     return [
         DownloadStrategy(
             name="youtube_public_av",
-            format_selector="bv*[height<=720]+ba/b[height<=720]/b",
+            format_selector=(
+                "bestvideo[height=480]+bestaudio/"
+                "best[height=480]/worstvideo+worstaudio/worst"
+            ),
         ),
         DownloadStrategy(
             name="youtube_public_progressive",
-            format_selector="b[height<=720]/b",
+            format_selector="best[height=480]/worst",
         ),
         DownloadStrategy(
             name="youtube_metadata_probe",

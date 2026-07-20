@@ -1,0 +1,331 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:video-truthfulness:schema:current-state:v1",
+  "title": "Video Truthfulness Current State v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "current_state_version",
+    "task_id",
+    "session_id",
+    "attempt_no",
+    "run_id",
+    "stage_id",
+    "status",
+    "as_of_event_id",
+    "as_of_occurred_at",
+    "event_count",
+    "event_head_hash",
+    "registry_heads",
+    "dag_version",
+    "workflow_version",
+    "actual_read_set",
+    "actual_write_set",
+    "input_artifacts",
+    "output_artifacts",
+    "invalidated_artifacts",
+    "completed_actions",
+    "remaining_actions",
+    "pending_human_decisions",
+    "validation_summary",
+    "candidate_next_nodes",
+    "state_hash"
+  ],
+  "properties": {
+    "current_state_version": {"const": "current_state_v1.0.0"},
+    "task_id": {"$ref": "#/$defs/taskId"},
+    "session_id": {"$ref": "#/$defs/sessionId"},
+    "attempt_no": {"type": "integer", "minimum": 1},
+    "run_id": {
+      "oneOf": [
+        {"$ref": "#/$defs/runId"},
+        {"type": "null"}
+      ]
+    },
+    "stage_id": {"$ref": "#/$defs/stageId"},
+    "status": {
+      "enum": [
+        "IN_PROGRESS",
+        "COMPLETED",
+        "FAILED",
+        "WAITING_FOR_HUMAN",
+        "BLOCKED_BY_INPUT",
+        "SKIPPED_BY_GATE"
+      ]
+    },
+    "as_of_event_id": {"$ref": "#/$defs/eventId"},
+    "as_of_occurred_at": {"$ref": "#/$defs/utcTimestamp"},
+    "event_count": {"type": "integer", "minimum": 1},
+    "event_head_hash": {"$ref": "#/$defs/sha256"},
+    "registry_heads": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/registryHead"},
+      "uniqueItems": true
+    },
+    "dag_version": {"const": "youtube_truthfulness_dag_v1.1.0"},
+    "workflow_version": {"const": "youtube_truthfulness_workflow_v1.1.0"},
+    "actual_read_set": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/observedAccess"},
+      "uniqueItems": true
+    },
+    "actual_write_set": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/observedAccess"},
+      "uniqueItems": true
+    },
+    "input_artifacts": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/artifactRef"},
+      "uniqueItems": true
+    },
+    "output_artifacts": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/artifactRef"},
+      "uniqueItems": true
+    },
+    "invalidated_artifacts": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/artifactRef"},
+      "uniqueItems": true
+    },
+    "completed_actions": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/completedAction"},
+      "uniqueItems": true
+    },
+    "remaining_actions": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/remainingAction"},
+      "uniqueItems": true
+    },
+    "pending_human_decisions": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/pendingHumanDecision"},
+      "uniqueItems": true
+    },
+    "validation_summary": {"$ref": "#/$defs/validationSummary"},
+    "candidate_next_nodes": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/candidateNode"},
+      "uniqueItems": true
+    },
+    "state_hash": {"$ref": "#/$defs/sha256"}
+  },
+  "$defs": {
+    "taskId": {"type": "string", "pattern": "^task_[0-9a-hjkmnp-tv-z]{26}$"},
+    "sessionId": {"type": "string", "pattern": "^session_[0-9a-hjkmnp-tv-z]{26}$"},
+    "runId": {"type": "string", "pattern": "^run_[0-9a-hjkmnp-tv-z]{26}$"},
+    "artifactId": {"type": "string", "pattern": "^artifact_[0-9a-hjkmnp-tv-z]{26}$"},
+    "recordId": {"type": "string", "pattern": "^record_[0-9a-hjkmnp-tv-z]{26}$"},
+    "eventId": {"type": "string", "pattern": "^event_[0-9a-hjkmnp-tv-z]{26}$"},
+    "stageId": {"type": "string", "pattern": "^S0[1-9]$"},
+    "dagNodeId": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "utcTimestamp": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?Z$"
+    },
+    "relativePath": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "pattern": "^(?![A-Za-z]:)(?!/)(?!~)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*(?:^|/)latest(?:/|$))(?!.*[\\\\*?$])[^\\r\\n]+$"
+    },
+    "artifactType": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*(?:\\.[a-z][a-z0-9_]*)+$"
+    },
+    "artifactRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_id",
+        "artifact_type",
+        "record_id",
+        "relative_path",
+        "content_hash_algorithm",
+        "content_hash",
+        "input_fingerprint",
+        "validation_status",
+        "lifecycle_state"
+      ],
+      "properties": {
+        "artifact_id": {"$ref": "#/$defs/artifactId"},
+        "artifact_type": {"$ref": "#/$defs/artifactType"},
+        "record_id": {"$ref": "#/$defs/recordId"},
+        "relative_path": {"$ref": "#/$defs/relativePath"},
+        "content_hash_algorithm": {"const": "sha256"},
+        "content_hash": {"$ref": "#/$defs/sha256"},
+        "input_fingerprint": {
+          "oneOf": [
+            {"$ref": "#/$defs/sha256"},
+            {"type": "null"}
+          ]
+        },
+        "validation_status": {"enum": ["not_validated", "passed", "failed", "partial"]},
+        "lifecycle_state": {
+          "enum": ["created", "validated", "frozen", "stale", "superseded", "invalid", "archived", "purged"]
+        }
+      }
+    },
+    "observedAccess": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_id",
+        "record_id",
+        "relative_path",
+        "content_hash_algorithm",
+        "content_hash",
+        "event_id"
+      ],
+      "properties": {
+        "artifact_id": {
+          "oneOf": [
+            {"$ref": "#/$defs/artifactId"},
+            {"type": "null"}
+          ]
+        },
+        "record_id": {
+          "oneOf": [
+            {"$ref": "#/$defs/recordId"},
+            {"type": "null"}
+          ]
+        },
+        "relative_path": {"$ref": "#/$defs/relativePath"},
+        "content_hash_algorithm": {"const": "sha256"},
+        "content_hash": {"$ref": "#/$defs/sha256"},
+        "event_id": {"$ref": "#/$defs/eventId"}
+      }
+    },
+    "registryHead": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "registry_scope",
+        "relative_path",
+        "content_hash_algorithm",
+        "content_hash",
+        "record_count",
+        "artifact_count",
+        "head_record_id",
+        "head_record_hash"
+      ],
+      "properties": {
+        "registry_scope": {"enum": ["run", "cross_run"]},
+        "relative_path": {"$ref": "#/$defs/relativePath"},
+        "content_hash_algorithm": {"const": "sha256"},
+        "content_hash": {"$ref": "#/$defs/sha256"},
+        "record_count": {"type": "integer", "minimum": 0},
+        "artifact_count": {"type": "integer", "minimum": 0},
+        "head_record_id": {
+          "oneOf": [
+            {"$ref": "#/$defs/recordId"},
+            {"type": "null"}
+          ]
+        },
+        "head_record_hash": {
+          "oneOf": [
+            {"$ref": "#/$defs/sha256"},
+            {"type": "null"}
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"record_count": {"const": 0}}, "required": ["record_count"]},
+          "then": {
+            "properties": {
+              "artifact_count": {"const": 0},
+              "head_record_id": {"type": "null"},
+              "head_record_hash": {"type": "null"}
+            }
+          },
+          "else": {
+            "properties": {
+              "head_record_id": {"$ref": "#/$defs/recordId"},
+              "head_record_hash": {"$ref": "#/$defs/sha256"}
+            }
+          }
+        }
+      ]
+    },
+    "completedAction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["action_key", "summary", "source_event_id"],
+      "properties": {
+        "action_key": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$", "maxLength": 120},
+        "summary": {"type": "string", "minLength": 1, "maxLength": 500},
+        "source_event_id": {"$ref": "#/$defs/eventId"}
+      }
+    },
+    "remainingAction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["action_key", "summary"],
+      "properties": {
+        "action_key": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$", "maxLength": 120},
+        "summary": {"type": "string", "minLength": 1, "maxLength": 500}
+      }
+    },
+    "pendingHumanDecision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["decision_artifact_id", "gate_node_id", "requested_event_id", "status", "summary"],
+      "properties": {
+        "decision_artifact_id": {"$ref": "#/$defs/artifactId"},
+        "gate_node_id": {"$ref": "#/$defs/dagNodeId"},
+        "requested_event_id": {"$ref": "#/$defs/eventId"},
+        "status": {"const": "pending"},
+        "summary": {"type": "string", "minLength": 1, "maxLength": 500}
+      }
+    },
+    "validatorResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["validator_id", "validator_version", "result", "validation_artifact_id"],
+      "properties": {
+        "validator_id": {"type": "string", "pattern": "^[a-z][a-z0-9_.-]*$", "maxLength": 160},
+        "validator_version": {"type": "string", "minLength": 1, "maxLength": 120},
+        "result": {"enum": ["passed", "failed", "partial"]},
+        "validation_artifact_id": {
+          "oneOf": [
+            {"$ref": "#/$defs/artifactId"},
+            {"type": "null"}
+          ]
+        }
+      }
+    },
+    "validationSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["overall_status", "passed_count", "failed_count", "partial_count", "validators"],
+      "properties": {
+        "overall_status": {"enum": ["passed", "failed", "partial", "not_run"]},
+        "passed_count": {"type": "integer", "minimum": 0},
+        "failed_count": {"type": "integer", "minimum": 0},
+        "partial_count": {"type": "integer", "minimum": 0},
+        "validators": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/validatorResult"},
+          "uniqueItems": true
+        }
+      }
+    },
+    "candidateNode": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["node_id", "stage_id", "status", "reason"],
+      "properties": {
+        "node_id": {"$ref": "#/$defs/dagNodeId"},
+        "stage_id": {"$ref": "#/$defs/stageId"},
+        "status": {"enum": ["ready", "manual_gate", "blocked", "failed", "stale", "invalid"]},
+        "reason": {"type": "string", "minLength": 1, "maxLength": 500}
+      }
+    }
+  }
+}

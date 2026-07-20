@@ -17,13 +17,20 @@ task_id = "^task_[0-9a-hjkmnp-tv-z]{26}$"
 session_id = "^session_[0-9a-hjkmnp-tv-z]{26}$"
 artifact_id = "^artifact_[0-9a-hjkmnp-tv-z]{26}$"
 checkpoint_id = "^checkpoint_[0-9a-hjkmnp-tv-z]{26}$"
+event_id = "^event_[0-9a-hjkmnp-tv-z]{26}$"
 batch_id = "^batch_[0-9a-hjkmnp-tv-z]{26}$"
 dataset_build_id = "^dataset_build_[0-9a-hjkmnp-tv-z]{26}$"
 exp_id = "^exp_[0-9a-hjkmnp-tv-z]{26}$"
 claim_id = "^claim_[0-9a-hjkmnp-tv-z]{26}$"
 evidence_id = "^evidence_[0-9a-hjkmnp-tv-z]{26}$"
+export_id = "^export_[0-9a-hjkmnp-tv-z]{26}$"
+load_plan_id = "^load_plan_[0-9a-hjkmnp-tv-z]{26}$"
+load_batch_id = "^load_batch_[0-9a-hjkmnp-tv-z]{26}$"
+projection_attempt_id = "^attempt_[0-9a-hjkmnp-tv-z]{26}$"
+load_receipt_id = "^load_receipt_[0-9a-hjkmnp-tv-z]{26}$"
 dataset_version = "^truthfulness_youtube_video_ds_v[0-9]+\\.[0-9]+\\.[0-9]+$"
 workflow_version = "^youtube_truthfulness_workflow_v[0-9]+\\.[0-9]+\\.[0-9]+$"
+dag_version = "^youtube_truthfulness_dag_v[0-9]+\\.[0-9]+\\.[0-9]+$"
 schema_version = "^[a-z][a-z0-9_]*_v[0-9]+\\.[0-9]+\\.[0-9]+$"
 prompt_version = "^[a-z][a-z0-9_]*_prompt_v[0-9]+\\.[0-9]+\\.[0-9]+$"
 agent_profile_version = "^[a-z][a-z0-9_]*_agent_v[0-9]+\\.[0-9]+\\.[0-9]+$"
@@ -36,6 +43,12 @@ v02_path_map = "runs/V02/run_path_map.jsonl"
 run_identity_filename = "run.json"
 path_separator = "/"
 allow_absolute_paths = false
+
+[storage_roots]
+repository = "repository"
+claim_warehouse = "ubuntu_v02_claim_warehouse"
+claim_warehouse_environment_variable = "VIDEO_TRUTHFULNESS_WAREHOUSE_V02_ROOT"
+allow_private_absolute_mapping_in_public_records = false
 
 [dataset]
 draft_status = "draft"

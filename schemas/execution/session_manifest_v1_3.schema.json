@@ -1,0 +1,539 @@
+{
+  "$defs": {
+    "ArtifactScope": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_id": {
+          "pattern": "^artifact_[0-9a-hjkmnp-tv-z]{26}$",
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "purpose": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Purpose",
+          "type": "string"
+        },
+        "scope_type": {
+          "const": "artifact",
+          "title": "Scope Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "scope_type",
+        "artifact_id",
+        "purpose"
+      ],
+      "title": "ArtifactScope",
+      "type": "object"
+    },
+    "CodeRef": {
+      "additionalProperties": false,
+      "properties": {
+        "git_commit": {
+          "pattern": "^[0-9a-f]{40}$",
+          "title": "Git Commit",
+          "type": "string"
+        },
+        "working_tree_dirty": {
+          "title": "Working Tree Dirty",
+          "type": "boolean"
+        },
+        "working_tree_manifest_hash": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Working Tree Manifest Hash"
+        },
+        "working_tree_manifest_path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Working Tree Manifest Path"
+        }
+      },
+      "required": [
+        "git_commit",
+        "working_tree_dirty",
+        "working_tree_manifest_path",
+        "working_tree_manifest_hash"
+      ],
+      "title": "CodeRef",
+      "type": "object"
+    },
+    "EnvironmentRef": {
+      "additionalProperties": false,
+      "properties": {
+        "architecture": {
+          "maxLength": 80,
+          "minLength": 1,
+          "title": "Architecture",
+          "type": "string"
+        },
+        "dependency_manifest_hash": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Dependency Manifest Hash"
+        },
+        "dependency_manifest_path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Dependency Manifest Path"
+        },
+        "os_family": {
+          "enum": [
+            "windows",
+            "linux",
+            "macos",
+            "other"
+          ],
+          "title": "Os Family",
+          "type": "string"
+        },
+        "runtime_name": {
+          "maxLength": 80,
+          "minLength": 1,
+          "title": "Runtime Name",
+          "type": "string"
+        },
+        "runtime_version": {
+          "maxLength": 80,
+          "minLength": 1,
+          "title": "Runtime Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "runtime_name",
+        "runtime_version",
+        "os_family",
+        "architecture",
+        "dependency_manifest_path",
+        "dependency_manifest_hash"
+      ],
+      "title": "EnvironmentRef",
+      "type": "object"
+    },
+    "FileBootstrapRef": {
+      "additionalProperties": false,
+      "properties": {
+        "content_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Content Hash",
+          "type": "string"
+        },
+        "content_hash_algorithm": {
+          "const": "sha256",
+          "title": "Content Hash Algorithm",
+          "type": "string"
+        },
+        "purpose": {
+          "maxLength": 240,
+          "minLength": 1,
+          "title": "Purpose",
+          "type": "string"
+        },
+        "ref_type": {
+          "enum": [
+            "document",
+            "working_tree_manifest",
+            "registry",
+            "dag_config"
+          ],
+          "title": "Ref Type",
+          "type": "string"
+        },
+        "relative_path": {
+          "maxLength": 512,
+          "minLength": 1,
+          "title": "Relative Path",
+          "type": "string"
+        }
+      },
+      "required": [
+        "ref_type",
+        "relative_path",
+        "content_hash_algorithm",
+        "content_hash",
+        "purpose"
+      ],
+      "title": "FileBootstrapRef",
+      "type": "object"
+    },
+    "GitBootstrapRef": {
+      "additionalProperties": false,
+      "properties": {
+        "description": {
+          "maxLength": 240,
+          "minLength": 1,
+          "title": "Description",
+          "type": "string"
+        },
+        "object_id": {
+          "pattern": "^[0-9a-f]{40}$",
+          "title": "Object Id",
+          "type": "string"
+        },
+        "ref_type": {
+          "enum": [
+            "git_commit",
+            "git_tree"
+          ],
+          "title": "Ref Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "ref_type",
+        "object_id",
+        "description"
+      ],
+      "title": "GitBootstrapRef",
+      "type": "object"
+    },
+    "HumanGatePolicy": {
+      "additionalProperties": false,
+      "properties": {
+        "approval_required": {
+          "title": "Approval Required",
+          "type": "boolean"
+        },
+        "decision_artifact_required": {
+          "title": "Decision Artifact Required",
+          "type": "boolean"
+        },
+        "gate_node_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Gate Node Ids",
+          "type": "array"
+        },
+        "implicit_approval_allowed": {
+          "const": false,
+          "title": "Implicit Approval Allowed",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "approval_required",
+        "gate_node_ids",
+        "decision_artifact_required",
+        "implicit_approval_allowed"
+      ],
+      "title": "HumanGatePolicy",
+      "type": "object"
+    },
+    "PathPrefixScope": {
+      "additionalProperties": false,
+      "properties": {
+        "purpose": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Purpose",
+          "type": "string"
+        },
+        "recursive": {
+          "title": "Recursive",
+          "type": "boolean"
+        },
+        "relative_path": {
+          "maxLength": 512,
+          "minLength": 1,
+          "title": "Relative Path",
+          "type": "string"
+        },
+        "scope_type": {
+          "const": "path_prefix",
+          "title": "Scope Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "scope_type",
+        "relative_path",
+        "recursive",
+        "purpose"
+      ],
+      "title": "PathPrefixScope",
+      "type": "object"
+    },
+    "PathScope": {
+      "additionalProperties": false,
+      "properties": {
+        "purpose": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Purpose",
+          "type": "string"
+        },
+        "relative_path": {
+          "maxLength": 512,
+          "minLength": 1,
+          "title": "Relative Path",
+          "type": "string"
+        },
+        "scope_type": {
+          "const": "path",
+          "title": "Scope Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "scope_type",
+        "relative_path",
+        "purpose"
+      ],
+      "title": "PathScope",
+      "type": "object"
+    },
+    "sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    }
+  },
+  "$id": "urn:video-truthfulness:schema:session-manifest:v1.3",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Warehouse-export S01 successor bound to Workflow v1.3 / DAG v1.4.",
+  "properties": {
+    "agent_profile_version": {
+      "pattern": "^[a-z][a-z0-9_]*_agent_v[0-9]+\\.[0-9]+\\.[0-9]+$",
+      "title": "Agent Profile Version",
+      "type": "string"
+    },
+    "agent_runtime_version": {
+      "maxLength": 120,
+      "minLength": 1,
+      "title": "Agent Runtime Version",
+      "type": "string"
+    },
+    "attempt_no": {
+      "minimum": 1,
+      "title": "Attempt No",
+      "type": "integer"
+    },
+    "bootstrap_refs": {
+      "items": {
+        "anyOf": [
+          {
+            "$ref": "#/$defs/GitBootstrapRef"
+          },
+          {
+            "$ref": "#/$defs/FileBootstrapRef"
+          }
+        ]
+      },
+      "title": "Bootstrap Refs",
+      "type": "array"
+    },
+    "code_ref": {
+      "$ref": "#/$defs/CodeRef"
+    },
+    "created_at": {
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?Z$",
+      "title": "Created At",
+      "type": "string"
+    },
+    "dag_node_id": {
+      "type": "null"
+    },
+    "dag_version": {
+      "const": "youtube_truthfulness_dag_v1.4.0"
+    },
+    "declared_read_set": {
+      "items": {
+        "discriminator": {
+          "mapping": {
+            "artifact": "#/$defs/ArtifactScope",
+            "path": "#/$defs/PathScope",
+            "path_prefix": "#/$defs/PathPrefixScope"
+          },
+          "propertyName": "scope_type"
+        },
+        "oneOf": [
+          {
+            "$ref": "#/$defs/ArtifactScope"
+          },
+          {
+            "$ref": "#/$defs/PathScope"
+          },
+          {
+            "$ref": "#/$defs/PathPrefixScope"
+          }
+        ]
+      },
+      "title": "Declared Read Set",
+      "type": "array"
+    },
+    "declared_write_set": {
+      "items": {
+        "discriminator": {
+          "mapping": {
+            "artifact": "#/$defs/ArtifactScope",
+            "path": "#/$defs/PathScope",
+            "path_prefix": "#/$defs/PathPrefixScope"
+          },
+          "propertyName": "scope_type"
+        },
+        "oneOf": [
+          {
+            "$ref": "#/$defs/ArtifactScope"
+          },
+          {
+            "$ref": "#/$defs/PathScope"
+          },
+          {
+            "$ref": "#/$defs/PathPrefixScope"
+          }
+        ]
+      },
+      "title": "Declared Write Set",
+      "type": "array"
+    },
+    "environment_ref": {
+      "$ref": "#/$defs/EnvironmentRef"
+    },
+    "human_gate_policy": {
+      "$ref": "#/$defs/HumanGatePolicy"
+    },
+    "manifest_hash": {
+      "$ref": "#/$defs/sha256"
+    },
+    "parent_checkpoint_id": {
+      "anyOf": [
+        {
+          "pattern": "^checkpoint_[0-9a-hjkmnp-tv-z]{26}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Parent Checkpoint Id"
+    },
+    "project_version": {
+      "const": "v0.2",
+      "title": "Project Version",
+      "type": "string"
+    },
+    "prompt_version": {
+      "pattern": "^[a-z][a-z0-9_]*_prompt_v[0-9]+\\.[0-9]+\\.[0-9]+$",
+      "title": "Prompt Version",
+      "type": "string"
+    },
+    "release_id": {
+      "const": "truthfulness_v0.2_youtube_video",
+      "title": "Release Id",
+      "type": "string"
+    },
+    "run_id": {
+      "anyOf": [
+        {
+          "pattern": "^run_[0-9a-hjkmnp-tv-z]{26}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Run Id"
+    },
+    "schema_versions": {
+      "items": {
+        "pattern": "^[a-z][a-z0-9_]*_v[0-9]+\\.[0-9]+\\.[0-9]+$",
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Schema Versions",
+      "type": "array"
+    },
+    "session_id": {
+      "pattern": "^session_[0-9a-hjkmnp-tv-z]{26}$",
+      "title": "Session Id",
+      "type": "string"
+    },
+    "session_manifest_version": {
+      "const": "session_manifest_v1.3.0"
+    },
+    "stage_id": {
+      "const": "S01"
+    },
+    "storage_version": {
+      "const": "V02",
+      "title": "Storage Version",
+      "type": "string"
+    },
+    "task_id": {
+      "pattern": "^task_[0-9a-hjkmnp-tv-z]{26}$",
+      "title": "Task Id",
+      "type": "string"
+    },
+    "task_scope": {
+      "enum": [
+        "run",
+        "cross_run"
+      ],
+      "title": "Task Scope",
+      "type": "string"
+    },
+    "workflow_version": {
+      "const": "youtube_truthfulness_workflow_v1.3.0"
+    }
+  },
+  "required": [
+    "session_manifest_version",
+    "project_version",
+    "storage_version",
+    "release_id",
+    "task_id",
+    "session_id",
+    "attempt_no",
+    "task_scope",
+    "run_id",
+    "stage_id",
+    "dag_node_id",
+    "parent_checkpoint_id",
+    "bootstrap_refs",
+    "agent_profile_version",
+    "agent_runtime_version",
+    "workflow_version",
+    "dag_version",
+    "schema_versions",
+    "prompt_version",
+    "code_ref",
+    "environment_ref",
+    "declared_read_set",
+    "declared_write_set",
+    "human_gate_policy",
+    "created_at",
+    "manifest_hash"
+  ],
+  "title": "Video Truthfulness Session Manifest v1.3",
+  "type": "object"
+}

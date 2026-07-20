@@ -1,0 +1,126 @@
+agent_profile_version = "source_depth_agent_v1.2.0"
+project_version = "v0.2"
+storage_version = "V02"
+stage_id = "S02"
+workflow_version = "youtube_truthfulness_workflow_v1.3.0"
+dag_version = "youtube_truthfulness_dag_v1.2.0"
+coordinator_role = "codex_coordinator"
+coordinator_requested_model = "gpt-5.6-sol"
+coordinator_requested_reasoning = "xhigh"
+repository_writer = "codex_coordinator"
+telemetry_writer = "codex_coordinator"
+max_attempts = 1
+automatic_retry = false
+automatic_next_stage = false
+
+[s02_a_prompt]
+node_id = "source_depth_prompt"
+required_gate = "G1B"
+prompt_template = "configs/prompts/v02/s02_source_depth_prompt_v1_2.md"
+output_artifact_type = "source_depth.prompt"
+target_scope = "source_depth.decision.targets_only"
+require_canonical_urls = true
+return_contract_version = "source_depth_manual_return_v1.0.0"
+publish_inbox_rule = true
+publish_result_ready_message = true
+terminal_state = "WAITING_FOR_HUMAN"
+next_action = "wait_for_human"
+stop_after_publication = true
+
+[manual_web_interval]
+executor = "user"
+interface = "gemini_web"
+codex_session_active = false
+codex_agent_active = false
+collector_active = false
+poller_active = false
+timer_active = false
+automatic_timeout = false
+cli_allowed = false
+api_allowed = false
+desktop_app_assumed = false
+repository_write_allowed = false
+result_extensions = [".json", ".md", ".txt"]
+result_max_size_bytes = 20971520
+result_ready_message = "gemini深度溯源已完成，文件地址在 <exact-path>"
+
+[s02_b_capture]
+node_id = "external_depth_action"
+required_gate = "G2"
+gate_semantics = "completed_gemini_depth_research_plus_one_exact_file_path"
+authorization_scope = "capture_only"
+directory_scan_allowed = false
+glob_allowed = false
+latest_allowed = false
+symlink_allowed = false
+reparse_point_allowed = false
+source_file_mutation_allowed = false
+source_file_registry_write_allowed = false
+source_file_event = "artifact.read_path_and_sha256"
+receipt_write_mode = "create_new"
+canonical_envelope_write_mode = "create_new"
+output_artifact_type = "source_depth.result"
+success_next_action = "return_to_stage_S02"
+success_stop_gate = "G3"
+
+[s02_b_capture.invalid_path]
+terminal_state = "BLOCKED_BY_INPUT"
+failure_class = "manual_external_input_invalid"
+next_action = "terminate"
+reason_codes = [
+  "path_out_of_scope",
+  "file_missing",
+  "file_unreadable",
+  "not_regular_file",
+  "extension_not_allowed",
+  "file_too_large",
+  "reparse_point",
+  "file_changed",
+  "prompt_request_mismatch",
+]
+
+[s02_b_capture.invalid_content]
+terminal_state = "FAILED"
+failure_class = "external_empty_return"
+next_action = "terminate"
+reason_codes = [
+  "empty_text",
+  "unmapped_claim",
+  "unlocated_summary",
+  "no_reviewable_source",
+]
+
+[s02_c_import]
+node_id = "source_depth_import_validation"
+required_gate = "G3"
+start_from = "fresh_session_and_exact_return_to_stage_handoff"
+raw_result_authority = "lead_only"
+classification_values = ["supports", "refutes", "context", "conflict", "unresolved", "rejected"]
+lead_status_values = ["evidence", "clue_only", "no_evidence", "source_blocked", "pending"]
+bounded_open_returned_urls = true
+open_ended_research_allowed = false
+cross_claim_expansion_allowed = false
+gold_upgrade_allowed = false
+training_write_allowed = false
+requires_user_confirmation_for_material_meaning_change = true
+output_artifact_type = "source_depth.import_validation"
+
+[telemetry.codex]
+instrumentation_mode = "host_receipt"
+recording_mode = "retrospective_host_receipt"
+observed_model_default_status = "unavailable"
+token_default_status = "unavailable"
+
+[telemetry.gemini]
+actor_role = "gemini_web_user"
+call_kind = "external_research"
+invocation_surface = "browser_ui"
+instrumentation_mode = "external_ui"
+recording_mode = "retrospective_manual_receipt"
+start_boundary = "s02_a_prompt_handoff_at"
+finish_boundary = "g2_result_ready_received_at"
+wall_elapsed_status = "derived"
+active_elapsed_default_status = "unavailable"
+provider_elapsed_default_status = "unavailable"
+token_default_status = "unavailable"
+observed_model_rule = "reported_only_from_auditable_ui_label_otherwise_unavailable"
